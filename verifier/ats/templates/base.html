@@ -11,7 +11,8 @@
 {% block head %}{% endblock %}
 </head>
 <body>
-<div class="rv-bar"><b>Demo build</b> · applicant data and every AI call stay on this machine.</div>
+{% if slack_live() %}<div class="rv-bar"><b>Demo build</b> · applicant data and every AI call stay on this machine.</div>
+{% else %}<div class="rv-bar rv-bar-off" role="status"><b>Slack is off on this stack</b> · cards go to a log file, not the channel. The real-Slack stack runs on port 8101.</div>{% endif %}
 <header class="rv-header">
   <div class="rv-header-in">
     <a class="rv-brand" href="/"><span class="rv-brand-mark" aria-hidden="true">AT</span>Mock ATS <small>demo applicant tracking</small></a>

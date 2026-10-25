@@ -111,3 +111,5 @@ p { margin: 0; }
 /* `hidden` must win over component display rules (status card swaps). */
 [hidden] { display: none !important; }
 .rv-done-ico { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 9px; font-weight: 700; flex: none; }
+.rv-bar-off { background: var(--warn-tint); border-bottom-color: var(--warn-line); }
+.rv-bar-off b { color: var(--warn); }

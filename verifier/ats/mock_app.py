@@ -169,6 +169,7 @@ def create_app(*, state_root: Path | None = None,
     jenv = jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATES)), autoescape=True)
     jenv.filters["nl2br"] = _nl2br
     jenv.filters["when"] = _when
+    jenv.globals["slack_live"] = _slack_live
     app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
 
     def public_url() -> str:
@@ -813,6 +814,12 @@ def _when(iso: str | None) -> str:
     except ValueError:
         return iso
     return dt.astimezone(timezone.utc).strftime("%b %d, %Y %H:%M UTC")
+
+
+def _slack_live() -> bool:
+    """True when this stack posts real Slack cards: demo_up.sh puts `slack` in VERIFIER_REAL only
+    with SLACK=real. Read per request; the page warns when cards only go to the stub log."""
+    return "slack" in [m.strip() for m in os.environ.get("VERIFIER_REAL", "").split(",")]
 
 
 def _default_app() -> FastAPI:

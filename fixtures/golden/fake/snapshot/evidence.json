@@ -7,6 +7,14 @@
   "misses": [],
   "responses": [
     {
+      "body_path": "raw/37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570.json",
+      "body_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/henrychen4736/cubesolver/commits?author=rv-fake-candidate&per_page=100",
+      "status": 200
+    },
+    {
       "body_path": "raw/35dd0cc0ccf4c4de903a7f5d47e9e33e63db8bc26e326d7fb5fe8cb5fd4b8a38.json",
       "body_sha256": "35dd0cc0ccf4c4de903a7f5d47e9e33e63db8bc26e326d7fb5fe8cb5fd4b8a38",
       "etag": null,
@@ -36,6 +44,22 @@
       "etag": null,
       "fetched_at": "2026-10-25T14:02:15Z",
       "key": "GET https://api.github.com/repos/rv-fake-candidate/fastgrid/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/48d34e2baab70c419db66c74ad8267418c3cf07b7b6f6b0d3dbe5a184a04e4d4.json",
+      "body_sha256": "48d34e2baab70c419db66c74ad8267418c3cf07b7b6f6b0d3dbe5a184a04e4d4",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/search/issues?q=type%3Apr%20author%3Arv-fake-candidate%20repo%3Ahenrychen4736%2Fcubesolver",
+      "status": 200
+    },
+    {
+      "body_path": "raw/48d34e2baab70c419db66c74ad8267418c3cf07b7b6f6b0d3dbe5a184a04e4d4.json",
+      "body_sha256": "48d34e2baab70c419db66c74ad8267418c3cf07b7b6f6b0d3dbe5a184a04e4d4",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/search/issues?q=type%3Apr%20is%3Amerged%20author%3Arv-fake-candidate%20repo%3Ahenrychen4736%2Fcubesolver",
       "status": 200
     },
     {

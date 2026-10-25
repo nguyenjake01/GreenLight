@@ -5,6 +5,9 @@ in; "now" for context lines is ``snapshot.evidence["created_at"]``), no network,
 environment. Thresholds use integer arithmetic; percentages in facts are whole numbers
 (floored), so the output never varies with float rounding.
 
+Checks for an ``oss_contribution`` claim (J13), in order: ``contribution``, ``pr_count`` (only
+when ``min_prs`` is set), ``maintainer`` (only for ``role: maintainer``).
+
 Checks, in order, for a project: ``repo``, ``fork``, ``start_date``, ``stars``,
 ``commit_share``, ``language``, ``substance``, ``run`` (the ``run`` check is J10's mapping from a
 ``RunTrace``; it can only add a soft result and a flag, never a hard result or an upgrade).
@@ -15,14 +18,15 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from verifier.contracts.snapshot import Snapshot
+from verifier.contracts.snapshot import Snapshot, cache_key
 from verifier.contracts.types import (
     Check, ClaimsDoc, Verdict, VerdictClaim, RunTrace,
 )
 from verifier.core import store
 from verifier.core.match import (
-    commit_timeline, commits_url, contributors_url, languages_url, match_commits, match_repo,
-    repo_detail_url, repos_list_url, user_url,
+    any_prs_url, author_commits_url, commit_timeline, commits_url, contributors_url,
+    languages_url, match_commits, match_repo, merged_prs_url, parse_repo_ref, repo_detail_url,
+    repos_list_url, reviewed_prs_url, user_url,
 )
 
 RUBRIC_VERSION = "rubric-v1"
@@ -486,7 +490,7 @@ def _run_check(trace: RunTrace) -> tuple[Check, list[str]]:
 
 # ── Combining ────────────────────────────────────────────────────────────────
 
-_PASS_ORDER = ("commit_share", "language", "start_date", "run", "stars", "substance", "fork", "repo")
+_PASS_ORDER = ("contribution", "pr_count", "maintainer", "commit_share", "language", "start_date", "run", "stars", "substance", "fork", "repo")
 
 
 def _top_reason(checks: list[Check]) -> str:
@@ -602,6 +606,123 @@ def _skill(claim: dict[str, Any], cx: _Ctx) -> VerdictClaim:
                    notes, links)
 
 
+# ── Open-source contribution claims (J13) ────────────────────────────────────
+
+_OSS_NOT_RUN = "Contribution check not run"
+_OSS_OFFLINE = "Contribution evidence unavailable offline"
+_OSS_MAX_LINKS = 5
+
+
+def _oss_simple(claim: dict[str, Any], reason: str, facts: dict[str, Any] | None = None) -> VerdictClaim:
+    return _simple(claim, "no_evidence", reason, [_check("contribution", "skip", reason, facts)])
+
+
+def _pr_sort_key(item: dict[str, Any]) -> tuple[int, int]:
+    """Newest first: merge time, else close time, else creation time; ties by PR number."""
+    pr = item.get("pull_request") if isinstance(item.get("pull_request"), dict) else {}
+    ts = _ts_key(pr.get("merged_at")) or _ts_key(item.get("closed_at")) or _ts_key(item.get("created_at"))
+    num = item.get("number")
+    return (-ts, -(num if isinstance(num, int) else 0))
+
+
+def _search_total(body: Any) -> int | None:
+    """`total_count` of a search response, or None when the body is not one."""
+    if not isinstance(body, dict):
+        return None
+    total = body.get("total_count")
+    if isinstance(total, int) and not isinstance(total, bool) and total >= 0:
+        return total
+    return None
+
+
+def _oss(claim: dict[str, Any], cx: _Ctx) -> VerdictClaim:
+    a = claim["assertions"]
+    login = str(cx.login)
+    repo = parse_repo_ref(a.get("repo"))
+    if not repo:
+        return _oss_simple(claim, _OSS_NOT_RUN)
+    maintainer = a.get("role") == "maintainer"
+    merged_u, any_u = merged_prs_url(repo, login), any_prs_url(repo, login)
+    commits_u = author_commits_url(repo, login)
+    review_u = reviewed_prs_url(repo, login) if maintainer else None
+    urls = [merged_u, any_u, commits_u] + ([review_u] if review_u else [])
+
+    keys = {u: cache_key("GET", u) for u in urls}
+    recorded = {r.get("key") for r in cx.snapshot.evidence.get("responses", []) if isinstance(r, dict)}
+    misses = set(cx.snapshot.evidence.get("misses") or [])
+    if not any(k in recorded or k in misses for k in keys.values()):
+        return _oss_simple(claim, _OSS_NOT_RUN)
+    if any(k in misses or k not in recorded for k in keys.values()):
+        return _oss_simple(claim, _OSS_OFFLINE)
+
+    got = {u: cx.ev.get(u) for u in urls}
+    if any(r is None for r in got.values()):
+        return _oss_simple(claim, _OSS_OFFLINE)
+
+    def total_of(url: str) -> int | None:
+        status, body = got[url]          # type: ignore[misc]
+        return _search_total(body) if status == 200 else None
+
+    merged_total, opened_total = total_of(merged_u), total_of(any_u)
+    reviews_total = total_of(review_u) if review_u else 0
+    cstatus, cbody = got[commits_u]      # type: ignore[misc]
+    if cstatus == 200 and isinstance(cbody, list):
+        landed = len(cbody)
+    elif cstatus in (404, 409, 410):     # repo gone or empty: nothing landed
+        landed = 0
+    else:
+        landed = None
+    if merged_total is None or opened_total is None or reviews_total is None or landed is None:
+        return _oss_simple(claim, _OSS_OFFLINE)
+
+    mstatus, mbody = got[merged_u]       # type: ignore[misc]
+    items = [i for i in (mbody.get("items") if isinstance(mbody, dict) else None) or []
+             if isinstance(i, dict)]
+    items.sort(key=_pr_sort_key)
+    items = items[:_OSS_MAX_LINKS]
+    titles = [_cut(str(i.get("title") or "")) for i in items]
+    facts: dict[str, Any] = {"merged_total": merged_total, "opened_total": opened_total,
+                             "reviews_total": reviews_total, "landed_commits": landed,
+                             "pr_titles": titles}
+
+    if merged_total == 0 and opened_total == 0 and landed == 0:
+        return _oss_simple(claim, f"Searched {repo} for PRs and commits by @{login}; none found.", facts)
+
+    checks: list[Check] = []
+    commit_txt = "100+" if landed >= 100 else str(landed)
+    if merged_total >= 1 or landed >= 1:
+        checks.append(_check(
+            "contribution", "pass",
+            f"{_plural(merged_total, 'merged PR')} and {_plural(commit_txt, 'commit')} "
+            f"by @{login} in {repo}", facts))
+    else:
+        checks.append(_check("contribution", "soft",
+                             f"{_plural(opened_total, 'PR')} opened in {repo}, none merged", facts))
+
+    want = a.get("min_prs")
+    if isinstance(want, int) and not isinstance(want, bool) and want >= 1:
+        checks.append(_check("pr_count", _band(merged_total, want, 80, 50),
+                             f"{_plural(merged_total, 'merged PR')}; claim says {want}",
+                             {"merged_total": merged_total, "claim_min_prs": want}))
+
+    if maintainer:
+        enough = reviews_total >= 5
+        checks.append(_check(
+            "maintainer", "pass" if enough else "soft",
+            f"{_plural(reviews_total, 'PR')} reviewed in {repo}" if enough
+            else f"Contributions found, but only {_plural(reviews_total, 'PR review')}",
+            {"reviews_total": reviews_total}))
+
+    links: list[str] = []
+    for i in items:
+        url = i.get("html_url")
+        if isinstance(url, str) and url and url not in links:
+            links.append(url)
+    if landed >= 1:
+        links.append(f"https://github.com/{repo}/commits?author={login}")
+    return _finish(claim, checks, [], [], links)
+
+
 # ── Context and account ───────────────────────────────────────────────────────
 
 def _context(cx: _Ctx) -> list[str]:
@@ -672,9 +793,8 @@ def compute_verdict(claims: ClaimsDoc, snapshot: Snapshot, run_traces: list[RunT
             out.append(_project(claim, cx, traces.get(claim["claim_id"])))
         elif t == "skill":
             out.append(_skill(claim, cx))
-        else:  # oss_contribution: J13 adds the real checks
-            text = "Contribution check not run"
-            out.append(_simple(claim, "no_evidence", text, [_check("contribution", "skip", text)]))
+        else:  # oss_contribution (J13)
+            out.append(_oss(claim, cx))
 
     tally = {"supported": 0, "partial": 0, "contradicted": 0, "no_evidence": 0}
     for vc in out:

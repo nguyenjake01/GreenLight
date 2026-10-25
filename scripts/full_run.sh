@@ -7,6 +7,8 @@
 #   SLACK=real bash scripts/full_run.sh      # post the card to SLACK_CHANNEL_ID
 #   bash scripts/full_run.sh fake            # another fixture (see: python -m verifier.ats.apply --list)
 #   KEEP=1 bash scripts/full_run.sh          # leave the servers running afterwards
+#   SANDBOX_BACKEND=openshell bash scripts/full_run.sh   # run checks in OpenShell (starts its gateway)
+#   VERIFIER_HOST=0.0.0.0 KEEP=1 ...         # let the OpenClaw sandbox reach :8200 (token-protected)
 #
 # Runs land in $RUNS_DIR (default: a fresh temp dir, printed at the start).
 set -euo pipefail
@@ -24,6 +26,7 @@ export GITHUB_FETCH_MODE="${GITHUB_FETCH_MODE:-replay}"
 export LLM_BASE_URL="${LLM_BASE_URL:-http://localhost:8000/v1}"
 export LLM_MODEL="${LLM_MODEL:-nvidia/Qwen3.6-35B-A3B-NVFP4}"
 LOGS="$RUNS_DIR/_logs"; mkdir -p "$LOGS"
+VERIFIER_HOST="${VERIFIER_HOST:-127.0.0.1}"
 PY=.venv/bin/python
 echo "runs: $RUNS_DIR   modules: $VERIFIER_REAL   sandbox: $SANDBOX_BACKEND"
 
@@ -34,6 +37,19 @@ for port in 8100 8200; do
   if curl -s -m 1 -o /dev/null "localhost:$port/"; then echo "port $port is already in use"; exit 1; fi
 done
 
+# OpenShell backend: the CLI must find the local gateway (verifier/stack/openshell/gateway.sh).
+if [ "$SANDBOX_BACKEND" = "openshell" ]; then
+  export PATH="$HOME/.local/bin:$PATH"
+  source <(bash verifier/stack/openshell/gateway.sh env)
+  if ! openshell gateway info 2>/dev/null | grep -q healthy; then
+    [ -d "${RV_OPENSHELL_HOME:-$HOME/.rv-openshell}" ] || bash verifier/stack/openshell/gateway.sh setup
+    echo "starting the OpenShell gateway (log: $LOGS/gateway.log; stop: bash verifier/stack/openshell/gateway.sh stop)"
+    nohup sg docker -c "bash verifier/stack/openshell/gateway.sh start" > "$LOGS/gateway.log" 2>&1 &
+    for _ in $(seq 1 30); do openshell gateway info 2>/dev/null | grep -q healthy && break; sleep 1; done
+    openshell gateway info 2>/dev/null | grep -q healthy || { echo "OpenShell gateway did not start; see $LOGS/gateway.log"; exit 1; }
+  fi
+fi
+
 # Each server gets its own process group (setsid), so stop() also kills uvicorn under sg.
 PIDS=()
 stop() { [ "${KEEP:-0}" = "1" ] && { echo "servers left running (process groups): ${PIDS[*]}"; return; }
@@ -43,9 +59,9 @@ trap stop EXIT
 setsid $PY -m uvicorn verifier.ats.mock_app:app --port 8100 > "$LOGS/ats.log" 2>&1 & PIDS+=($!)
 # The Docker backend needs the docker group; older shells only get it through sg.
 if id -nG | grep -qw docker; then
-  setsid $PY -m uvicorn verifier.core.service:app --port 8200 > "$LOGS/service.log" 2>&1 & PIDS+=($!)
+  setsid $PY -m uvicorn verifier.core.service:app --host $VERIFIER_HOST --port 8200 > "$LOGS/service.log" 2>&1 & PIDS+=($!)
 else
-  setsid sg docker -c "$PY -m uvicorn verifier.core.service:app --port 8200" > "$LOGS/service.log" 2>&1 & PIDS+=($!)
+  setsid sg docker -c "$PY -m uvicorn verifier.core.service:app --host $VERIFIER_HOST --port 8200" > "$LOGS/service.log" 2>&1 & PIDS+=($!)
 fi
 for _ in $(seq 1 30); do
   curl -sf -m 1 localhost:8100/ > /dev/null 2>&1 && curl -s -m 1 localhost:8200/internal/health > /dev/null 2>&1 && break

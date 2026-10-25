@@ -26,7 +26,8 @@ read anything but write only to gitignored folders (they may still run `full_run
 | 25ae0aa | Second candidate Aidan Hong (`aidanhong8`) replaces the fake candidate |
 | 7bd6a77 | Thread lines name Slack users by `<@U…>` mention when OpenClaw gives no username |
 | 75ba301 | Judge: reasoning on (missing weights/datasets → `could_not_attempt`), `MAX_TOKENS` 6000 |
-| (next) | `full_run.sh` OpenShell + `VERIFIER_HOST`; `scripts/openclaw_onboard.sh`, `scripts/openclaw_install_plugin.sh`, NemoClaw preset |
+| 2261c77 | `scripts/openclaw_onboard.sh`, `scripts/openclaw_install_plugin.sh`, NemoClaw preset `rv-verifier` |
+| (this) | `full_run.sh`: OpenShell backend starts its gateway; `VERIFIER_HOST` |
 
 `contracts-v1` is **not tagged** yet.
 

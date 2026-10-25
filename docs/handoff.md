@@ -45,9 +45,11 @@ Sonnet `coder` agents write the code, several at once on separate files.
   NemoClaw v0.0.137 (`~/.nemoclaw/source`, `npm link`ed). **Not on PATH by default**: run
   `export PATH=$HOME/.local/node/bin:$HOME/.local/bin:$PATH` (editing `.bashrc` was blocked).
 - Docker: user `dell` is now in the `docker` group, but older shells need `sg docker -c "<cmd>"`.
-- At checkpoint a background job was running `docker load` of the vLLM image (9 GB) and the
-  run-check image, then `a-bundle/start-vllm-offline.sh`. Check: `sg docker -c "docker ps; docker images"`,
-  `curl -s localhost:8000/v1/models`. If nothing loaded, rerun:
+- Images `nvcr.io/nvidia/vllm:nemoclaw-qwen36-9204569b` and `functional-run-sandbox:arm64` are loaded,
+  and container `vllm-qwen` was started at the checkpoint (startup takes several minutes; not yet
+  answering then). Check: `sg docker -c "docker logs --tail 20 vllm-qwen"`, `curl -s localhost:8000/v1/models`.
+  If the container is gone, restart with `bash ~/Downloads/hackathon/a-bundle/start-vllm-offline.sh` (via `sg docker`).
+  Full reload from scratch, if ever needed:
   `cd ~/Downloads/hackathon && sg docker -c "docker load -i a-bundle/nvcr.io_nvidia_vllm_nemoclaw-qwen36-9204569b.arm64.tar && docker load -i c-bundle/functional-run-sandbox.arm64.tar && bash a-bundle/start-vllm-offline.sh"`
 - vLLM serves the model as `nvidia/Qwen3.6-35B-A3B-NVFP4` → set `LLM_MODEL` to that and
   `LLM_BASE_URL=http://localhost:8000/v1` in `.env` (verifier on the host, design doc §5.2).

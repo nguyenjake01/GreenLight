@@ -1,0 +1,386 @@
+{
+  "text": "New application: Henry Chen: 🟢 6 🟡 1 🔴 0 ⚪ 2",
+  "blocks": [
+    {
+      "type": "header",
+      "block_id": "header",
+      "text": {
+        "type": "plain_text",
+        "text": "New application: Henry Chen · Software Engineer Intern",
+        "emoji": true
+      }
+    },
+    {
+      "type": "context",
+      "block_id": "account",
+      "elements": [
+        {
+          "type": "mrkdwn",
+          "text": "GitHub @henrychen4736 · 5 public repos · account since Sep 2021"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "block_id": "tally",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟢 6   🟡 1   🔴 0   ⚪ 2"
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "group_projects",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*PROJECTS*"
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "claim_c1",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟢 *Polytrack-ML*: 35 of 35 commits by the candidate; Python is the main language; JavaScript is 34% of the code"
+      },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "openclaw:rv:claim_menu",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "More context",
+              "emoji": true
+            },
+            "value": "more_context|12345|c1"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Suggest questions",
+              "emoji": true
+            },
+            "value": "suggest_questions|12345|c1"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Edit claim",
+              "emoji": true
+            },
+            "value": "edit_claim|12345|c1"
+          }
+        ]
+      }
+    },
+    {
+      "type": "context",
+      "block_id": "notes_claim_c1",
+      "elements": [
+        {
+          "type": "mrkdwn",
+          "text": "↳ Commits not linked to the GitHub account"
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "block_id": "claim_c2",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟢 *CAC24*: 5 of 5 commits by the candidate; Dart is the main language; Python is 10% of the code"
+      },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "openclaw:rv:claim_menu",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "More context",
+              "emoji": true
+            },
+            "value": "more_context|12345|c2"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Suggest questions",
+              "emoji": true
+            },
+            "value": "suggest_questions|12345|c2"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Edit claim",
+              "emoji": true
+            },
+            "value": "edit_claim|12345|c2"
+          }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "claim_c3",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟡 *cubesolver*: Described as a complete project, but the repo is 3 KB with 2 commits on 1 day"
+      },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "openclaw:rv:claim_menu",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "More context",
+              "emoji": true
+            },
+            "value": "more_context|12345|c3"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Suggest questions",
+              "emoji": true
+            },
+            "value": "suggest_questions|12345|c3"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Edit claim",
+              "emoji": true
+            },
+            "value": "edit_claim|12345|c3"
+          }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "group_skills",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*SKILLS*"
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "claim_c4",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟢 *Python*: Main language in 1 repo"
+      },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "openclaw:rv:claim_menu",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "More context",
+              "emoji": true
+            },
+            "value": "more_context|12345|c4"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Suggest questions",
+              "emoji": true
+            },
+            "value": "suggest_questions|12345|c4"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Edit claim",
+              "emoji": true
+            },
+            "value": "edit_claim|12345|c4"
+          }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "claim_c5",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟢 *Dart*: Main language in 1 repo"
+      },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "openclaw:rv:claim_menu",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "More context",
+              "emoji": true
+            },
+            "value": "more_context|12345|c5"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Suggest questions",
+              "emoji": true
+            },
+            "value": "suggest_questions|12345|c5"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Edit claim",
+              "emoji": true
+            },
+            "value": "edit_claim|12345|c5"
+          }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "claim_c6",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟢 *JavaScript*: In 2 repos, up to 88% of the code"
+      },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "openclaw:rv:claim_menu",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "More context",
+              "emoji": true
+            },
+            "value": "more_context|12345|c6"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Suggest questions",
+              "emoji": true
+            },
+            "value": "suggest_questions|12345|c6"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Edit claim",
+              "emoji": true
+            },
+            "value": "edit_claim|12345|c6"
+          }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "claim_c7",
+      "text": {
+        "type": "mrkdwn",
+        "text": "🟢 *C++*: Main language in 1 repo"
+      },
+      "accessory": {
+        "type": "overflow",
+        "action_id": "openclaw:rv:claim_menu",
+        "options": [
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "More context",
+              "emoji": true
+            },
+            "value": "more_context|12345|c7"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Suggest questions",
+              "emoji": true
+            },
+            "value": "suggest_questions|12345|c7"
+          },
+          {
+            "text": {
+              "type": "plain_text",
+              "text": "Edit claim",
+              "emoji": true
+            },
+            "value": "edit_claim|12345|c7"
+          }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "group_unchecked",
+      "text": {
+        "type": "mrkdwn",
+        "text": "*NOT CHECKED (2)*"
+      }
+    },
+    {
+      "type": "section",
+      "block_id": "unchecked",
+      "text": {
+        "type": "mrkdwn",
+        "text": "⚪ Employment, education. Not verifiable from public code."
+      }
+    },
+    {
+      "type": "actions",
+      "block_id": "actions",
+      "elements": [
+        {
+          "type": "button",
+          "action_id": "openclaw:rv:recheck",
+          "text": {
+            "type": "plain_text",
+            "text": "Re-check now",
+            "emoji": true
+          },
+          "value": "12345"
+        },
+        {
+          "type": "button",
+          "action_id": "openclaw:rv:open_ats",
+          "text": {
+            "type": "plain_text",
+            "text": "Open in Greenhouse",
+            "emoji": true
+          },
+          "url": "http://localhost:8100/candidates/2000001?application_id=12345"
+        },
+        {
+          "type": "button",
+          "action_id": "openclaw:rv:open_pdf",
+          "text": {
+            "type": "plain_text",
+            "text": "Open annotated resume",
+            "emoji": true
+          },
+          "url": "https://example.slack.com/files/U1/F1/henry_resume_verified_1.pdf"
+        }
+      ]
+    },
+    {
+      "type": "context",
+      "block_id": "footer",
+      "elements": [
+        {
+          "type": "mrkdwn",
+          "text": "Evidence summary, not a hiring decision · rubric-v1 · snap_20261025T140215Z"
+        }
+      ]
+    }
+  ]
+}

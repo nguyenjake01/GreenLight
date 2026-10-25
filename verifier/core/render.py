@@ -451,7 +451,7 @@ def render_run_update(application_id: str, claim: Claim,
 def _fmt_val(v: Any) -> str:
     if v is None:
         return "not stated"
-    return str(v)
+    return _cut(" ".join(str(v).split()), 80)
 
 
 def render_label_change(claim: Claim, edits: list[ClaimEdit], old: Label, new: Label,
@@ -470,13 +470,32 @@ def render_label_change(claim: Claim, edits: list[ClaimEdit], old: Label, new: L
 
 
 def _slack_format(text: str) -> str:
+    """Markdown to Slack mrkdwn: "- " bullets become "• ", `**bold**` becomes `*bold*`,
+    `#` headings become bold lines."""
     out = []
     for line in text.splitlines():
         stripped = line.lstrip()
         if stripped.startswith(("- ", "* ")):
             line = line[: len(line) - len(stripped)] + "• " + stripped[2:]
+        elif stripped.startswith("#"):
+            heading = stripped.lstrip("#")
+            if heading.startswith(" ") and heading.strip():
+                line = f"**{heading.strip()}**"
         out.append(line)
     return "\n".join(out).replace("**", "*")
+
+
+def _split_text(body: str, limit: int) -> list[str]:
+    """Pieces of at most `limit` characters, cut at a line break when one is available."""
+    chunks: list[str] = []
+    while len(body) > limit:
+        cut = body.rfind("\n", 0, limit + 1)
+        if cut < limit // 2:
+            cut = limit
+        chunks.append(body[:cut].rstrip("\n"))
+        body = body[cut:].lstrip("\n")
+    chunks.append(body)
+    return chunks
 
 
 def render_generated(claim: Claim, gen: Generated) -> SlackMessage:
@@ -484,7 +503,7 @@ def render_generated(claim: Claim, gen: Generated) -> SlackMessage:
     name = _claim_name(claim)
     body = _esc(_slack_format(gen["text"]))
     title = f"{kind_title}: {name}"
-    chunks = [body[i:i + 2900] for i in range(0, len(body), 2900)] or [""]
+    chunks = _split_text(body, 2900)
     blocks = [_section(f"*{_esc(title)}*\n{chunks[0]}", f"gen_{claim['claim_id']}_{gen['kind']}")]
     for i, chunk in enumerate(chunks[1:], start=2):
         blocks.append(_section(chunk, f"gen_{claim['claim_id']}_{gen['kind']}_{i}"))
@@ -493,21 +512,94 @@ def render_generated(claim: Claim, gen: Generated) -> SlackMessage:
     return {"text": title, "blocks": blocks}
 
 
+# Edit modal field layout per claim type (§8.5, J12): (field, label, kind, required, options).
+# kinds: text, multiline, number, select. A select that is not required gets a "not stated" option.
+NOT_STATED = "none_stated"
+_MODAL_FIELDS: dict[str, tuple[tuple[str, str, str, bool, tuple[str, ...]], ...]] = {
+    "project": (
+        ("repo_url", "Repository URL", "text", False, ()),
+        ("repo_name", "Repository name", "text", False, ()),
+        ("language", "Language", "text", False, ()),
+        ("role", "Role", "select", False, ("creator", "co-creator", "maintainer")),
+        ("min_stars", "Minimum stars", "number", False, ()),
+        ("start_year", "Start year", "number", False, ()),
+        ("scale", "Scale", "select", False, ("small", "substantial")),
+        ("public_signal", "Public signal", "select", True, ("link", "open_source_wording", "none")),
+        ("behavior", "Behavior", "multiline", False, ()),
+    ),
+    "skill": (
+        ("name", "Skill", "text", True, ()),
+        ("kind", "Kind", "select", True, ("language", "framework_tool")),
+    ),
+    "oss_contribution": (
+        ("repo", "Repository (owner/repo)", "text", True, ()),
+        ("role", "Role", "select", True, ("contributor", "maintainer")),
+        ("min_prs", "Minimum merged PRs", "number", False, ()),
+        ("description", "Description", "multiline", False, ()),
+    ),
+}
+_PLACEHOLDERS = {"repo_url": "https://github.com/owner/repo", "repo": "owner/repo"}
+
+
+def _option(value: str, text: str | None = None) -> dict[str, Any]:
+    return {"text": _plain(text or value), "value": value}
+
+
+def _modal_input(field: str, label: str, kind: str, required: bool, options: tuple[str, ...],
+                 current: Any) -> dict[str, Any]:
+    if kind == "select":
+        opts = [_option(o) for o in options]
+        initial = None
+        if current in options:
+            initial = _option(current)
+        elif current is None and not required:
+            initial = _option(NOT_STATED, "not stated")
+        if not required:
+            opts.append(_option(NOT_STATED, "not stated"))
+        element: dict[str, Any] = {"type": "static_select", "action_id": "v", "options": opts}
+        if initial is not None:
+            element["initial_option"] = initial
+    elif kind == "number":
+        element = {"type": "number_input", "action_id": "v", "is_decimal_allowed": False}
+        if field != "start_year":
+            element["min_value"] = "0"
+        if isinstance(current, int) and not isinstance(current, bool):
+            element["initial_value"] = str(current)
+    else:
+        element = {"type": "plain_text_input", "action_id": "v"}
+        if kind == "multiline":
+            element["multiline"] = True
+        if current not in (None, ""):
+            element["initial_value"] = str(current)[:3000]
+        if field in _PLACEHOLDERS:
+            element["placeholder"] = _plain(_PLACEHOLDERS[field], 150)
+    return {"type": "input", "block_id": field, "optional": not required,
+            "label": _plain(label, 2000), "element": element}
+
+
 def render_edit_modal(application_id: str, claims_version: int, claim: Claim) -> dict:
-    """Minimal valid modal (J12 replaces this with the real input fields)."""
+    """The Edit claim modal: the claim's source text, then one input per assertion field of its
+    type (`block_id` = field name, element `action_id` = `v`). Claims that can't be edited
+    (unchecked, needs_review) get a modal with a note and no inputs."""
+    fields = _MODAL_FIELDS.get(claim.get("type", ""))
+    blocks: list[dict[str, Any]] = [
+        _context([_esc(_cut(claim.get("source_text", ""), 300))], "source_text")]
+    if fields is None or claim.get("needs_review"):
+        blocks.append(_section("This claim can't be edited.", "no_fields"))
+    else:
+        assertions = claim.get("assertions", {})
+        blocks += [_modal_input(f, label, kind, req, opts, assertions.get(f))
+                   for f, label, kind, req, opts in fields]
     return {
         "type": "modal",
-        "callback_id": CB_EDIT_CLAIM,
+        "callback_id": f"{CB_EDIT_CLAIM}:{application_id}:{claim['claim_id']}:{claims_version}",
         "private_metadata": json.dumps({"application_id": application_id,
                                         "claim_id": claim["claim_id"],
                                         "claims_version": claims_version}),
         "title": _plain("Edit claim", 24),
         "submit": _plain("Save", 24),
         "close": _plain("Cancel", 24),
-        "blocks": [
-            _context([_esc(_cut(claim.get("source_text", ""), 300))], "source_text"),
-            _section("Editing fields isn't available yet.", "no_fields"),
-        ],
+        "blocks": blocks,
     }
 
 

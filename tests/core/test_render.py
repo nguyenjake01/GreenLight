@@ -570,7 +570,7 @@ def test_generated():
 
 def test_edit_modal_valid():
     view = render.render_edit_modal("12345", 3, C3)
-    assert view["type"] == "modal" and view["callback_id"] == "openclaw:rv:edit_claim"
+    assert view["type"] == "modal" and view["callback_id"] == "openclaw:rv:edit_claim:12345:c3:3"
     assert json.loads(view["private_metadata"]) == {"application_id": "12345", "claim_id": "c3",
                                                     "claims_version": 3}
     for k in ("title", "submit", "close"):

@@ -19,7 +19,7 @@ import copy
 import logging
 import re
 import threading
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -861,9 +861,31 @@ _FIELDS = {
 _REQUIRED = {("project", "public_signal"), ("skill", "name"), ("skill", "kind"),
              ("oss_contribution", "repo"), ("oss_contribution", "role")}
 REPO_FIELDS = {"project": ("repo_url", "repo_name"), "oss_contribution": ("repo",)}
-_GITHUB_URL = re.compile(r"^https?://(?:www\.)?github\.com/([\w.-]+)/([\w.-]+?)(?:\.git)?/?(?:[?#].*)?$",
-                         re.IGNORECASE)
-_OWNER_REPO = re.compile(r"^[\w.-]+/[\w.-]+$")
+_GITHUB_URL = re.compile(
+    r"^(?:https?://)?(?:www\.)?github\.com/([A-Za-z0-9][A-Za-z0-9-]*)/([A-Za-z0-9._-]+?)"
+    r"(?:\.git)?(?:[/?#].*)?$", re.IGNORECASE)
+_OWNER_REPO = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]*/[A-Za-z0-9._-]+$")
+
+
+def _norm_repo_url(url: str) -> str | None:
+    """`https://github.com/<owner>/<repo>`, or None if `url` isn't a GitHub repo URL
+    (the same normal form extraction produces)."""
+    m = _GITHUB_URL.match(url.strip())
+    return f"https://github.com/{m.group(1)}/{m.group(2)}" if m else None
+
+
+def _unwrap(raw: Any) -> Any:
+    """A bare value from a Slack state entry (`{"value": …}`, `{"selected_option": {"value": …}}`)
+    or from the same inside the `v` action; plain values pass through."""
+    if isinstance(raw, dict):
+        if "v" in raw and isinstance(raw["v"], dict):
+            raw = raw["v"]
+        if isinstance(raw.get("selected_option"), dict):
+            return raw["selected_option"].get("value")
+        if "selected_option" in raw:
+            return None
+        return raw.get("value")
+    return raw
 
 
 def _normalize(claim: Claim, values: dict[str, Any]) -> tuple[dict[str, Any], dict[str, str]]:
@@ -879,9 +901,12 @@ def _normalize(claim: Claim, values: dict[str, Any]) -> tuple[dict[str, Any], di
         if kind is None:
             errors[field] = "Unknown field."
             continue
+        raw = _unwrap(raw)
         if isinstance(raw, str):
             raw = raw.strip()
-        if raw in ("", None, "none_stated", "not stated"):
+            if kind == "enum" and raw.lower() in ("none_stated", "not stated"):
+                raw = ""
+        if raw in ("", None):
             raw = None
         if raw is None:
             if (ctype, field) in _REQUIRED:
@@ -911,14 +936,16 @@ def _normalize(claim: Claim, values: dict[str, Any]) -> tuple[dict[str, Any], di
         else:  # text
             text = str(raw)
             if field == "repo_url":
-                m = _GITHUB_URL.match(text)
-                if not m:
+                text = _norm_repo_url(text)
+                if text is None:
                     errors[field] = "Enter a GitHub repository URL."
                     continue
-                text = f"https://github.com/{m.group(1)}/{m.group(2)}"
-            elif ctype == "oss_contribution" and field == "repo" and not _OWNER_REPO.match(text):
-                errors[field] = "Use the form owner/repo."
-                continue
+            elif ctype == "oss_contribution" and field == "repo":
+                url = _norm_repo_url(text)
+                text = url.removeprefix("https://github.com/") if url else text
+                if not _OWNER_REPO.match(text):
+                    errors[field] = "Use the form owner/repo."
+                    continue
             clean[field] = text
     if clean.get("repo_url"):
         clean["public_signal"] = "link"  # a repo link makes the signal a link (H2's rule)
@@ -971,9 +998,12 @@ def _edit_flow(flow: _Flow, claim_id: str, changes: dict[str, Any], by: str) -> 
     name = _claim_name(claim)
     clean, errors = _normalize(claim, changes)
     if errors:
-        flow.reply(f"Couldn't edit {name}: " + "; ".join(f"{k}: {v}" for k, v in errors.items()))
+        flow.reply(f"Couldn't edit {name}: "
+                   + "; ".join(v if k == "_claim" else f"{k}: {v}" for k, v in errors.items()))
         return
-    current = claim["assertions"]
+    current = dict(claim["assertions"])
+    if isinstance(current.get("repo_url"), str):   # an old unnormalized URL isn't an edit
+        current["repo_url"] = _norm_repo_url(current["repo_url"]) or current["repo_url"]
     changed = {f: v for f, v in clean.items() if current.get(f) != v}
     if not changed:
         flow.reply(f"No changes to {name}.")
@@ -984,8 +1014,9 @@ def _edit_flow(flow: _Flow, claim_id: str, changes: dict[str, Any], by: str) -> 
     doc = copy.deepcopy(flow.claims)
     doc["claims_version"], doc["created_at"] = version, at
     target = _find_claim_obj(doc, claim_id)
+    stored = claim["assertions"]
     new_edits = [{"claims_version": version, "claim_id": claim_id, "field": f,
-                  "from": current.get(f), "to": v, "by": by, "at": at} for f, v in changed.items()]
+                  "from": stored.get(f), "to": v, "by": by, "at": at} for f, v in changed.items()]
     target["assertions"].update(changed)  # type: ignore[union-attr]
     doc["edits"] = list(doc.get("edits", [])) + new_edits
     store.write_json(flow.rd / f"claims.v{version}.json", doc)
@@ -1010,15 +1041,29 @@ def _edit_flow(flow: _Flow, claim_id: str, changes: dict[str, Any], by: str) -> 
                       if vc["claim_id"] == claim_id), "no_evidence")
     if flow.card is not None:
         flow.slack("post_thread", flow.card, _m("render").render_label_change(
-            _find_claim_obj(doc, claim_id), new_edits, old_label, new_label, by))
+            claim, new_edits, old_label, new_label, by))
     flow.finish()
 
 
 # ── generate ──────────────────────────────────────────────────────────────────
 
+def _save_generated(rd: Path, claim_id: str, kind: str, gen: dict) -> Path:
+    """Write `generated/{claim_id}-{kind}-{timestamp}.json` (validated by `store`). Two clicks in
+    the same second get the next free second."""
+    stamp = datetime.now(timezone.utc)
+    while True:
+        path = rd / "generated" / f"{claim_id}-{kind}-{stamp.strftime('%Y%m%dT%H%M%SZ')}.json"
+        if not path.exists():
+            break
+        stamp += timedelta(seconds=1)
+    store.write_json(path, gen)
+    return path
+
+
 def generate(application_id: str, claim_id: str, kind: str, by: str) -> None:
-    """More context / Suggest questions. Takes no lock: it only reads finished files and
-    writes a new one."""
+    """More context / Suggest questions, only on a click (D6, D8). Takes no lock: it only reads
+    finished files and writes a new one, so it works while run checks are going. Posts a
+    "asked for" line in the thread, then updates that same message with the text."""
     flow = _load_flow(application_id)
     if flow is None:
         return
@@ -1033,20 +1078,16 @@ def generate(application_id: str, claim_id: str, kind: str, by: str) -> None:
         if claim is None or vclaim is None or flow.verdict is None:
             flow.reply("Not available.")
             return
-        try:
-            from verifier.core import generate as gen_mod
-        except ImportError as e:
-            flow.err("generate", f"generate module missing: {e}", claim_id)
-            flow.reply("Not available yet.")
-            return
-        name = _claim_name(claim)
-        ref = flow.reply(f"⏳ {by} asked for {GENERATE_KINDS[kind]} on {name}…")
+        from verifier.core import generate as gen_mod
+        ref = flow.reply(f"⏳ {by} asked for {GENERATE_KINDS[kind]} on {_claim_name(claim)}…")
         try:
             gen = gen_mod.generate_text(kind, claim, vclaim, flow.verdict)
-            stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-            store.write_json(flow.rd / "generated" / f"{claim_id}-{kind}-{stamp}.json", gen)
+            _save_generated(flow.rd, claim_id, kind, gen)
             msg = _m("render").render_generated(claim, gen)
         except LLMError:
+            msg = _text_msg("Couldn't generate this right now.")
+        except Exception as e:  # noqa: BLE001 - a bad reply must not leave the "⏳" line hanging
+            flow.err("generate", e, claim_id)
             msg = _text_msg("Couldn't generate this right now.")
         if ref is not None:
             flow.slack("update_card", ref, msg)

@@ -1,0 +1,8 @@
+{
+  "body": "{\"C++\":11434}",
+  "body_sha256": "28a4f47d9f506cfb795a782645604df921c3810e9676930ce324ea80c45b681c",
+  "etag": "\"0f8bd128b52702375880479b3a256c5012e830feb32f7f4ce52679d9f83d1f8b\"",
+  "fetched_at": "2026-10-25T18:32:00Z",
+  "key": "GET https://api.github.com/repos/henrychen4736/cubesolver/languages",
+  "status": 200
+}

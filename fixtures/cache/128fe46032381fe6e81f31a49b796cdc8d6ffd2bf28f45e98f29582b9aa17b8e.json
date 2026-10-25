@@ -1,0 +1,8 @@
+{
+  "body": "{\"TypeScript\":52024,\"CSS\":22636,\"JavaScript\":1314,\"HTML\":912}",
+  "body_sha256": "3b52a0684fef3ac6b54946194fbcb884cd939397925f023297c7b31a70168393",
+  "etag": "W/\"a42182885b7451437872ad375722f9d69c60b2892e8a3b6d0b91e484e7c51896\"",
+  "fetched_at": "2026-10-25T18:32:00Z",
+  "key": "GET https://api.github.com/repos/henrychen4736/henrychen4736.github.io/languages",
+  "status": 200
+}

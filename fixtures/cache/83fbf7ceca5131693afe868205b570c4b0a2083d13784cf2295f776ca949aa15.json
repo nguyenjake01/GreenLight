@@ -1,0 +1,8 @@
+{
+  "body": "{\"CSS\":34396,\"Python\":34004,\"HTML\":28027,\"JavaScript\":25178}",
+  "body_sha256": "c368b07a273db3709a3016f8501182ac1c360a70018f337495d9e928f2bf19da",
+  "etag": "W/\"7f8cbc05227c3f39084b7dde3237763cac3fef93dd453c2d36c980eca3363db5\"",
+  "fetched_at": "2026-10-25T18:32:00Z",
+  "key": "GET https://api.github.com/repos/henrychen4736/fbla-coding/languages",
+  "status": 200
+}

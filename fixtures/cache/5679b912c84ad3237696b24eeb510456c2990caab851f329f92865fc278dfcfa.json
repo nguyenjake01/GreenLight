@@ -1,0 +1,8 @@
+{
+  "body": "[{\"email\":\"henrychen4736@berkeley.edu\",\"name\":\"Henry Chen\",\"type\":\"Anonymous\",\"contributions\":35}]",
+  "body_sha256": "c4d2e60e78aa312f464c26906215bd4c3298f6b5debd3f1ea9a64d96230bd92b",
+  "etag": "W/\"a9d469dbbc08a05abac12d1de37c38011445b6e9e7b426e21078f4d72935cbf7\"",
+  "fetched_at": "2026-10-25T18:32:01Z",
+  "key": "GET https://api.github.com/repos/henrychen4736/polytrack-ml/contributors?anon=1&per_page=100",
+  "status": 200
+}

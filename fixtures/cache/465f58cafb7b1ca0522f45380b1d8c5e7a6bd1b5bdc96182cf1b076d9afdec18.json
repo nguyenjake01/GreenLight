@@ -1,0 +1,8 @@
+{
+  "body": "{\"Dart\":204317,\"Python\":172595,\"Ruby\":1490,\"PowerShell\":1222,\"Dockerfile\":805,\"Swift\":676,\"Shell\":666,\"Batchfile\":569,\"Kotlin\":119,\"Objective-C\":38}",
+  "body_sha256": "80b91aef35d4348b924e1ada041d00a33535562d57be9a5d7fbc574ab173fd39",
+  "etag": "W/\"9eca25ed8f0ff9ee4f70d177e9fd3ef8c41f74f135adc9930fc338328dba366b\"",
+  "fetched_at": "2026-10-25T18:32:00Z",
+  "key": "GET https://api.github.com/repos/henrychen4736/cac24/languages",
+  "status": 200
+}

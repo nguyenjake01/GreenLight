@@ -1,0 +1,8 @@
+{
+  "body": "[{\"email\":\"henrychen4736@berkeley.edu\",\"name\":\"Henry Chen\",\"type\":\"Anonymous\",\"contributions\":4},{\"login\":\"henrychen4736\",\"id\":90074013,\"node_id\":\"MDQ6VXNlcjkwMDc0MDEz\",\"avatar_url\":\"https://avatars.githubusercontent.com/u/90074013?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/henrychen4736\",\"html_url\":\"https://github.com/henrychen4736\",\"followers_url\":\"https://api.github.com/users/henrychen4736/followers\",\"following_url\":\"https://api.github.com/users/henrychen4736/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/henrychen4736/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/henrychen4736/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/henrychen4736/subscriptions\",\"organizations_url\":\"https://api.github.com/users/henrychen4736/orgs\",\"repos_url\":\"https://api.github.com/users/henrychen4736/repos\",\"events_url\":\"https://api.github.com/users/henrychen4736/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/henrychen4736/received_events\",\"type\":\"User\",\"user_view_type\":\"public\",\"site_admin\":false,\"contributions\":1}]",
+  "body_sha256": "ac8e35c0a15b0fb4f9b9514a5a99a9c010b0c4f23d6efdabf233c631538f4b70",
+  "etag": "W/\"d68d4ff1964fd8f3fa2501cf74b3e4dd8c2612a190ee4cd98f3e1d510502165a\"",
+  "fetched_at": "2026-10-25T18:32:02Z",
+  "key": "GET https://api.github.com/repos/henrychen4736/cac24/contributors?anon=1&per_page=100",
+  "status": 200
+}

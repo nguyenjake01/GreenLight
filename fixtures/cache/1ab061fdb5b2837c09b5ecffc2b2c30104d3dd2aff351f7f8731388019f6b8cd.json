@@ -1,0 +1,8 @@
+{
+  "body": "[{\"login\":\"henrychen4736\",\"id\":90074013,\"node_id\":\"MDQ6VXNlcjkwMDc0MDEz\",\"avatar_url\":\"https://avatars.githubusercontent.com/u/90074013?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/henrychen4736\",\"html_url\":\"https://github.com/henrychen4736\",\"followers_url\":\"https://api.github.com/users/henrychen4736/followers\",\"following_url\":\"https://api.github.com/users/henrychen4736/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/henrychen4736/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/henrychen4736/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/henrychen4736/subscriptions\",\"organizations_url\":\"https://api.github.com/users/henrychen4736/orgs\",\"repos_url\":\"https://api.github.com/users/henrychen4736/repos\",\"events_url\":\"https://api.github.com/users/henrychen4736/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/henrychen4736/received_events\",\"type\":\"User\",\"user_view_type\":\"public\",\"site_admin\":false,\"contributions\":52},{\"email\":\"kenny@kennys-macbook-air.local\",\"name\":\"Kenny\",\"type\":\"Anonymous\",\"contributions\":17},{\"email\":\"160088654+ykentykt@users.noreply.github.com\",\"name\":\"ykentykt\",\"type\":\"Anonymous\",\"contributions\":3}]",
+  "body_sha256": "c3ead38305f0064ed336430e0d450d5169fecc19d5c33f485f3aa45b4bffb22d",
+  "etag": "W/\"42b602262104f94bafb2049a3b1c497b433061fe5019fd75f034fc6ef566662e\"",
+  "fetched_at": "2026-10-25T18:32:03Z",
+  "key": "GET https://api.github.com/repos/henrychen4736/fbla-coding/contributors?anon=1&per_page=100",
+  "status": 200
+}

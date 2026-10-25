@@ -118,7 +118,9 @@ Also untracked: `docs/video-script.md` (from another session; not reviewed).
    sandbox → `host.openshell.internal:8200` HTTP 200. The verifier must listen on 0.0.0.0
    (`VERIFIER_HOST=0.0.0.0 KEEP=1 SANDBOX_BACKEND=openshell SLACK=real bash scripts/full_run.sh`).
    **A real Re-check click from Slack works end to end** (21:04 UTC: Slack → OpenClaw → plugin → `/internal/actions` 200 →
-   "Re-check started/done" in the thread). Still to check: an @-mention, the overflow menu (More context, Edit),
+   "Re-check started/done" in the thread). **@-mention works** (21:11 UTC: "why is Aidan Hong's portfolio claim
+   red?" → `get_verdict` → correct answer in ~12 s); `channels.slack.replyToMode=all` (set by the install script)
+   makes the bot reply in threads, per H5. Still to check: the overflow menu (More context, Edit),
    (Solved) The buttons vanished at 20:53 UTC because a click landed before the plugin was installed: with no
    handler, OpenClaw's Slack fallback replaces the clicked `actions` block with "✅ … selected by @user" and wakes
    its agent (the "⚠️ Memory Search blocked" reply is just a tool-not-found warning). No config disables it; with
@@ -129,6 +131,7 @@ Also untracked: `docs/video-script.md` (from another session; not reviewed).
 3. Recorder quirk: treat GitHub's 204 for an empty repo's `contributors` like 404/409.
 
 ## Open items for the user
+- The GitHub repo moved to `git@github.com:nguyenjake01/GreenLight.git` (old URL redirects); update `origin` when convenient.
 - Tag `contracts-v1` (Jake and Henry both agree).
 - Whether to delete the stray failed Henry card in Slack.
 - Whether to keep the Karpathy candidate.

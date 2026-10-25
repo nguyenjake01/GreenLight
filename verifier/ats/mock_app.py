@@ -467,6 +467,18 @@ def create_app(*, state_root: Path | None = None,
     def render(template: str, status: int = 200, **ctx: Any) -> HTMLResponse:
         return HTMLResponse(jenv.get_template(template).render(**ctx), status_code=status)
 
+    @app.get("/_mock/status")
+    def status_endpoint(ids: str = ""):
+        wanted: list[str] = []
+        for part in ids.split(","):
+            part = part.strip()
+            if _DIGITS.match(part) and part not in wanted:
+                wanted.append(part)
+            if len(wanted) >= 50:
+                break
+        return JSONResponse({i: processing_status(i) for i in wanted},
+                            headers={"Cache-Control": "no-store"})
+
     @app.get("/", response_class=HTMLResponse)
     def index():
         snap = state.snapshot()
@@ -480,6 +492,7 @@ def create_app(*, state_root: Path | None = None,
                         or f"Candidate {app_rec['candidate_id']}",
                 "job": jobs[0].get("name") if jobs else None,
                 "applied_at": app_rec.get("applied_at"),
+                "status": processing_status(app_rec["id"]),
             })
         return render("index.html", applications=rows, fixtures=fixture_names(),
                       hide_simulate=hide_simulate())
@@ -537,6 +550,7 @@ def create_app(*, state_root: Path | None = None,
                 "source": source.get("public_name") if isinstance(source, dict) else None,
             },
             viewer_url=viewer_url,
+            proc=processing_status(chosen["id"]) if chosen else None,
             viewing=viewing["filename"] if viewing else None,
             viewing_annotated=annotated is not None,
             attachments=[{"filename": a["filename"], "type": a["type"],
@@ -547,6 +561,113 @@ def create_app(*, state_root: Path | None = None,
         )
 
     return app
+
+
+# ── Processing status (read-only view of the verifier's run folder) ──────────
+
+STATUS_STEPS = ("received", "reading resume", "finding claims", "checking github",
+                "weighing evidence", "running code", "writing back", "done")
+STALL_AFTER_S = 15 * 60
+_DIGITS = re.compile(r"^[0-9]{1,20}$")
+
+
+def _read_json(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def _status_dict(state_: str, idx: int, detail: str | None, progress: float) -> dict:
+    steps = []
+    for i, label in enumerate(STATUS_STEPS):
+        if state_ == "done" or i < idx:
+            st = "done"
+        elif i == idx:
+            st = "current"
+        else:
+            st = "todo"
+        steps.append({"label": label, "status": st})
+    return {"state": state_, "step": STATUS_STEPS[idx], "detail": detail,
+            "progress": round(max(0.0, min(1.0, progress)), 3), "steps": steps}
+
+
+def processing_status(application_id: Any) -> dict:
+    """Where the verifier is with one application. Reads only RUNS_DIR/<id>/; never writes,
+    never raises: a missing, partial or corrupt file just means an earlier stage."""
+    try:
+        return _processing_status(str(application_id))
+    except Exception:  # noqa: BLE001 - a status read must never break a page
+        return _status_dict("queued", 0, None, 0.0)
+
+
+def _processing_status(app_id: str) -> dict:
+    queued = _status_dict("queued", 0, None, 0.0)
+    if not _DIGITS.match(app_id):
+        return queued
+    folder = Path(env("RUNS_DIR")) / app_id
+    meta_path = folder / "meta.json"
+    meta = _read_json(meta_path)
+    if not isinstance(meta, dict):
+        return queued
+
+    last = len(STATUS_STEPS) - 1
+    latest = meta.get("latest") if isinstance(meta.get("latest"), dict) else {}
+    runs = meta.get("runs") if isinstance(meta.get("runs"), dict) else {}
+    errors = [e for e in (meta.get("stage_errors") or []) if isinstance(e, dict)]
+    writebacks = meta.get("writebacks") or []
+
+    claims_files = sorted(folder.glob("claims.v*.json"))
+    claims_doc = _read_json(claims_files[-1]) if claims_files else None
+    extraction = claims_doc.get("extraction") if isinstance(claims_doc, dict) else None
+    extraction_failed = isinstance(extraction, dict) and extraction.get("status") == "failed"
+    fatal = any(e.get("stage") in ("resume", "extract") for e in errors)
+
+    has_resume = (folder / "resume.txt").exists()
+    has_claims = bool(claims_files)
+    has_snapshot = bool(latest.get("snapshot_id"))
+    verdicts = folder / "verdicts"
+    has_verdict = latest.get("verdict_n") is not None or (
+        verdicts.is_dir() and any(verdicts.iterdir()))
+
+    if fatal or extraction_failed:
+        idx = 1 if not has_resume else 2
+        out = _status_dict("failed", idx, "couldn't read the resume", idx / last)
+        return out
+    if writebacks:
+        return _status_dict("done", last, None, 1.0)
+
+    detail = None
+    if not has_resume:
+        idx = 1
+    elif not has_claims:
+        idx = 2
+    elif not has_snapshot:
+        idx = 3
+    elif not has_verdict:
+        idx = 4
+    else:
+        values = [str(v) for v in runs.values()]
+        pending = [v for v in values if v in ("queued", "running")]
+        if pending:
+            idx = 5
+            detail = f"{len(values) - len(pending)} of {len(values)} projects"
+        else:
+            idx = 6
+    progress = idx / last
+    if idx == 5 and runs:
+        progress = (5 + (len(runs) - len(pending)) / len(runs)) / last * 0.98
+    out = _status_dict("working", idx, detail, progress)
+
+    try:
+        if time.time() - meta_path.stat().st_mtime > STALL_AFTER_S:
+            note = "stalled"
+            if errors:
+                note += f" · {errors[-1].get('stage', 'stage')}: {errors[-1].get('error', '')}"
+            out["detail"] = note
+    except OSError:
+        pass
+    return out
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

@@ -22,6 +22,13 @@
 </style>
 {% endblock %}
 {% block navend %}<a class="rv-btn rv-btn-sm" href="/">Refresh</a>{% endblock %}
+{% macro status_chip(st, aid) -%}
+{%- if st.state == "done" -%}<span class="rv-chip rv-chip-ok" data-rv-chip="{{ aid }}" data-state="done">report ready</span>
+{%- elif st.state == "failed" -%}<span class="rv-chip rv-chip-bad" data-rv-chip="{{ aid }}" data-state="failed">couldn't read resume</span>
+{%- elif st.state == "queued" -%}<span class="rv-chip" data-rv-chip="{{ aid }}" data-state="queued">queued</span>
+{%- else -%}<span class="rv-chip rv-chip-info rv-chip-spin" data-rv-chip="{{ aid }}" data-state="working"><span class="rv-spin" aria-hidden="true"></span>{{ st.step }}{% if st.detail %} · {{ st.detail | replace(" projects", "") }}{% endif %}</span>
+{%- endif -%}
+{%- endmacro %}
 {% block content %}
 <section class="ix-hero">
   <div class="ix-hero-l">
@@ -54,15 +61,17 @@
     <span class="rv-card-end rv-chip rv-chip-info plain">{{ applications|length }}</span>
   </div>
   {% if applications %}
+  {% if applications | selectattr("status.state", "in", ["queued", "working"]) | list %}<div class="rv-indet" data-rv-indet role="progressbar" aria-label="Processing"></div>{% endif %}
   <div class="rv-card-body flush">
     <div class="rv-table-wrap">
       <table class="rv-table">
-        <thead><tr><th>Candidate</th><th>Job</th><th>Applied</th><th>Application id</th></tr></thead>
+        <thead><tr><th>Candidate</th><th>Job</th><th>Status</th><th>Applied</th><th>Application id</th></tr></thead>
         <tbody>
         {% for a in applications %}
           <tr>
             <td class="ix-name"><a href="/candidates/{{ a.candidate_id }}?application_id={{ a.application_id }}">{{ a.name }}</a>{% if loop.first %}<span class="rv-chip rv-chip-accent plain ix-new">new</span>{% endif %}</td>
             <td>{{ a.job or "none" }}</td>
+            <td>{{ status_chip(a.status, a.application_id) }}</td>
             <td>{{ a.applied_at | when }}</td>
             <td class="ix-mono">{{ a.application_id }}</td>
           </tr>
@@ -76,3 +85,4 @@
   {% endif %}
 </section>
 {% endblock %}
+{% block scripts %}<script src="/static/rv/status.js" defer></script>{% endblock %}

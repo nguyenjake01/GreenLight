@@ -57,6 +57,23 @@
     </div>
   </section>
 
+  {% if proc and proc.state != "done" %}
+  <section class="rv-card rv-st-card" data-rv-panel="{{ application.id }}" data-state="{{ proc.state }}" aria-live="polite">
+    <div data-rv-bar{% if proc.state == "failed" %} hidden{% endif %}><div class="rv-progress"><i data-rv-fill style="width: {{ (proc.progress * 100) | round | int }}%"></i></div></div>
+    <div class="rv-card-body">
+      <div class="rv-st-head">
+        {% if proc.state != "failed" %}<span class="rv-spin" data-rv-spin aria-hidden="true"></span>{% endif %}
+        <b data-rv-title>{% if proc.state == "failed" %}Couldn't read the resume{% else %}Resume Verifier is checking this resume{% endif %}</b>
+      </div>
+      <div class="rv-st-sub" data-rv-sub>{% if proc.state == "failed" %}The verifier found no claims to check.{% else %}{{ proc.step }}{% if proc.detail %} · {{ proc.detail | replace(" projects", "") }}{% endif %}{% endif %}</div>
+      <ol class="rv-steps" data-rv-steps{% if proc.state == "failed" %} hidden{% endif %}>
+      {% for s in proc.steps %}<li data-s="{{ s.status }}"><span class="rv-step-dot">{% if s.status == "done" %}&#10003;{% elif s.status == "current" %}<span class="rv-spin"></span>{% endif %}</span>{{ s.label }}</li>{% endfor %}
+      </ol>
+      <div class="rv-st-actions" data-rv-actions></div>
+    </div>
+  </section>
+  {% endif %}
+
   <div class="cd-grid">
     <section class="rv-card">
       <div class="rv-card-head">
@@ -117,3 +134,4 @@
   </div>
 {% endif %}
 {% endblock %}
+{% block scripts %}{% if proc and proc.state in ("queued", "working") %}<script src="/static/rv/status.js" defer></script>{% endif %}{% endblock %}

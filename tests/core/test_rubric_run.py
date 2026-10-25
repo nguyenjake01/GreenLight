@@ -332,13 +332,13 @@ def test_run_check_does_not_mutate_trace(tmp_path):
 
 
 def test_fixture_trace_c3_passes_cleanly():
-    """The hand-made cubesolver trace (build ok, judge works_as_claimed) is a plain pass."""
+    """The real live cubesolver trace (build ok, judge works_as_claimed) is a plain pass."""
     import json
     from pathlib import Path
     tr = json.loads((Path(__file__).resolve().parents[2] / "fixtures" / "run_traces" / "c3.json")
                     .read_text(encoding="utf-8"))
     chk, flags = rubric._run_check(tr)
-    assert (chk["result"], chk["reason"]) == ("pass", "Built in 3.1s; works as claimed")
+    assert (chk["result"], chk["reason"]) == ("pass", "Built in 0.8s; works as claimed")
     assert flags == []
 
 

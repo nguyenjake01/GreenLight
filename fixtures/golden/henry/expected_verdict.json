@@ -226,7 +226,7 @@
         },
         {
           "check": "run",
-          "reason": "Built in 3.1s; works as claimed",
+          "reason": "Built in 0.8s; works as claimed",
           "result": "pass"
         }
       ],
@@ -397,7 +397,7 @@
     "run_traces": [
       {
         "claim_id": "c3",
-        "sha256": "e3f103f798a1451f8942c3fe6f9651500079b1ed137b9867bc8617431e68ec0e"
+        "sha256": "2655fb359ffead3122f838dbeca3f6630ed6e34272650be27a6ba10e5f5c690d"
       }
     ],
     "snapshot_id": "snap_20261025T185533Z"

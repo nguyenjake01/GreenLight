@@ -10,7 +10,7 @@ before committing).
 
 Cases:
 - ``henry``: a real replay snapshot built from the recorded GitHub cache (`fixtures/cache/`) and a live
-  extraction of `fixtures/resumes/henry.pdf`; the run trace is still hand-made.
+  extraction of `fixtures/resumes/henry.pdf`; the run trace is a real live run (Docker sandbox, vLLM Qwen3.6).
 - ``fake``: a hand-made snapshot of the fake candidate (account and repo created Oct 2026, 0 stars).
 - ``edges``: hand-made edge cases (fork as creator, stars soft, language soft, empty repo, missing
   data, repo-match decision missing, failed build with a run trace, ...).
@@ -117,7 +117,7 @@ def test_henry_cubesolver_is_partial_from_substance_with_a_clean_run():
     assert vc["top_reason"] == ("Described as a complete project, but the repo is 3 KB "
                                 "with 2 commits on 1 day")
     run = [c for c in vc["checks"] if c["check"] == "run"][0]
-    assert run["result"] == "pass" and run["reason"] == "Built in 3.1s; works as claimed"
+    assert run["result"] == "pass" and run["reason"] == "Built in 0.8s; works as claimed"
 
 
 def test_fake_fabricated_library_is_red_with_both_hard_reasons():

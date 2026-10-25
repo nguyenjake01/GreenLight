@@ -491,7 +491,7 @@ def test_run_started_skipped_error():
 def test_run_done_full_line_with_transcript_button():
     msg = render.render_run_update("12345", C3, "done", TRACE)
     check_message(msg)
-    assert msg["text"] == "▶ cubesolver: built (3.1s) → ran 2 commands → works as claimed"
+    assert msg["text"] == "▶ cubesolver: built (0.8s) → ran 5 commands → works as claimed"
     acc = msg["blocks"][0]["accessory"]
     assert acc["action_id"] == "openclaw:rv:transcript" and acc["value"] == "12345|c3"
     assert "⚠" not in msg["text"]
@@ -500,7 +500,7 @@ def test_run_done_full_line_with_transcript_button():
 def test_run_done_without_buttons_agent_or_judge():
     msg = render.render_run_update("12345", C3, "done", _trace(agent=None, judge=None), buttons=False)
     check_message(msg)
-    assert msg["text"] == "▶ cubesolver: built (3.1s)"
+    assert msg["text"] == "▶ cubesolver: built (0.8s)"
     assert "accessory" not in msg["blocks"][0]
 
 

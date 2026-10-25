@@ -314,7 +314,7 @@ def test_recheck_carries_traces_when_pushed_at_unchanged(env, monkeypatch):
     assert len(meta["writebacks"]) == 2
     # raw outputs copied with the trace
     assert (store.run_dir(aid) / "snapshots" / meta["latest"]["snapshot_id"] / "raw"
-            / "35d4078868d36939f2fdeadb24360a9f94af41796de9012e67dfa7849cf01908.txt").is_file()
+            / "52fe1a016b4b130902deb6b6c2c1983fbdae0366865f8a606137ddd7cec01383.txt").is_file()
 
 
 def test_recheck_reruns_when_pushed_at_changed(env, monkeypatch):
@@ -486,8 +486,8 @@ def test_show_transcript_uploads_text_file(env):
     path = Path(new[0]["path"])
     assert path.parent == store.run_dir(aid) / "transcripts" and path.name.startswith("c3-snap_")
     text = path.read_text()
-    assert "Run transcript: cubesolver" in text and "g++ -O2 main.cpp" in text
-    assert "$ ls -la" in text and "works_as_claimed" in text
+    assert "Run transcript: cubesolver" in text and "g++ -std=c++17 -O2 -o /tmp/a.out cubesolver.cpp" in text
+    assert "$ ls -la /work" in text and "works_as_claimed" in text
     pipeline.show_transcript(aid, "c3")  # idempotent
     assert len(slack_log(env)) == n_before + 2
 

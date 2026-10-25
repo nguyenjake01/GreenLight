@@ -1,0 +1,5 @@
+total 24
+drwxrwxrwx 2 1000  988  4096 Oct 25 08:17 .
+drwxr-xr-x 1 root root  4096 Oct 25 19:04 ..
+-rw-rw-rw- 1 1000  988   156 Oct 25 08:17 README.md
+-rw-rw-rw- 1 1000  988 11434 Oct 25 08:17 cubesolver.cpp

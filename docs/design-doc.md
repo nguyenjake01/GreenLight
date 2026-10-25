@@ -84,6 +84,7 @@
 | D20 | **Annotated PDF uploads as `type: "other"` on the application; every re-check adds a new note** | Harvest v3 puts attachments on applications; uploading a `resume` demotes the original. Candidate notes can't be edited. |
 | D21 | **Demo and video run in replay mode** | Off GitHub responses recorded at the venue (11:45, phone hotspot). |
 | D22 | **Greenhouse note visibility defaults to `private`** | Resolved this session; configurable. |
+| D23 | **The Resume Verifier design system is visual styling only** [new] | It sets colours, fonts, glass surfaces and layout for the candidate page and any web UI. Where it differs from this doc, this doc wins: the four labels (D4) with their emoji, the card buttons (*Re-check now*, *Open in Greenhouse*, *Open annotated resume*) and the per-claim menu (*More context*, *Suggest questions*, *Edit claim*), as specified in J6. Ignore its three-verdict wording, its no-emoji rule and its Slack card buttons. |
 
 ## 4. v1 scope
 

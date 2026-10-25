@@ -225,7 +225,9 @@ def test_by_falls_back_to_username_then_id(client, monkeypatch):
     act(client, block_action("openclaw:rv:recheck", "1", user={"id": "U9", "username": "ju"}))
     assert rec.wait()[1] == ("1", "ju")
     act(client, block_action("openclaw:rv:recheck", "1", user={"id": "U9"}))
-    assert rec.wait()[1] == ("1", "U9")
+    assert rec.wait()[1] == ("1", "<@U9>")  # a Slack mention: Slack shows the user's name
+    act(client, block_action("openclaw:rv:recheck", "1", user={"id": "x-1"}))
+    assert rec.wait()[1] == ("1", "x-1")    # not a Slack user id: shown as is
 
 
 @pytest.mark.parametrize("kind", ["more_context", "suggest_questions"])

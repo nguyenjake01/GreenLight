@@ -6,6 +6,7 @@ Labels and tallies come from the verdict as-is; nothing here computes or changes
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime
 from typing import Any, Literal
 
@@ -466,7 +467,10 @@ def render_label_change(claim: Claim, edits: list[ClaimEdit], old: Label, new: L
         verdict_part = f"{EMOJI.get(old, '⚪')} → {EMOJI.get(new, '⚪')}."
     head = f"{by} edited {name}: {changes}." if changes else f"{by} edited {name}."
     text = f"{head} {verdict_part}"
-    return {"text": text, "blocks": [_section(_esc(text), f"label_{claim['claim_id']}")]}
+    # A Slack mention ("<@U123>") from service._user stays unescaped so Slack shows the name.
+    mention = re.fullmatch(r"<@[UW][A-Z0-9]+>", by)
+    body = by + _esc(text[len(by):]) if mention else _esc(text)
+    return {"text": text, "blocks": [_section(body, f"label_{claim['claim_id']}")]}
 
 
 def _slack_format(text: str) -> str:

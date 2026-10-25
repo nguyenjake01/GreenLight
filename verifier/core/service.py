@@ -10,6 +10,7 @@ from __future__ import annotations
 import hmac
 import json
 import logging
+import re
 import threading
 from typing import Any
 from urllib.parse import parse_qs
@@ -149,8 +150,15 @@ def _parse_body(raw: bytes, content_type: str) -> dict[str, Any]:
 
 
 def _user(payload: dict[str, Any]) -> str:
+    """Name, else username, else a Slack mention of the id (Slack shows it as the name)."""
     user = payload.get("user") or {}
-    return str(user.get("name") or user.get("username") or user.get("id") or "someone")
+    name = user.get("name") or user.get("username")
+    if name:
+        return str(name)
+    uid = str(user.get("id") or "")
+    if re.fullmatch(r"[UW][A-Z0-9]+", uid):
+        return f"<@{uid}>"
+    return uid or "someone"
 
 
 def _action_value(action: dict[str, Any]) -> str:
@@ -191,6 +199,8 @@ def _open_edit_modal(trigger_id: str, application_id: str, claim_id: str) -> Non
         log.warning("edit_claim: unknown claim %s/%s", application_id, claim_id)
         return
     try:
+        # Real render, not registry.get("render"): the service parses the real modal's
+        # callback_id suffix (<app>:<claim>:<version>), which the stub modal lacks.
         view = render.render_edit_modal(application_id, claims["claims_version"], claim)
         registry.get("slack").open_modal(trigger_id, view)
     except Exception:

@@ -552,6 +552,11 @@ def test_label_change():
     assert same["text"].endswith("Label unchanged (🟡).")
     nulls = [{**edits[0], "from": None, "to": 5, "field": "min_stars"}]
     assert "min_stars not stated → 5" in render.render_label_change(C3, nulls, "partial", "partial", "J")["text"]
+    tagged = render.render_label_change(C3, edits, "partial", "supported", "<@U07AB>")
+    body = tagged["blocks"][0]["text"]["text"]
+    assert body.startswith("<@U07AB> edited ")  # the mention is not escaped
+    hostile = render.render_label_change(C3, edits, "partial", "supported", "<!channel>")
+    assert hostile["blocks"][0]["text"]["text"].startswith("&lt;!channel&gt;")
 
 
 def test_generated():

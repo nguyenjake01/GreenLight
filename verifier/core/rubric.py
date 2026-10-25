@@ -62,6 +62,29 @@ def split_languages(text: str) -> list[str]:
     return out
 
 
+# Well-known frameworks, libraries and tools that GitHub's linguist does not list as languages.
+# Real linguist languages (SQL, HTML, CSS, Shell, Dockerfile, Jupyter Notebook, ...) stay out.
+_FRAMEWORKS = frozenset(n.lower() for n in (
+    "Flutter", "React", "React Native", "ReactJS", "React.js", "Next.js", "NextJS", "Node.js", "NodeJS",
+    "Node", "Vue", "Vue.js", "VueJS", "Nuxt", "Nuxt.js", "Angular", "AngularJS", "Svelte", "SvelteKit",
+    "Django", "Flask", "FastAPI", "Spring", "Spring Boot", "Rails", "Ruby on Rails", "Express",
+    "Express.js", "ExpressJS", ".NET", "Unity", "Unreal", "Unreal Engine", "TensorFlow", "PyTorch",
+    "Keras", "scikit-learn", "sklearn", "pandas", "NumPy", "OpenCV", "Tailwind", "Tailwind CSS",
+    "Bootstrap", "jQuery", "Firebase", "AWS", "Docker", "Kubernetes", "Git", "Linux",
+    "PostgreSQL", "Postgres", "MySQL", "MongoDB", "Redis", "SQLite",
+))
+
+
+def is_framework(name: str) -> bool:
+    """Is `name` a known framework/library/tool rather than a GitHub language? (case-insensitive)"""
+    return (name or "").strip().lower() in _FRAMEWORKS
+
+
+def split_language_parts(text: str) -> list[str]:
+    """Like `split_languages`, with a parenthesized part ("JavaScript (React)") as another part."""
+    return split_languages(re.sub(r"[()]", "/", text or ""))
+
+
 def language_counts_for(claimed: str, repo_lang: str) -> bool:
     """Does a repo's language `repo_lang` count toward a claim naming `claimed`?
 
@@ -366,10 +389,14 @@ def _commit_share(cx: _Ctx, full: str, role: str, notes: list[str]) -> Check:
 
 
 def _language_check(ev: _Ev, full: str, claimed: str) -> Check:
+    parts = split_language_parts(claimed) or [claimed.strip()]
+    real = [p for p in parts if not is_framework(p)]
+    if not real:
+        return _check("language", "skip", f"{', '.join(parts)} is a framework, not a language")
+    parts = real
     langs = ev.ok(languages_url(full), dict)
     if langs is None:
         return _check("language", "skip", "Languages unavailable offline")
-    parts = split_languages(claimed) or [claimed.strip()]
     total = sum(v for v in langs.values() if isinstance(v, int) and v > 0)
     facts = {"languages": {k: _pct(v, total) for k, v in langs.items()
                            if isinstance(v, int) and v > 0}}
@@ -546,7 +573,12 @@ def _skill(claim: dict[str, Any], cx: _Ctx) -> VerdictClaim:
         text = "Framework or tool; not checked in v1"
         return _simple(claim, "no_evidence", text, [_check("skill_presence", "skip", text)])
     login = cx.login
-    parts = split_languages(a.get("name") or "") or [str(a.get("name") or "").strip()]
+    parts = split_language_parts(a.get("name") or "") or [str(a.get("name") or "").strip()]
+    real = [p for p in parts if not is_framework(p)]
+    if not real:
+        text = f"{', '.join(parts)} is a framework, not checked as a language"
+        return _simple(claim, "no_evidence", text, [_check("skill_presence", "skip", text)])
+    parts = real
     owned = cx.owned or []
     if cx.owned is None:
         text = "Evidence unavailable offline"

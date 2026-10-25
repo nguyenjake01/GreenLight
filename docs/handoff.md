@@ -1,4 +1,4 @@
-# Handoff: Resume Verifier build (checkpoint 3, Oct 25 2026, ~15:00 CDT)
+# Handoff: Resume Verifier build (checkpoint 3, Oct 25 2026, ~15:15 CDT)
 
 Read this first in the next session, then `CLAUDE.md`, then the design-doc sections a task cites.
 Setup: one machine (the GB10 itself, arm64, Python 3.12). The lead (Opus) plans and reviews;
@@ -7,7 +7,7 @@ Sonnet `coder` agents write the code, several at once on separate files.
 ## Where things stand
 
 **Every module in the plan is on `main`**, and the full system now runs end to end with **real Slack**.
-1108 tests and `demo --stub` pass at `89f4254`.
+1109 tests and `demo --stub` (henry and aidan) pass at `25ae0aa`.
 
 | Commit | What |
 |---|---|
@@ -21,37 +21,40 @@ Sonnet `coder` agents write the code, several at once on separate files.
 | 2192067 | H6 OpenShell backend verified live; `verifier/stack/openshell/gateway.sh` |
 | 7a4420a | cubesolver run trace fixture is now a real live trace; plugin `package-lock.json` (real `npm install`) |
 | 89f4254 | `scripts/full_run.sh`: one-command full-system run |
+| 25ae0aa | Second candidate Aidan Hong (`aidanhong8`) replaces the fake candidate |
 
 `contracts-v1` is **not tagged** yet.
 
-## In progress at the pause: Aidan replaces the fake candidate (uncommitted)
+## Second candidate: Aidan Hong (committed, 25ae0aa)
 
-The user's friend **Aidan Hong, GitHub `aidanhong8`**, replaces the placeholder `rv-fake-candidate` / "Alex Rivera".
+The user's friend **Aidan Hong, GitHub `aidanhong8`**, replaced the placeholder `rv-fake-candidate` / "Alex Rivera".
 The user approved one deliberately overstated claim on his demo resume, for the demo's 🔴 beat (design doc ~line 2608).
-A coder was working on this at the pause. **Nothing of it is committed. Check `git status` first.**
+Fixture key `aidan` (`python -m verifier.ats.apply aidan`, `demo --stub --candidate aidan`). He has live-extracted
+claims, recorded evidence (66 cache files), 4 repo archives (portfolio is 15.5 MB), golden case `fixtures/golden/aidan/`,
+and `fixtures/expected/aidanhong8.labels.json`.
 
-Resume plan (placeholder style, `fixtures/resumes/make_placeholder_resumes.py`):
-- **True projects:** `care360` (JavaScript, 2025), `HalloweenTracker` (Swift, 2025, Instructables Halloween contest), `quiz` (TypeScript, 2025).
-- **Overstated project:** `portfolio-aidan-hong` "started 2021, open-sourced as a template with 500+ stars".
-  The real repo was created 2024-03-31 and has 1★, so the target is 🔴 with hard `start_date` and `stars`.
-- **True contribution:** 2 merged PRs to `boomty/CameraDetectionforTraffic` (target 🟢 with PR links).
-  He also has merged PRs to `EricWang812/TimbreGT` (2) and `Tepah/CodingStemAcademyRegistrationSystem` (1).
-- **Skills:** JavaScript, TypeScript, Python, Swift. **Unchecked:** Diamond Bar High School; FBLA.
+| Claim | Label | top_reason |
+|---|---|---|
+| c1 care360, c2 HalloweenTracker, c3 quiz | 🟢 | all commits by the candidate; language is the main one |
+| c4 portfolio-aidan-hong (overstated) | 🔴 | "Created Mar 2024; claim says 2021" (+ hard `stars`: "1 stars; claim says 500") |
+| c5 contribution, boomty/CameraDetectionforTraffic | 🟢 | 2 merged PRs and 17 commits by @aidanhong8 |
+| c6–c9 skills JavaScript, TypeScript, Python, Swift | 🟢 | |
+| c10 education, c11 FBLA | ⚪ | not verifiable from public code |
 
-Planned file renames: key `aidan` in `fixtures/candidates.json`; `fixtures/resumes/aidan.pdf` and `aidan.resume.json`;
-`fixtures/claims/aidanhong8.json` (from live extraction); `fixtures/expected/aidanhong8.labels.json`;
-`fixtures/golden/aidan/` (replaces `golden/fake/`); webhook fixture; about 26 test references to the `fake` key.
-Record with `python -m verifier.core.fetch record --login aidanhong8 --claims fixtures/claims/aidanhong8.json --clone`.
-It should only add to `fixtures/cache/`; check that Henry's entries are unchanged.
+A live pipeline run for Aidan (Docker backend, 290 s) gave the same labels. Not done yet: a live run with real Slack,
+`SLACK=real bash scripts/full_run.sh aidan`.
 
-**To finish:**
-1. Review what's on disk (`git status`, `git diff --stat`).
-2. Check no `rv-fake-candidate` references remain:
-   `grep -rn rv-fake-candidate tests fixtures verifier --include=*.py --include=*.json`
-3. Run the real rubric on Aidan's snapshot. The portfolio claim must be 🔴 with both hard reasons, and the contribution 🟢.
-4. Full suite and `demo --stub`, then commit.
-5. Then `SLACK=real bash scripts/full_run.sh aidan` for a live 🔴 card.
-6. If the work is half-done or broken, `git checkout -- fixtures tests` plus removing the new untracked files resets it; then redo with one coder.
+**History note:** the handoff commit `3b01001` accidentally carried the coder's staged deletions of the old fake-candidate
+files, so it's a broken in-between commit (tests fail there). `25ae0aa` completes the swap; HEAD is green.
+Recorder quirk worth fixing: GitHub returns 204 (empty body) for an empty repo's `contributors`. The recorder logs that
+as a miss; it should treat it like 409/404.
+
+## Another session's uncommitted work (not this lead's; don't commit it blindly)
+At the pause, a separate session was adding a third candidate, **Andrej Karpathy** (`karpathy`). It was also editing
+`verifier/stack/judge.py`, `verifier/stack/prompts/judge-v1.md`, `tests/stack/test_judge.py` and `docs/design-doc.md`.
+On disk: the `karpathy` entry in `fixtures/candidates.json`, `KARPATHY` in `make_placeholder_resumes.py`,
+`fixtures/resumes/karpathy.*` and `fixtures/webhooks/karpathy.json`. Ask the user whether that work should be kept,
+and review it before committing (Karpathy is a real public figure, so check what his placeholder resume claims).
 
 ## Verified live today (GB10)
 - **vLLM** (`vllm-qwen` container, `nvidia/Qwen3.6-35B-A3B-NVFP4` on :8000). Extraction takes ~24 s per resume.
@@ -93,7 +96,7 @@ It should only add to `fixtures/cache/`; check that Henry's entries are unchange
 - vLLM restart if needed: `sg docker -c "bash ~/Downloads/hackathon/a-bundle/start-vllm-offline.sh"`.
 
 ## Next steps (in order)
-1. Finish and commit the Aidan swap (above), then a live Aidan run with real Slack.
+1. Live Aidan run with real Slack (`SLACK=real bash scripts/full_run.sh aidan`); decide what to do with the Karpathy work.
 2. **OpenClaw install** (internet is up). Steps from the H4 coder:
    1. Build the plugin.
    2. Add a NemoClaw network-policy preset allowing `host.openshell.internal:8200` `/internal/**`.

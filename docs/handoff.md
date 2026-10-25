@@ -119,7 +119,12 @@ Also untracked: `docs/video-script.md` (from another session; not reviewed).
    (`VERIFIER_HOST=0.0.0.0 KEEP=1 SANDBOX_BACKEND=openshell SLACK=real bash scripts/full_run.sh`).
    **A real Re-check click from Slack works end to end** (21:04 UTC: Slack → OpenClaw → plugin → `/internal/actions` 200 →
    "Re-check started/done" in the thread). Still to check: an @-mention, the overflow menu (More context, Edit),
-   why the card's buttons vanished at 20:53 UTC before any click, and OpenClaw's "⚠️ Memory Search blocked" thread reply.
+   (Solved) The buttons vanished at 20:53 UTC because a click landed before the plugin was installed: with no
+   handler, OpenClaw's Slack fallback replaces the clicked `actions` block with "✅ … selected by @user" and wakes
+   its agent (the "⚠️ Memory Search blocked" reply is just a tool-not-found warning). No config disables it; with
+   the plugin loaded, clicks are `handled:true` and nothing is stripped. **Demo rule: don't click during a
+   gateway restart or plugin reload.** Restore a stripped card: `RUNS_DIR=<dir> bash scripts/refresh_card.sh <app_id>`.
+   Handled clicks log only in the sandbox's `/sandbox/.openclaw/logs/gateway-persistent.log`, not `nemoclaw logs`.
 2. Demo prep (design doc ~line 2608 beat sheet): record in replay mode; J11's *Simulate application* button starts a run.
 3. Recorder quirk: treat GitHub's 204 for an empty repo's `contributors` like 404/409.
 

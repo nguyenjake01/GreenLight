@@ -29,7 +29,7 @@ See https://github.com/adobe-type-tools/cmap-resources
 
   <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self'; img-src 'self' blob: data:; media-src blob:; font-src 'self' data:; connect-src * blob: data:; base-uri 'none'; form-action 'none';"
+      content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self' blob:; style-src 'self' https://fonts.googleapis.com; img-src 'self' blob: data:; media-src blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src * blob: data:; base-uri 'none'; form-action 'none';"
     />
 
 <!-- This snippet is used in production (included from viewer.html) -->
@@ -37,8 +37,10 @@ See https://github.com/adobe-type-tools/cmap-resources
 <script src="../build/pdf.mjs" type="module"></script>
 
     <link rel="stylesheet" href="viewer.css" />
+    <link rel="stylesheet" href="rv-hover.css" />
 
   <script src="viewer.mjs" type="module"></script>
+  <script src="rv-hover.js" defer></script>
   </head>
 
   <body tabindex="0">

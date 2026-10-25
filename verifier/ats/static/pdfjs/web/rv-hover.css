@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap");
+
+/* Force pdf.js to its light theme (the site is light-only). */
+:root {
+  color-scheme: light only !important;
+  --button-disabled-opacity: 0.4 !important;
+  --hover-filter: brightness(0.9) !important;
+}
+
+:root {
+  --rvh-surface: #ffffff;
+  --rvh-border: #e9e7ed;
+  --rvh-border-strong: #dbd7df;
+  --rvh-text: #211f24;
+  --rvh-muted: #65616a;
+  --rvh-faint: #847f8a;
+  --rvh-sans: "Geist", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --rvh-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* Hide pdf.js's own popups for annotations that get a card. */
+.annotationLayer .popupAnnotation,
+.annotationLayer .popup,
+.annotationLayer [data-rv-card] + .popupAnnotation {
+  display: none !important;
+}
+.annotationLayer [data-rv-card] { cursor: help; }
+.annotationLayer [data-rv-card] > a, .annotationLayer [data-rv-card] section { cursor: help; }
+
+.rv-card {
+  position: fixed;
+  z-index: 100000;
+  box-sizing: border-box;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  overflow: auto;
+  padding: 14px;
+  background: var(--rvh-surface);
+  border: 1px solid var(--rvh-border-strong);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(33, 31, 36, 0.08);
+  color: var(--rvh-text);
+  font: 400 13.5px/1.45 var(--rvh-sans);
+  text-align: left;
+}
+.rv-card[hidden] { display: none; }
+.rv-card * { box-sizing: border-box; }
+
+.rv-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.rv-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 24px; padding: 0 8px;
+  border: 1px solid var(--rvh-border-strong); border-radius: 4px;
+  font: 500 12px/1 var(--rvh-mono);
+  color: var(--rvh-muted); background: #faf8fb;
+}
+.rv-chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.rv-chip.ok { color: #18794e; background: #e9f9ee; border-color: #b2e5c4; }
+.rv-chip.warn { color: #ab6400; background: #fff7c2; border-color: #f3d673; }
+.rv-chip.bad { color: #ce2c31; background: #ffebec; border-color: #fdbdbe; }
+.rv-chip.neutral { color: #65616a; background: #faf8fb; border-color: #dbd7df; }
+
+.rv-headline { margin: 0 0 12px; font-weight: 500; color: var(--rvh-text); overflow-wrap: anywhere; }
+
+.rv-label {
+  margin: 0 0 6px;
+  font: 400 11px/1.2 var(--rvh-mono);
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--rvh-faint);
+}
+.rv-checks { list-style: none; margin: 0 0 12px; padding: 0; }
+.rv-checks li {
+  display: grid; grid-template-columns: 16px 1fr; gap: 6px;
+  padding: 5px 0; border-top: 1px solid var(--rvh-border);
+}
+.rv-checks li:first-child { border-top: 0; }
+.rv-glyph { font: 600 13px/1.45 var(--rvh-mono); text-align: center; color: var(--rvh-faint); }
+.rv-glyph.pass { color: #18794e; }
+.rv-glyph.soft { color: #ab6400; }
+.rv-glyph.hard { color: #ce2c31; }
+.rv-glyph.skip { color: var(--rvh-faint); }
+.rv-check-title { font-weight: 500; }
+.rv-check-reason { color: var(--rvh-muted); overflow-wrap: anywhere; }
+
+.rv-notes { margin: 0 0 12px; padding: 0; list-style: none; color: var(--rvh-muted); font-size: 12.5px; }
+.rv-notes li { margin: 2px 0; overflow-wrap: anywhere; }
+
+.rv-links { margin: 0 0 12px; display: flex; flex-direction: column; gap: 3px; }
+.rv-links a {
+  font: 400 12px/1.4 var(--rvh-mono); color: var(--rvh-text);
+  text-decoration: underline; text-decoration-color: var(--rvh-border-strong);
+  text-underline-offset: 2px; overflow-wrap: anywhere;
+}
+.rv-links a:hover { text-decoration-color: var(--rvh-text); }
+
+.rv-footer {
+  margin: 0; padding-top: 8px; border-top: 1px solid var(--rvh-border);
+  font: 400 11px/1.2 var(--rvh-mono); color: var(--rvh-faint);
+}
+
+/* Margin dots are 8px; give them a bigger invisible hover target. */
+.annotationLayer .circleAnnotation { overflow: visible !important; }
+.annotationLayer .circleAnnotation::after { content: ""; position: absolute; inset: -7px; }

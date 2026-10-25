@@ -208,6 +208,16 @@ def _popup_text(vc: dict[str, Any]) -> str:
     if flags:
         head = f"WARNING - {', '.join(flags)}. " + head
     lines = [_ascii(head)]
+    for chk in vc.get("checks") or []:
+        result = str(chk.get("result") or "")
+        reason = str(chk.get("reason") or "").strip()
+        if result == "skip" and not reason:
+            continue
+        title = str(chk.get("check") or "check").replace("_", " ").strip()
+        title = title[:1].upper() + title[1:]
+        lines.append(_ascii(f"[{result}] {title}: {reason}".replace("\n", " ").strip()))
+    for note in vc.get("notes") or []:
+        lines.append(_ascii(f"[note] {note}".replace("\n", " ")))
     lines += [_ascii(link) for link in vc.get("evidence_links") or []]
     return "\n".join(lines)
 

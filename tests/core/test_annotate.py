@@ -98,7 +98,7 @@ def test_every_located_claim_has_a_mark_and_popup(tmp_path):
         expected = f"{LABEL_WORDS[vc['label']]}: {vc['top_reason']}"
         matches = [c for c in contents if c.startswith(expected)]
         assert matches, cid
-        assert any(m.splitlines()[1] == vc["evidence_links"][0] for m in matches), cid
+        assert any(vc["evidence_links"][0] in m.splitlines() for m in matches), cid
     for a in annots:
         assert a.info["title"] == "Resume Verifier"
         assert a.has_popup
@@ -107,8 +107,7 @@ def test_every_located_claim_has_a_mark_and_popup(tmp_path):
 def test_annotation_subtypes_per_claim_type(tmp_path):
     _, out = _run(tmp_path)
     doc = pymupdf.open(out)
-    by_content = {a.info["content"].split(":")[0] + a.info["content"].splitlines()[1]: a.kind
-                  for a in _annots(doc)}
+    by_content = {a.info["content"].splitlines()[0]: a.kind for a in _annots(doc)}
     kinds = [a.kind for a in _annots(doc)]
     assert kinds.count("Circle") == 3     # three projects: dots
     assert kinds.count("Highlight") == 4  # four skills
@@ -297,7 +296,7 @@ def test_flagged_hollow_and_contradicted_marks(tmp_path):
     assert flagged.info["content"].startswith("WARNING - run failed. Supported: Runs, mostly")
     assert flagged.rect.width > 2 * annotate.DOT_R  # ring is larger than the dot
     assert "No public evidence" in by
-    assert by["No public evidence"].info["content"] == "No public evidence: No repo found"
+    assert by["No public evidence"].info["content"].splitlines()[0] == "No public evidence: No repo found"
     assert by["Contradicted"].info["content"].startswith("Contradicted: No merged PRs")
     notes = doc[doc.page_count - 1].get_text()
     assert "WARNING - run failed" in notes
@@ -360,3 +359,27 @@ def test_not_a_pdf_raises_annotate_error(tmp_path):
 def test_missing_input_raises_annotate_error(tmp_path):
     with pytest.raises(AnnotateError):
         annotate.annotate_pdf(tmp_path / "nope.pdf", CLAIMS, VERDICT, tmp_path / "o.pdf")
+
+
+def test_popup_has_check_note_and_link_lines(tmp_path):
+    pdf = _make_pdf(tmp_path / "k.pdf", ["Project Alpha does a thing"])
+    vc = _vc("c1", "project", "supported", "Runs fine", links=("https://github.com/o/r",))
+    vc["checks"] = [
+        {"check": "repo", "result": "pass", "reason": "Repo o/r (matched by name)", "facts": {}},
+        {"check": "commit_share", "result": "soft", "reason": "Low share", "facts": {}},
+        {"check": "ci", "result": "skip", "reason": "", "facts": {}},
+        {"check": "run", "result": "hard", "reason": "Crashed", "facts": {}},
+    ]
+    vc["notes"] = ["Checked at 10:00"]
+    claims, verdict = _docs(
+        [_claim("c1", "project", "Project Alpha does a thing", repo_name="Alpha")], [vc])
+    _, out = _run(tmp_path, claims, verdict, pdf)
+    lines = _annots(pymupdf.open(out))[0].info["content"].splitlines()
+    assert lines == [
+        "Supported: Runs fine",
+        "[pass] Repo: Repo o/r (matched by name)",
+        "[soft] Commit share: Low share",
+        "[hard] Run: Crashed",
+        "[note] Checked at 10:00",
+        "https://github.com/o/r",
+    ]

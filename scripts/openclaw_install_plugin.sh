@@ -10,7 +10,7 @@
 # Environment: ENV_FILE (default <repo>/.env; INTERNAL_TOKEN is read from it, never printed),
 #   SLACK_ACTIONS=plugin|agent|off (default plugin), INSTALL_EXTRA_FLAGS (extra `openclaw plugins install` flags).
 # The verifier service must run on the host and listen on a non-loopback address, e.g.
-#   .venv/bin/python -m uvicorn verifier.core.service:app --host 0.0.0.0 --port 8200
+#   .venv/bin/python -m uvicorn verifier.core.service:app --host 0.0.0.0 --port 8201
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -19,8 +19,8 @@ PLUGIN_DIR="$REPO_ROOT/verifier/stack/openclaw/resume-verifier"
 PRESET_FILE="$REPO_ROOT/verifier/stack/openclaw/nemoclaw-policy-verifier.yaml"
 PRESET_NAME="rv-verifier"
 PLUGIN_ID="resume-verifier"
-SANDBOX_URL="http://host.openshell.internal:8200"   # how the sandbox reaches the host service
-HOST_URL="http://localhost:8200"                    # how this host reaches it
+SANDBOX_URL="http://host.openshell.internal:8201"   # how the sandbox reaches the host service
+HOST_URL="http://localhost:8201"                    # how this host reaches it
 export PATH="$HOME/.local/node/bin:$HOME/.local/bin:$PATH"
 
 DRY_RUN=0; VERIFY_ONLY=0; NAME=""
@@ -94,7 +94,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------------------------
-step "2. Network policy: allow host.openshell.internal:8200 /internal/** (preset '$PRESET_NAME')"
+step "2. Network policy: allow host.openshell.internal:8201 /internal/** (preset '$PRESET_NAME')"
 [ -f "$PRESET_FILE" ] || die "missing $PRESET_FILE"
 nc policy add --from-file "$PRESET_FILE" --dry-run
 nc policy add --from-file "$PRESET_FILE" --yes
@@ -233,12 +233,12 @@ else
   if [ "$host_code" != 200 ]; then
     RESULT=FAIL
     echo "verifier service: NOT RUNNING on $HOST_URL (HTTP ${host_code:-none}; 401 would mean a token mismatch). Start it, listening on all interfaces:"
-    echo "  .venv/bin/python -m uvicorn verifier.core.service:app --host 0.0.0.0 --port 8200"
+    echo "  .venv/bin/python -m uvicorn verifier.core.service:app --host 0.0.0.0 --port 8201"
     echo "then re-run: bash scripts/openclaw_install_plugin.sh --verify-only $NAME"
   else
-    listen="$(ss -ltn 'sport = :8200' 2>/dev/null | awk 'NR>1{print $4}' | tr '\n' ' ')"
+    listen="$(ss -ltn 'sport = :8201' 2>/dev/null | awk 'NR>1{print $4}' | tr '\n' ' ')"
     echo "verifier service: up on host; listening on: ${listen:-unknown}"
-    if [[ -n "$listen" && "$listen" != *0.0.0.0:8200* && "$listen" != *"*:8200"* && "$listen" != *"[::]:8200"* ]]; then
+    if [[ -n "$listen" && "$listen" != *0.0.0.0:8201* && "$listen" != *"*:8201"* && "$listen" != *"[::]:8201"* ]]; then
       warn "the service listens on loopback only, so the sandbox cannot reach it. Restart uvicorn with --host 0.0.0.0."
     fi
     code="$(printf 'header = "X-Verifier-Token: %s"\n' "$INTERNAL_TOKEN" \
@@ -248,7 +248,7 @@ else
       401) RESULT=FAIL; echo "sandbox reaches the service but the token is rejected (HTTP 401): INTERNAL_TOKEN differs between .env and the running service." ;;
       403) RESULT=FAIL; echo "HTTP 403 from the sandbox proxy: the network policy blocked it. Check: nemoclaw $NAME policy list  (expect $PRESET_NAME)" ;;
       *)   RESULT=FAIL; echo "sandbox cannot reach $SANDBOX_URL (got '${code:-nothing}')."
-           echo "  Likely a host firewall: let the Docker bridge reach port 8200, e.g. sudo ufw allow from 172.16.0.0/12 to any port 8200 proto tcp"
+           echo "  Likely a host firewall: let the Docker bridge reach port 8201, e.g. sudo ufw allow from 172.16.0.0/12 to any port 8201 proto tcp"
            echo "  Also: nemoclaw $NAME doctor" ;;
     esac
   fi

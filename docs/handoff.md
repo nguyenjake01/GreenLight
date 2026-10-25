@@ -5,6 +5,7 @@ Setup: one machine (the GB10 itself, arm64, Python 3.12). The lead (Opus) plans 
 write the code, several at once on separate files, and slow non-blocking work runs in background agents.
 The lead session is the **master coding session**: only it writes tracked files. Other sessions may read anything and
 write only to gitignored folders, but they may run `full_run.sh`, so check ports 8100/8200 before starting a stack.
+The real-Slack stack (the one the OpenClaw bot calls) runs on 8101/8201; `SLACK=real demo_up.sh` defaults to those, and stubbed stacks keep 8100/8200.
 
 ## Where things stand
 
@@ -94,7 +95,7 @@ so nothing posts).
 - **Onboarding** needed `openshell settings set -g nemoclaw --global --key providers_v2_enabled --value true --yes`
   on NemoClaw's gateway, then `nemoclaw onboard --resume`. Non-interactive resume works with the Slack env vars set,
   once the user has accepted the notice.
-- **The verifier must listen on 0.0.0.0** for the sandbox to reach `host.openshell.internal:8200`.
+- **The verifier must listen on 0.0.0.0** for the sandbox to reach `host.openshell.internal:8201`.
   Use `VERIFIER_HOST=0.0.0.0` (`demo_up.sh` defaults to it).
 - **Button-strip gotcha.** A click that lands while the plugin isn't loaded (onboarding, a gateway restart, a plugin
   reload) makes OpenClaw replace the card's buttons with "✅ … selected by @user" and wake its agent ("⚠️ Memory Search

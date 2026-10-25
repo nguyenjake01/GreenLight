@@ -11,7 +11,8 @@
 #   SLACK=real|stub          real posts to SLACK_CHANNEL_ID (default stub)
 #   SANDBOX_BACKEND          openshell (default, the demo backend; its gateway is started if needed) | docker
 #   RUN_CHECK                on (default) | off | baseline_only
-#   ATS_PORT / VERIFIER_PORT 8100 / 8200. The OpenClaw plugin reaches the verifier on 8200, so keep it for the demo.
+#   ATS_PORT / VERIFIER_PORT 8101 / 8201 with SLACK=real (the OpenClaw plugin reaches the verifier on 8201, so keep it
+#                            for the demo); 8100 / 8200 with Slack stubbed, so test stacks never take the bot's ports
 #   ATS_HOST                 127.0.0.1 (default); 0.0.0.0 to open the mock ATS from another machine
 #   VERIFIER_HOST            0.0.0.0 (default), so the OpenClaw sandbox can reach the verifier
 #   ATS_PUBLIC_URL           what "Open in Greenhouse" points at (default http://localhost:$ATS_PORT);
@@ -31,8 +32,10 @@ SLACK="${SLACK:-stub}"
 MODULES="llm,extract,agent,judge,resume,fetch,rubric,render,annotate,ats,harness,sandbox"
 [ "$SLACK" = "real" ] && MODULES="$MODULES,slack"
 
-ATS_PORT="${ATS_PORT:-8100}"
-VERIFIER_PORT="${VERIFIER_PORT:-8200}"
+# Real Slack uses 8101/8201 (the port the OpenClaw plugin calls); stub stacks keep 8100/8200.
+if [ "$SLACK" = "real" ]; then DEF_ATS=8101; DEF_VERIFIER=8201; else DEF_ATS=8100; DEF_VERIFIER=8200; fi
+ATS_PORT="${ATS_PORT:-$DEF_ATS}"
+VERIFIER_PORT="${VERIFIER_PORT:-$DEF_VERIFIER}"
 ATS_HOST="${ATS_HOST:-127.0.0.1}"
 VERIFIER_HOST="${VERIFIER_HOST:-0.0.0.0}"
 OPENCLAW_SANDBOX="${OPENCLAW_SANDBOX:-rv-openclaw}"

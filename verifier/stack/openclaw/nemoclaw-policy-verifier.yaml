@@ -8,17 +8,17 @@
 # Format: NemoClaw docs `network-policy/create-custom-policy-presets.mdx`. `allowed_ips` is accepted in a
 # custom preset only on the `host.openshell.internal` bridge endpoint (the sandbox -> host path); the same
 # private-range pins ship in NemoClaw's own `local-inference` preset. The verifier service must listen on a
-# non-loopback address (`--host 0.0.0.0`) and the host firewall must let the Docker bridge reach port 8200.
+# non-loopback address (`--host 0.0.0.0`) and the host firewall must let the Docker bridge reach port 8201.
 preset:
   name: rv-verifier
-  description: "Resume Verifier internal API on the host (host.openshell.internal:8200, /internal/** only)"
+  description: "Resume Verifier internal API on the host (host.openshell.internal:8201, /internal/** only)"
 
 network_policies:
   rv_verifier:
     name: rv_verifier
     endpoints:
       - host: host.openshell.internal
-        port: 8200
+        port: 8201
         protocol: rest
         enforcement: enforce
         allowed_ips:

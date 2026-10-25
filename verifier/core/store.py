@@ -10,12 +10,16 @@ Rules (J1):
 
 from __future__ import annotations
 
+import copy
+import fcntl
 import hashlib
 import json
 import os
 import re
 import tempfile
 from datetime import datetime, timezone
+from collections.abc import Callable, Iterator
+from contextlib import contextmanager
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -175,3 +179,84 @@ def next_claims_version(run_dir: Path) -> int:
 def next_verdict_n(run_dir: Path) -> int:
     """1 + the highest `verdicts/verdict_N.json` (1 if none)."""
     return _next_number(Path(run_dir) / "verdicts", re.compile(r"^verdict_(\d+)\.json$"))
+
+
+# ── meta.json: the only file that is ever replaced (J7, design doc 7.2) ──────
+
+def meta_path(application_id: str) -> Path:
+    """`{RUNS_DIR}/{application_id}/meta.json` (does not create anything)."""
+    return _runs_dir() / str(application_id) / "meta.json"
+
+
+@contextmanager
+def _meta_lock(application_id: str) -> Iterator[None]:
+    """Exclusive per-application file lock (flock on `.meta.lock`), across threads and processes."""
+    fd = os.open(run_dir(application_id) / ".meta.lock", os.O_CREAT | os.O_RDWR, 0o644)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        yield
+    finally:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
+
+
+def _replace_meta(application_id: str, meta: Any) -> None:
+    """Validate, then replace `meta.json` atomically (temp file, then `os.replace`)."""
+    validate(meta, "meta")
+    path = meta_path(application_id)
+    fd, tmp_name = tempfile.mkstemp(dir=path.parent, prefix=".meta.json.", suffix=".tmp")
+    tmp = Path(tmp_name)
+    try:
+        with os.fdopen(fd, "wb") as f:
+            f.write(dump_json(meta))
+            f.flush()
+            os.fsync(f.fileno())
+        os.chmod(tmp, 0o644)
+        os.replace(tmp, path)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def read_meta(application_id: str) -> dict:
+    """The current `meta.json` (always a complete file, because writes are atomic replaces).
+    Raises FileNotFoundError if the application has none."""
+    return json.loads(meta_path(application_id).read_text(encoding="utf-8"))
+
+
+def init_meta(application_id: str, meta: dict) -> tuple[dict, bool]:
+    """Create `meta.json` unless it exists. Returns (meta on disk, created)."""
+    with _meta_lock(application_id):
+        if meta_path(application_id).is_file():
+            return read_meta(application_id), False
+        _replace_meta(application_id, meta)
+        return copy.deepcopy(meta), True
+
+
+def update_meta(application_id: str, fn: Callable[[dict], dict | None]) -> dict:
+    """Read, apply `fn` to a copy (it mutates in place, or returns a replacement), validate,
+    replace atomically, all under the per-application file lock. Returns the new meta.
+    `fn` must not call `update_meta` itself."""
+    with _meta_lock(application_id):
+        new = copy.deepcopy(read_meta(application_id))
+        result = fn(new)
+        if result is not None:
+            new = result
+        _replace_meta(application_id, new)
+        return new
+
+
+def list_metas() -> list[dict]:
+    """Every application's meta (folders starting with `_` are runtime files, not applications)."""
+    root = _runs_dir()
+    out: list[dict] = []
+    if not root.is_dir():
+        return out
+    for child in sorted(root.iterdir()):
+        if child.is_dir() and not child.name.startswith("_") and (child / "meta.json").is_file():
+            try:
+                out.append(json.loads((child / "meta.json").read_text(encoding="utf-8")))
+            except (OSError, ValueError):
+                continue
+    return out

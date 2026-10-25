@@ -1,0 +1,308 @@
+{
+  "application_id": "edges",
+  "candidate": {
+    "emails": [
+      "eddie@example.com"
+    ],
+    "github_login": "edge-user",
+    "github_login_conflict": null,
+    "github_login_source": "resume_link",
+    "name": "Eddie Edge"
+  },
+  "claims": [
+    {
+      "assertions": {
+        "behavior": null,
+        "language": "Python",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "forked-lib",
+        "repo_url": null,
+        "role": "creator",
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c1",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "forked-lib project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": null,
+        "min_stars": 100,
+        "public_signal": "none",
+        "repo_name": "star-proj",
+        "repo_url": null,
+        "role": "creator",
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c2",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "star-proj project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": "Python",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "lang-proj",
+        "repo_url": null,
+        "role": "creator",
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c3",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "lang-proj project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": "Python",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "empty-repo",
+        "repo_url": null,
+        "role": "creator",
+        "scale": "substantial",
+        "start_year": null
+      },
+      "claim_id": "c4",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "empty-repo project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": null,
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "ghost-quiet",
+        "repo_url": null,
+        "role": null,
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c5",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "ghost-quiet project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": null,
+        "min_stars": null,
+        "public_signal": "link",
+        "repo_name": "ghost-public",
+        "repo_url": null,
+        "role": null,
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c6",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "ghost-public project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": null,
+        "min_stars": null,
+        "public_signal": "link",
+        "repo_name": null,
+        "repo_url": "https://github.com/acme/widgets",
+        "role": null,
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c7",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "None project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": null,
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": null,
+        "repo_url": null,
+        "role": null,
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c8",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "None project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": "Python",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "no-data",
+        "repo_url": null,
+        "role": "creator",
+        "scale": "substantial",
+        "start_year": null
+      },
+      "claim_id": "c9",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "no-data project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": "Python and Go",
+        "min_stars": 100,
+        "public_signal": "none",
+        "repo_name": "mixed",
+        "repo_url": null,
+        "role": "creator",
+        "scale": null,
+        "start_year": 2023
+      },
+      "claim_id": "c10",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "mixed project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": "Rust",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "maintained",
+        "repo_url": null,
+        "role": "maintainer",
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c11",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "maintained project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": null,
+        "language": "Rust",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "co-op",
+        "repo_url": null,
+        "role": "co-creator",
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c12",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "co-op project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Haskell"
+      },
+      "claim_id": "c13",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Skills: Haskell",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Rust and Zig"
+      },
+      "claim_id": "c14",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Skills: Rust and Zig",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "framework_tool",
+        "name": "React"
+      },
+      "claim_id": "c15",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Skills: React",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Python"
+      },
+      "claim_id": "c16",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Skills: Python",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "category": "other"
+      },
+      "claim_id": "c17",
+      "needs_review": true,
+      "section": null,
+      "source_text": "Worked somewhere",
+      "type": "unchecked"
+    },
+    {
+      "assertions": {
+        "description": null,
+        "min_prs": 1,
+        "repo": "someone/lib",
+        "role": "contributor"
+      },
+      "claim_id": "c18",
+      "needs_review": false,
+      "section": null,
+      "source_text": "Contributed to someone/lib",
+      "type": "oss_contribution"
+    }
+  ],
+  "claims_version": 1,
+  "created_at": "2026-10-25T14:02:11Z",
+  "edits": [],
+  "extraction": {
+    "model": "m",
+    "prompt_version": "extract-v1",
+    "resume_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "status": "ok",
+    "temperature": 0
+  },
+  "schema_version": "1"
+}

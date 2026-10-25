@@ -1,0 +1,77 @@
+{
+  "application_id": "nologin",
+  "candidate": {
+    "emails": [
+      "alice@example.com"
+    ],
+    "github_login": null,
+    "github_login_conflict": null,
+    "github_login_source": "none",
+    "name": "No Login"
+  },
+  "claims": [
+    {
+      "assertions": {
+        "behavior": null,
+        "language": null,
+        "min_stars": null,
+        "public_signal": "link",
+        "repo_name": "something",
+        "repo_url": null,
+        "role": null,
+        "scale": null,
+        "start_year": null
+      },
+      "claim_id": "c1",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "something project",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Python"
+      },
+      "claim_id": "c2",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Skills: Python",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "description": null,
+        "min_prs": 1,
+        "repo": "a/b",
+        "role": "contributor"
+      },
+      "claim_id": "c3",
+      "needs_review": false,
+      "section": null,
+      "source_text": "Contributed to a/b",
+      "type": "oss_contribution"
+    },
+    {
+      "assertions": {
+        "category": "education"
+      },
+      "claim_id": "c4",
+      "needs_review": false,
+      "section": null,
+      "source_text": "Worked somewhere",
+      "type": "unchecked"
+    }
+  ],
+  "claims_version": 1,
+  "created_at": "2026-10-25T14:02:11Z",
+  "edits": [],
+  "extraction": {
+    "model": "m",
+    "prompt_version": "extract-v1",
+    "resume_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "status": "ok",
+    "temperature": 0
+  },
+  "schema_version": "1"
+}

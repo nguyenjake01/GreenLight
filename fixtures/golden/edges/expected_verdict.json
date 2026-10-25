@@ -1,0 +1,680 @@
+{
+  "account": {
+    "created_at": "2023-02-01",
+    "followers": 1,
+    "login": "edge-user",
+    "login_conflict": null,
+    "login_source": "resume_link",
+    "public_repos": 12
+  },
+  "application_id": "edges",
+  "claims": [
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/forked-lib"
+          },
+          "reason": "Repo edge-user/forked-lib (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "facts": {
+            "parent": "upstream/forked-lib"
+          },
+          "reason": "Repo is a fork of upstream/forked-lib",
+          "result": "hard"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 10,
+              "name": 0
+            },
+            "matched": 10,
+            "total": 10
+          },
+          "reason": "10 of 10 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "Python": 100
+            }
+          },
+          "reason": "Python is the main language",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c1",
+      "evidence_links": [
+        "https://github.com/edge-user/forked-lib"
+      ],
+      "flags": [],
+      "label": "contradicted",
+      "notes": [],
+      "top_reason": "Repo is a fork of upstream/forked-lib",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/star-proj"
+          },
+          "reason": "Repo edge-user/star-proj (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "stars",
+          "facts": {
+            "claim_min_stars": 100,
+            "stars": 60
+          },
+          "reason": "60 stars; claim says 100",
+          "result": "soft"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 10,
+              "name": 0
+            },
+            "matched": 10,
+            "total": 10
+          },
+          "reason": "10 of 10 commits by the candidate",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c2",
+      "evidence_links": [
+        "https://github.com/edge-user/star-proj"
+      ],
+      "flags": [],
+      "label": "partial",
+      "notes": [],
+      "top_reason": "60 stars; claim says 100",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/lang-proj"
+          },
+          "reason": "Repo edge-user/lang-proj (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 10,
+              "name": 0
+            },
+            "matched": 10,
+            "total": 10
+          },
+          "reason": "10 of 10 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "Go": 81,
+              "Python": 19
+            }
+          },
+          "reason": "Python is 19% of the code",
+          "result": "soft"
+        }
+      ],
+      "claim_id": "c3",
+      "evidence_links": [
+        "https://github.com/edge-user/lang-proj"
+      ],
+      "flags": [],
+      "label": "partial",
+      "notes": [],
+      "top_reason": "Python is 19% of the code",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/empty-repo"
+          },
+          "reason": "Repo edge-user/empty-repo (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 0,
+              "name": 0
+            },
+            "matched": 0,
+            "total": 0
+          },
+          "reason": "0 of 0 commits by the candidate",
+          "result": "hard"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {}
+          },
+          "reason": "No Python code in the repo",
+          "result": "hard"
+        },
+        {
+          "check": "substance",
+          "facts": {
+            "commits": 0,
+            "distinct_days": 0,
+            "size_kb": 0
+          },
+          "reason": "Described as a complete project, but the repo is 0 KB with 0 commits on 0 days",
+          "result": "soft"
+        }
+      ],
+      "claim_id": "c4",
+      "evidence_links": [
+        "https://github.com/edge-user/empty-repo"
+      ],
+      "flags": [],
+      "label": "contradicted",
+      "notes": [],
+      "top_reason": "0 of 0 commits by the candidate",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "reason": "No matching public repo: No repo named ghost-quiet among @edge-user's 8 public repos; the repo-match model chose none",
+          "result": "skip"
+        }
+      ],
+      "claim_id": "c5",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "No matching public repo: No repo named ghost-quiet among @edge-user's 8 public repos; the repo-match model chose none",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "reason": "Repo not found: No repo named ghost-public among @edge-user's 8 public repos; the repo-match model chose none",
+          "result": "hard"
+        }
+      ],
+      "claim_id": "c6",
+      "evidence_links": [],
+      "flags": [],
+      "label": "contradicted",
+      "notes": [],
+      "top_reason": "Repo not found: No repo named ghost-public among @edge-user's 8 public repos; the repo-match model chose none",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "reason": "Repo details unavailable offline",
+          "result": "skip"
+        }
+      ],
+      "claim_id": "c7",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Repo details unavailable offline",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "reason": "Couldn't match the repo",
+          "result": "skip"
+        }
+      ],
+      "claim_id": "c8",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Couldn't match the repo",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/no-data"
+          },
+          "reason": "Repo edge-user/no-data (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "reason": "Contributors unavailable offline",
+          "result": "skip"
+        },
+        {
+          "check": "language",
+          "reason": "Languages unavailable offline",
+          "result": "skip"
+        },
+        {
+          "check": "substance",
+          "reason": "Commit history unavailable offline",
+          "result": "skip"
+        }
+      ],
+      "claim_id": "c9",
+      "evidence_links": [
+        "https://github.com/edge-user/no-data"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Not a fork",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/mixed"
+          },
+          "reason": "Repo edge-user/mixed (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2023,
+            "repo_created_at": "2024-02-01"
+          },
+          "reason": "Created Feb 2024; claim says 2023",
+          "result": "soft"
+        },
+        {
+          "check": "stars",
+          "facts": {
+            "claim_min_stars": 100,
+            "stars": 79
+          },
+          "reason": "79 stars; claim says 100",
+          "result": "soft"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 3,
+              "name": 0
+            },
+            "matched": 3,
+            "total": 10
+          },
+          "reason": "3 of 10 commits by the candidate",
+          "result": "soft"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "Go": 70,
+              "Python": 30
+            }
+          },
+          "reason": "Python is 30% of the code; Go is the main language",
+          "result": "pass"
+        },
+        {
+          "check": "run",
+          "reason": "Build failed: main.c:12: error: unknown type name 'foo'",
+          "result": "soft"
+        }
+      ],
+      "claim_id": "c10",
+      "evidence_links": [
+        "https://github.com/edge-user/mixed"
+      ],
+      "flags": [
+        "run_failed"
+      ],
+      "label": "partial",
+      "notes": [],
+      "top_reason": "Created Feb 2024; claim says 2023",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/maintained"
+          },
+          "reason": "Repo edge-user/maintained (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 4,
+              "name": 0
+            },
+            "matched": 4,
+            "total": 100
+          },
+          "reason": "4 of 100 commits by the candidate",
+          "result": "hard"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "Rust": 100
+            }
+          },
+          "reason": "Rust is the main language",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c11",
+      "evidence_links": [
+        "https://github.com/edge-user/maintained"
+      ],
+      "flags": [],
+      "label": "contradicted",
+      "notes": [],
+      "top_reason": "4 of 100 commits by the candidate",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "edge-user/co-op"
+          },
+          "reason": "Repo edge-user/co-op (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 1,
+              "name": 0
+            },
+            "matched": 1,
+            "total": 10
+          },
+          "reason": "1 of 10 commits by the candidate",
+          "result": "soft"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "Rust": 100
+            }
+          },
+          "reason": "Rust is the main language",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c12",
+      "evidence_links": [
+        "https://github.com/edge-user/co-op"
+      ],
+      "flags": [],
+      "label": "partial",
+      "notes": [],
+      "top_reason": "1 of 10 commits by the candidate",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 5,
+                "repo": "edge-user/star-proj"
+              }
+            ]
+          },
+          "reason": "Only in star-proj, 5% of the code",
+          "result": "soft"
+        }
+      ],
+      "claim_id": "c13",
+      "evidence_links": [
+        "https://github.com/edge-user/star-proj"
+      ],
+      "flags": [],
+      "label": "partial",
+      "notes": [
+        "Language data unavailable offline for 1 repo"
+      ],
+      "top_reason": "Only in star-proj, 5% of the code",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 100,
+                "repo": "edge-user/co-op"
+              },
+              {
+                "percent": 100,
+                "repo": "edge-user/maintained"
+              }
+            ]
+          },
+          "reason": "No public Zig code found in @edge-user's 7 repos",
+          "result": "skip"
+        }
+      ],
+      "claim_id": "c14",
+      "evidence_links": [
+        "https://github.com/edge-user/co-op",
+        "https://github.com/edge-user/maintained"
+      ],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [
+        "Language data unavailable offline for 1 repo"
+      ],
+      "top_reason": "No public Zig code found in @edge-user's 7 repos",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "reason": "Framework or tool; not checked in v1",
+          "result": "skip"
+        }
+      ],
+      "claim_id": "c15",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Framework or tool; not checked in v1",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 90,
+                "repo": "edge-user/star-proj"
+              },
+              {
+                "percent": 30,
+                "repo": "edge-user/mixed"
+              },
+              {
+                "percent": 19,
+                "repo": "edge-user/lang-proj"
+              }
+            ]
+          },
+          "reason": "Main language in 1 repo",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c16",
+      "evidence_links": [
+        "https://github.com/edge-user/star-proj",
+        "https://github.com/edge-user/mixed",
+        "https://github.com/edge-user/lang-proj"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [
+        "Language data unavailable offline for 1 repo"
+      ],
+      "top_reason": "Main language in 1 repo",
+      "type": "skill"
+    },
+    {
+      "checks": [],
+      "claim_id": "c17",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Couldn't classify this claim; check the resume.",
+      "type": "unchecked"
+    },
+    {
+      "checks": [
+        {
+          "check": "contribution",
+          "reason": "Contribution check not run",
+          "result": "skip"
+        }
+      ],
+      "claim_id": "c18",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Contribution check not run",
+      "type": "oss_contribution"
+    }
+  ],
+  "computed_at": "2026-10-25T14:06:40Z",
+  "context": [
+    "Account created Feb 2023.",
+    "Some GitHub evidence was unavailable offline (4 requests)."
+  ],
+  "inputs": {
+    "claims_sha256": "be89cfd129e3afe0e3b7fbb4b404f25ef4d62bd3001b1bbc526d7f9c4f901d8c",
+    "claims_version": 1,
+    "evidence_sha256": "993c320679b19c8f96a806a7546c8a494acd267ac1e7e7cf6270aed24942fd29",
+    "run_traces": [
+      {
+        "claim_id": "c10",
+        "sha256": "58184f06b0299d9c1d5c3a6c06bca9e1b44911a024dbefe0c922de06e46b7539"
+      }
+    ],
+    "snapshot_id": "snap_20261025T140000Z"
+  },
+  "rubric_version": "rubric-v1",
+  "schema_version": "1",
+  "tally": {
+    "contradicted": 4,
+    "no_evidence": 7,
+    "partial": 5,
+    "supported": 2
+  },
+  "verdict_id": "verdict_1"
+}

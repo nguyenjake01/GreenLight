@@ -1,0 +1,66 @@
+{
+  "account": null,
+  "application_id": "nologin",
+  "claims": [
+    {
+      "checks": [],
+      "claim_id": "c1",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "No GitHub account found",
+      "type": "project"
+    },
+    {
+      "checks": [],
+      "claim_id": "c2",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "No GitHub account found",
+      "type": "skill"
+    },
+    {
+      "checks": [],
+      "claim_id": "c3",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "No GitHub account found",
+      "type": "oss_contribution"
+    },
+    {
+      "checks": [],
+      "claim_id": "c4",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Not verifiable from public code",
+      "type": "unchecked"
+    }
+  ],
+  "computed_at": "2026-10-25T14:06:40Z",
+  "context": [
+    "No GitHub account found on the resume or application."
+  ],
+  "inputs": {
+    "claims_sha256": "3eb11e3ce0ea0dfb428b48868f51772b546c982804de013157b6209887b615a4",
+    "claims_version": 1,
+    "evidence_sha256": "a27beee654f25d48e18ba6322ae894191247253cc21bf7d9c11fdc08488e8c72",
+    "run_traces": [],
+    "snapshot_id": "snap_20261025T140000Z"
+  },
+  "rubric_version": "rubric-v1",
+  "schema_version": "1",
+  "tally": {
+    "contradicted": 0,
+    "no_evidence": 4,
+    "partial": 0,
+    "supported": 0
+  },
+  "verdict_id": "verdict_1"
+}

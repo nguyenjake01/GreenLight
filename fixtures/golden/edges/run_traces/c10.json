@@ -1,0 +1,19 @@
+{
+  "agent": null,
+  "baseline": {
+    "command": "make -j2",
+    "duration_s": 1.4,
+    "exit_code": 2,
+    "failure_kind": "error",
+    "output_excerpt": "gcc -O2 -o a.out main.c\nmain.c:12: error: unknown type name 'foo'\nmake: *** [all] Error 2\n",
+    "output_path": null,
+    "step": "build",
+    "timed_out": false
+  },
+  "claim_id": "c10",
+  "commit_sha": "abababababababababababababababababababab",
+  "judge": null,
+  "repo": "edge-user/mixed",
+  "sandbox_backend": "docker",
+  "schema_version": "1"
+}

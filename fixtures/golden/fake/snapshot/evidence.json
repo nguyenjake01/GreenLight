@@ -1,0 +1,60 @@
+{
+  "application_id": "app1",
+  "created_at": "2026-10-25T14:02:15Z",
+  "decisions": [],
+  "fetch_mode": "replay",
+  "github_login": "rv-fake-candidate",
+  "misses": [],
+  "responses": [
+    {
+      "body_path": "raw/35dd0cc0ccf4c4de903a7f5d47e9e33e63db8bc26e326d7fb5fe8cb5fd4b8a38.json",
+      "body_sha256": "35dd0cc0ccf4c4de903a7f5d47e9e33e63db8bc26e326d7fb5fe8cb5fd4b8a38",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/rv-fake-candidate/fastgrid",
+      "status": 200
+    },
+    {
+      "body_path": "raw/f5c3cfd0281c9f22d75436b2721d800b2d0496b9e0b516e8176b9112375ec3d4.json",
+      "body_sha256": "f5c3cfd0281c9f22d75436b2721d800b2d0496b9e0b516e8176b9112375ec3d4",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/rv-fake-candidate/fastgrid/commits?per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/2db137a2bd42da8baea6c704593a123c10205ffd8b2ad45502500e3ace585d85.json",
+      "body_sha256": "2db137a2bd42da8baea6c704593a123c10205ffd8b2ad45502500e3ace585d85",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/rv-fake-candidate/fastgrid/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/ff9b12342779f0d8205ad000fcc22f748c9c7de0b55b263d2a308c0762957c59.json",
+      "body_sha256": "ff9b12342779f0d8205ad000fcc22f748c9c7de0b55b263d2a308c0762957c59",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/rv-fake-candidate/fastgrid/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/2a88e634e3bbb2ea3cab8837136e510aac7061a70ae9dd7b97ebefcf983d20b8.json",
+      "body_sha256": "2a88e634e3bbb2ea3cab8837136e510aac7061a70ae9dd7b97ebefcf983d20b8",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/users/rv-fake-candidate",
+      "status": 200
+    },
+    {
+      "body_path": "raw/191044e5570eb5bea0a53f32779a9b12aa22ae732663965645d2cf9a048c427b.json",
+      "body_sha256": "191044e5570eb5bea0a53f32779a9b12aa22ae732663965645d2cf9a048c427b",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/users/rv-fake-candidate/repos?per_page=100&sort=pushed&type=owner",
+      "status": 200
+    }
+  ],
+  "schema_version": "1",
+  "snapshot_id": "snap_20261025T140000Z"
+}

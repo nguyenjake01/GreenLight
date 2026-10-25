@@ -1,0 +1,143 @@
+{
+  "application_id": "12345",
+  "candidate": {
+    "emails": [
+      "henry@example.com"
+    ],
+    "github_login": "henrychen4736",
+    "github_login_conflict": null,
+    "github_login_source": "resume_link",
+    "name": "Henry Chen"
+  },
+  "claims": [
+    {
+      "assertions": {
+        "behavior": "Reinforcement learning agents that learn to drive a racing game",
+        "language": "Python and JavaScript",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "Polytrack-ML",
+        "repo_url": null,
+        "role": "creator",
+        "scale": null,
+        "start_year": 2026
+      },
+      "claim_id": "c1",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "Polytrack-ML (Python, JavaScript, 2026): reinforcement learning agents for a racing game",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": "Flutter mobile app with a Python backend",
+        "language": "Dart and Python",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "CAC24",
+        "repo_url": null,
+        "role": "creator",
+        "scale": null,
+        "start_year": 2024
+      },
+      "claim_id": "c2",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "CAC24 (Dart/Flutter, Python, 2024): mobile app with a Python backend",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": "Solves a scrambled Rubik's cube",
+        "language": "C++",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "cubesolver",
+        "repo_url": null,
+        "role": "creator",
+        "scale": "substantial",
+        "start_year": 2024
+      },
+      "claim_id": "c3",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "Built cubesolver, a full Rubik's cube solver in C++",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Python"
+      },
+      "claim_id": "c4",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: Python, Dart, JavaScript, C++",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Dart"
+      },
+      "claim_id": "c5",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: Python, Dart, JavaScript, C++",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "JavaScript"
+      },
+      "claim_id": "c6",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: Python, Dart, JavaScript, C++",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "C++"
+      },
+      "claim_id": "c7",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: Python, Dart, JavaScript, C++",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "category": "employment"
+      },
+      "claim_id": "c8",
+      "needs_review": false,
+      "section": "Experience",
+      "source_text": "Math Tutor, Brightpath Learning, Jun 2025 to Aug 2025",
+      "type": "unchecked"
+    },
+    {
+      "assertions": {
+        "category": "education"
+      },
+      "claim_id": "c9",
+      "needs_review": false,
+      "section": "Education",
+      "source_text": "Westview High School, Class of 2027",
+      "type": "unchecked"
+    }
+  ],
+  "claims_version": 1,
+  "created_at": "2026-10-25T14:02:11Z",
+  "edits": [],
+  "extraction": {
+    "model": "Qwen3.6-35B-A3B-NVFP4",
+    "prompt_version": "extract-v1",
+    "resume_sha256": "ae134d0d68714b947176fe54a0c89b526af84bd5e1b51747001a01b203309ce5",
+    "status": "ok",
+    "temperature": 0
+  },
+  "schema_version": "1"
+}

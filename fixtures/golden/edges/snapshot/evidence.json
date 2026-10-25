@@ -1,0 +1,282 @@
+{
+  "application_id": "app1",
+  "created_at": "2026-10-25T14:02:15Z",
+  "decisions": [
+    {
+      "claim_id": "c5",
+      "inputs": {},
+      "kind": "repo_match",
+      "model": "m",
+      "output": "none",
+      "prompt_version": "match-v1"
+    },
+    {
+      "claim_id": "c6",
+      "inputs": {},
+      "kind": "repo_match",
+      "model": "m",
+      "output": "none",
+      "prompt_version": "match-v1"
+    }
+  ],
+  "fetch_mode": "replay",
+  "github_login": "edge-user",
+  "misses": [
+    "GET https://api.github.com/repos/acme/widgets",
+    "GET https://api.github.com/repos/edge-user/no-data/commits?per_page=100",
+    "GET https://api.github.com/repos/edge-user/no-data/contributors?anon=1&per_page=100",
+    "GET https://api.github.com/repos/edge-user/no-data/languages"
+  ],
+  "responses": [
+    {
+      "body_path": "raw/8900ad0f3de6067b74d90a9505084a0a8ec7bc226ae1140475f2a5fd8f9464da.json",
+      "body_sha256": "8900ad0f3de6067b74d90a9505084a0a8ec7bc226ae1140475f2a5fd8f9464da",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/co-op",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d.json",
+      "body_sha256": "6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/co-op/commits?per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/651079e48da414bcbfbc4b2b83699b4da261de588f3326d6614361f75cf40bbe.json",
+      "body_sha256": "651079e48da414bcbfbc4b2b83699b4da261de588f3326d6614361f75cf40bbe",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/co-op/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/a396f4dadee9d3dda0e4005cb0c2f4f7635e9d70b4b0a0769f8bb19ec9a54f8a.json",
+      "body_sha256": "a396f4dadee9d3dda0e4005cb0c2f4f7635e9d70b4b0a0769f8bb19ec9a54f8a",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/co-op/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/fc09cfff2d988a8426b3870cb7871e5ddff8250029f55a701ccb16db5cce7aab.json",
+      "body_sha256": "fc09cfff2d988a8426b3870cb7871e5ddff8250029f55a701ccb16db5cce7aab",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/empty-repo",
+      "status": 200
+    },
+    {
+      "body_path": "raw/1fc05a8894dfc3a991c02fafdd7a36cc13beb08824527cbb3a875d95a52c0a96.json",
+      "body_sha256": "1fc05a8894dfc3a991c02fafdd7a36cc13beb08824527cbb3a875d95a52c0a96",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/empty-repo/commits?per_page=100",
+      "status": 409
+    },
+    {
+      "body_path": "raw/37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570.json",
+      "body_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/empty-repo/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356.json",
+      "body_sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/empty-repo/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/23422b0856b1ad2a3c7c5dbd49ee7f6d46b990d1cc930e43c58fe646da783098.json",
+      "body_sha256": "23422b0856b1ad2a3c7c5dbd49ee7f6d46b990d1cc930e43c58fe646da783098",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/forked-lib",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d.json",
+      "body_sha256": "6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/forked-lib/commits?per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6f3be1c26b4ba5b6c59c277a238d5bbbf023f829321d4f131a162636c01978d4.json",
+      "body_sha256": "6f3be1c26b4ba5b6c59c277a238d5bbbf023f829321d4f131a162636c01978d4",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/forked-lib/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/44633678f2716c23b564bfcefee32338de801b4420a0b9579ae70366eb3d4d48.json",
+      "body_sha256": "44633678f2716c23b564bfcefee32338de801b4420a0b9579ae70366eb3d4d48",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/forked-lib/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/2512eae799e18a044e5b3a596b949b5c672d962c35677bd57711c9cf9fc602bb.json",
+      "body_sha256": "2512eae799e18a044e5b3a596b949b5c672d962c35677bd57711c9cf9fc602bb",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/lang-proj",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d.json",
+      "body_sha256": "6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/lang-proj/commits?per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6f3be1c26b4ba5b6c59c277a238d5bbbf023f829321d4f131a162636c01978d4.json",
+      "body_sha256": "6f3be1c26b4ba5b6c59c277a238d5bbbf023f829321d4f131a162636c01978d4",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/lang-proj/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/5404a94bde86341e540eb6122dcad7f2409dba15df3a0d99876dbe0f7ea4ae23.json",
+      "body_sha256": "5404a94bde86341e540eb6122dcad7f2409dba15df3a0d99876dbe0f7ea4ae23",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/lang-proj/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/df8564e8e1093ee590a686348b16198a885153bb6a85a044c8c8c4eed4e6b925.json",
+      "body_sha256": "df8564e8e1093ee590a686348b16198a885153bb6a85a044c8c8c4eed4e6b925",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/maintained",
+      "status": 200
+    },
+    {
+      "body_path": "raw/4898470e7d98c65178a838fe5fca225cdade4165549d0f2d6bb3ba676ef6bb74.json",
+      "body_sha256": "4898470e7d98c65178a838fe5fca225cdade4165549d0f2d6bb3ba676ef6bb74",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/maintained/commits?per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/0a9741e85fcea2fa0b6d6763cf5291478814d0a8b72feb78721b4e5d46c2dc80.json",
+      "body_sha256": "0a9741e85fcea2fa0b6d6763cf5291478814d0a8b72feb78721b4e5d46c2dc80",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/maintained/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/a396f4dadee9d3dda0e4005cb0c2f4f7635e9d70b4b0a0769f8bb19ec9a54f8a.json",
+      "body_sha256": "a396f4dadee9d3dda0e4005cb0c2f4f7635e9d70b4b0a0769f8bb19ec9a54f8a",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/maintained/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/5f5504698224d206a507ed0bafde4f24a8628758ce71cc32ca7b27446c835ae7.json",
+      "body_sha256": "5f5504698224d206a507ed0bafde4f24a8628758ce71cc32ca7b27446c835ae7",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/mixed",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d.json",
+      "body_sha256": "6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/mixed/commits?per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/f79fc5e4b1189c89dfca00b92bd0b976502b5f229f519c040cb5b58870fed621.json",
+      "body_sha256": "f79fc5e4b1189c89dfca00b92bd0b976502b5f229f519c040cb5b58870fed621",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/mixed/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/5ab5bf6915693a657abba1e57680a78b46bc1f98fd506c4d3c19103b33fb6376.json",
+      "body_sha256": "5ab5bf6915693a657abba1e57680a78b46bc1f98fd506c4d3c19103b33fb6376",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/mixed/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/d7cf70d14b699c97a7e2d172993d21f1da41b06a84eb2f4d7f736de4de1fa570.json",
+      "body_sha256": "d7cf70d14b699c97a7e2d172993d21f1da41b06a84eb2f4d7f736de4de1fa570",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/no-data",
+      "status": 200
+    },
+    {
+      "body_path": "raw/0f6a430e5ce31bdaa627bb667926f02700592627da75b90829209545d4b0ac0e.json",
+      "body_sha256": "0f6a430e5ce31bdaa627bb667926f02700592627da75b90829209545d4b0ac0e",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/star-proj",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d.json",
+      "body_sha256": "6d316605551ca34c2284e44864cbf06c18248a71a0408aacb7f5e22bdfb8c34d",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/star-proj/commits?per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/6f3be1c26b4ba5b6c59c277a238d5bbbf023f829321d4f131a162636c01978d4.json",
+      "body_sha256": "6f3be1c26b4ba5b6c59c277a238d5bbbf023f829321d4f131a162636c01978d4",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/star-proj/contributors?anon=1&per_page=100",
+      "status": 200
+    },
+    {
+      "body_path": "raw/81f619f77336d4accec409881bb9d0784d224a506e467260e67784665f455822.json",
+      "body_sha256": "81f619f77336d4accec409881bb9d0784d224a506e467260e67784665f455822",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/repos/edge-user/star-proj/languages",
+      "status": 200
+    },
+    {
+      "body_path": "raw/bee81cd380ffa601033e6a85e777f9e2bd7530579295c7f1823f9b65ba40348e.json",
+      "body_sha256": "bee81cd380ffa601033e6a85e777f9e2bd7530579295c7f1823f9b65ba40348e",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/users/edge-user",
+      "status": 200
+    },
+    {
+      "body_path": "raw/eca7eb96b6db2c7843091844b9d92878c67c45f51838663e48835dfa36effc7e.json",
+      "body_sha256": "eca7eb96b6db2c7843091844b9d92878c67c45f51838663e48835dfa36effc7e",
+      "etag": null,
+      "fetched_at": "2026-10-25T14:02:15Z",
+      "key": "GET https://api.github.com/users/edge-user/repos?per_page=100&sort=pushed&type=owner",
+      "status": 200
+    }
+  ],
+  "schema_version": "1",
+  "snapshot_id": "snap_20261025T140000Z"
+}

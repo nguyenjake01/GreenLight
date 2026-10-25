@@ -1,0 +1,93 @@
+[
+  {
+    "created_at": "2025-03-02T10:00:00Z",
+    "fork": true,
+    "full_name": "edge-user/forked-lib",
+    "html_url": "https://github.com/edge-user/forked-lib",
+    "language": null,
+    "name": "forked-lib",
+    "parent": {
+      "full_name": "upstream/forked-lib"
+    },
+    "pushed_at": "2025-03-09T10:00:00Z",
+    "size": 500,
+    "stargazers_count": 0
+  },
+  {
+    "created_at": "2025-05-01T10:00:00Z",
+    "fork": false,
+    "full_name": "edge-user/star-proj",
+    "html_url": "https://github.com/edge-user/star-proj",
+    "language": null,
+    "name": "star-proj",
+    "pushed_at": "2025-06-01T10:00:00Z",
+    "size": 500,
+    "stargazers_count": 60
+  },
+  {
+    "created_at": "2025-06-01T10:00:00Z",
+    "fork": false,
+    "full_name": "edge-user/lang-proj",
+    "html_url": "https://github.com/edge-user/lang-proj",
+    "language": null,
+    "name": "lang-proj",
+    "pushed_at": "2025-07-01T10:00:00Z",
+    "size": 500,
+    "stargazers_count": 0
+  },
+  {
+    "created_at": "2026-09-01T10:00:00Z",
+    "fork": false,
+    "full_name": "edge-user/empty-repo",
+    "html_url": "https://github.com/edge-user/empty-repo",
+    "language": null,
+    "name": "empty-repo",
+    "pushed_at": "2026-09-01T10:00:00Z",
+    "size": 0,
+    "stargazers_count": 0
+  },
+  {
+    "created_at": "2025-01-01T10:00:00Z",
+    "fork": false,
+    "full_name": "edge-user/no-data",
+    "html_url": "https://github.com/edge-user/no-data",
+    "language": null,
+    "name": "no-data",
+    "pushed_at": "2025-01-02T10:00:00Z",
+    "size": 500,
+    "stargazers_count": 0
+  },
+  {
+    "created_at": "2024-02-01T10:00:00Z",
+    "fork": false,
+    "full_name": "edge-user/mixed",
+    "html_url": "https://github.com/edge-user/mixed",
+    "language": null,
+    "name": "mixed",
+    "pushed_at": "2026-10-20T10:00:00Z",
+    "size": 900,
+    "stargazers_count": 79
+  },
+  {
+    "created_at": "2022-01-01T10:00:00Z",
+    "fork": false,
+    "full_name": "edge-user/maintained",
+    "html_url": "https://github.com/edge-user/maintained",
+    "language": null,
+    "name": "maintained",
+    "pushed_at": "2026-10-10T10:00:00Z",
+    "size": 5000,
+    "stargazers_count": 0
+  },
+  {
+    "created_at": "2025-02-01T10:00:00Z",
+    "fork": false,
+    "full_name": "edge-user/co-op",
+    "html_url": "https://github.com/edge-user/co-op",
+    "language": null,
+    "name": "co-op",
+    "pushed_at": "2026-10-12T10:00:00Z",
+    "size": 800,
+    "stargazers_count": 0
+  }
+]

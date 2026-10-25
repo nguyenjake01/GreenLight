@@ -1,87 +1,87 @@
 {% extends "base.html" %}
-{% set graph_mode = "still" %}
 {% set nav = "candidate" %}
 {% block title %}{% if missing %}Not found{% else %}{{ name }}{% endif %} | Mock ATS{% endblock %}
 
 {% block head %}
 <style>
   html, body { overflow-x: hidden; }
-  .cd-head { gap: 8px; }
-  .cd-name { margin: 0; font-family: var(--font-display); font-size: clamp(32px, 5vw, 44px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; overflow-wrap: anywhere; }
-  .cd-meta { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--muted); font-size: 13.5px; align-items: center; }
+  .cd-hero { display: flex; flex-direction: column; gap: 12px; }
+  .cd-hero .rv-h1 { overflow-wrap: anywhere; }
+  .cd-meta { display: flex; flex-wrap: wrap; gap: 6px 24px; align-items: center; color: var(--muted); font-size: 14px; }
   .cd-meta b { color: var(--text); font-weight: 600; }
-  .cd-meta .cd-back { margin-left: auto; font-family: var(--font-mono); font-size: 12.5px; }
+  .cd-meta .cd-back { margin-left: auto; text-decoration: none; font-weight: 500; }
+  .cd-meta .cd-back:hover { text-decoration: underline; }
   .cd-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr); gap: var(--gap); align-items: start; }
   .cd-rail { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
   @media (max-width: 1040px) { .cd-grid { grid-template-columns: minmax(0, 1fr); } }
-  .cd-glass h2 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 650; line-height: 1.1; letter-spacing: -0.015em; }
-  .cd-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .cd-file { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; }
-  .cd-gold { display: inline-flex; align-items: center; padding: 0 11px; border-radius: var(--radius-pill); border: 1px solid var(--gold); color: var(--gold); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.9; white-space: nowrap; }
-  .cd-window { border: 1px solid var(--stroke); border-radius: var(--radius-sub); box-shadow: var(--shadow-window); overflow: hidden; background: #fff; }
+  @media (max-width: 520px) { .cd-meta .cd-back { margin-left: 0; } }
+  .rv-card-head h2 { display: inline; margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0; color: var(--text); }
+  .cd-file { font-family: var(--font-mono); font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+  .cd-frame { border: 1px solid var(--line); border-radius: var(--radius-sm); overflow: hidden; background: #fff; }
   iframe.viewer { display: block; width: 100%; height: 78vh; min-height: 520px; border: 0; background: #fff; }
-  .cd-scroll { overflow-x: auto; max-width: 100%; }
-  .cd-glass table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  .cd-glass th, .cd-glass td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  .cd-glass th { font-family: var(--font-mono); font-weight: 400; font-size: 11px; color: var(--muted); white-space: nowrap; }
-  .cd-glass td { overflow-wrap: anywhere; }
-  .cd-glass td:last-child { white-space: nowrap; color: var(--muted); font-size: 12px; }
-  .cd-glass td:nth-child(2) { white-space: nowrap; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
-  .cd-glass tbody tr:last-child td { border-bottom: 0; }
-  .note { border-top: 1px solid var(--line); padding: 12px 0; }
-  .note:first-of-type { border-top: 0; padding-top: 0; }
-  .note-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--muted); font-size: 12.5px; margin-bottom: 6px; }
-  .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 var(--pill-pad-x); border-radius: var(--radius-pill); border: 1px solid var(--stroke); background: var(--chip-tint); color: var(--text); font-family: var(--font-mono); font-size: 11.5px; line-height: 1; white-space: nowrap; box-sizing: border-box; }
-  .note[data-vis="public"] .badge { border-color: var(--ok); color: var(--ok); background: var(--ok-tint); }
-  .note[data-vis="admin_only"] .badge { border-color: var(--gold); color: var(--gold); }
-  .note-body { overflow-wrap: anywhere; }
+  .cd-table td { overflow-wrap: anywhere; font-size: 13.5px; }
+  .cd-table td:nth-child(2) { font-family: var(--font-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .cd-table td:last-child { color: var(--muted); font-size: 12.5px; white-space: nowrap; }
+  .cd-table th, .cd-table td { padding-left: 16px; padding-right: 16px; }
+  .note { padding: 16px var(--card-pad); border-top: 1px solid var(--line); }
+  .note:first-child { border-top: 0; }
+  .note-head { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-bottom: 8px; font-size: 13px; }
+  .note-head .note-author { font-weight: 600; color: var(--text); }
+  .note-head .note-time { color: var(--muted); }
+  .badge { display: inline-flex; align-items: center; gap: 6px; height: 22px; padding: 0 8px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--subtle); color: var(--muted); font-family: var(--font-mono); font-size: 12px; line-height: 1; white-space: nowrap; }
+  .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .note[data-vis="public"] .badge { color: var(--ok); background: var(--ok-tint); border-color: var(--ok-line); }
+  .note[data-vis="admin_only"] .badge { color: var(--accent-text); background: var(--accent-tint); border-color: var(--accent-line); }
+  .note-body { font-size: 14.5px; overflow-wrap: anywhere; }
 </style>
 {% endblock %}
 
-{% block navend %}<a class="rv-btn rv-btn-sm" href="">Refresh</a>{% endblock %}
+{% block navend %}<a class="rv-btn rv-btn-sm" href="">Refresh <span class="rv-arrow">→</span></a>{% endblock %}
 
 {% block content %}
 {% if missing %}
-  <section class="rv-glass cd-glass">
-    <h2>Not found</h2>
-    <p class="rv-muted" style="margin:0">No candidate {{ candidate_id }} (or that application) in this Mock ATS.</p>
+  <section class="rv-card">
+    <div class="rv-card-head"><h2>Not found</h2></div>
+    <div class="rv-card-body"><p class="rv-muted">No candidate {{ candidate_id }} (or that application) in this Mock ATS.</p></div>
   </section>
 {% else %}
-  <section class="rv-glass cd-head">
-    <span class="rv-label">candidate · {{ application.job or "none" }}</span>
-    <h1 class="cd-name">{{ name }}</h1>
+  <section class="cd-hero">
+    <span class="rv-eyebrow">Candidate · {{ application.job or "none" }}</span>
+    <h1 class="rv-h1">{{ name }}</h1>
     <div class="cd-meta">
       <span>Job: <b>{{ application.job or "none" }}</b></span>
       <span>Applied: <b>{{ application.applied_at | when }}</b></span>
       <span>Source: <b>{{ application.source or "unknown" }}</b></span>
       <span>Application id: <b>{{ application.id }}</b></span>
-      <a class="cd-back" href="/">All applications</a>
+      <a class="cd-back" href="/">All applications <span class="rv-arrow">→</span></a>
     </div>
   </section>
 
   <div class="cd-grid">
-    <section class="rv-glass cd-glass">
-      <div class="cd-title-row">
-        <h2>Resume</h2>
+    <section class="rv-card">
+      <div class="rv-card-head">
+        <span class="rv-num">01</span><h2>Resume</h2>
         {% if viewing %}<span class="cd-file">{{ viewing }}</span>{% endif %}
-        {% if viewing and viewing_annotated %}<span class="cd-gold">annotated by the verifier</span>{% endif %}
+        {% if viewing and viewing_annotated %}<span class="rv-card-end rv-chip rv-chip-accent">annotated by the verifier</span>{% endif %}
       </div>
+      <div class="rv-card-body">
       {% if viewer_url %}
-        <div class="cd-window">
+        <div class="cd-frame">
           <iframe class="viewer" id="resume-viewer" src="{{ viewer_url }}" title="Resume viewer"></iframe>
         </div>
       {% else %}
-        <p class="rv-muted" style="margin:0">No resume on file.</p>
+        <p class="rv-muted">No resume on file.</p>
       {% endif %}
+      </div>
     </section>
 
     <div class="cd-rail">
-      <section class="rv-glass cd-glass">
-        <h2>Attachments</h2>
+      <section class="rv-card">
+        <div class="rv-card-head"><span class="rv-num">02</span><h2>Attachments</h2></div>
         {% if attachments %}
-        <div class="cd-scroll">
-        <table>
-          <thead><tr><th>file</th><th>type</th><th>uploaded</th></tr></thead>
+        <div class="rv-card-body flush"><div class="rv-table-wrap">
+        <table class="rv-table cd-table">
+          <thead><tr><th>File</th><th>Type</th><th>Uploaded</th></tr></thead>
           <tbody>
           {% for a in attachments %}
             <tr>
@@ -92,24 +92,24 @@
           {% endfor %}
           </tbody>
         </table>
-        </div>
-        {% else %}<p class="rv-muted" style="margin:0">No attachments.</p>{% endif %}
+        </div></div>
+        {% else %}<div class="rv-card-body"><p class="rv-muted">No attachments.</p></div>{% endif %}
       </section>
 
-      <section class="rv-glass cd-glass">
-        <h2>Notes</h2>
-        <div>
+      <section class="rv-card">
+        <div class="rv-card-head"><span class="rv-num">03</span><h2>Notes</h2></div>
+        <div class="rv-card-body flush">
         {% for n in notes %}
           <div class="note" data-vis="{{ n.visibility }}">
             <div class="note-head">
+              <span class="note-author">{{ n.author }}</span>
+              <span class="note-time">{{ n.created_at | when }}</span>
               <span class="badge">{{ n.badge }}</span>
-              <span>{{ n.created_at | when }}</span>
-              <span>{{ n.author }}</span>
             </div>
             <div class="note-body">{{ n.body | nl2br }}</div>
           </div>
         {% else %}
-          <p class="rv-muted" style="margin:0">No notes yet.</p>
+          <div class="rv-card-body"><p class="rv-muted">No notes yet.</p></div>
         {% endfor %}
         </div>
       </section>

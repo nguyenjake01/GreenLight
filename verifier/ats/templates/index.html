@@ -3,68 +3,71 @@
 {% block title %}Applications · Mock ATS{% endblock %}
 {% block head %}
 <style>
-  .ix-title { margin: 0; font-family: var(--font-display); font-size: clamp(34px, 6vw, 52px); font-weight: 800; line-height: 1; letter-spacing: -0.03em; }
+  .ix-hero { display: grid; grid-template-columns: 1fr; gap: 24px; padding: 8px 0 8px; }
+  .ix-hero-l { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+  .ix-hero-l h1 { margin: 0; }
+  .ix-hero-r { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .ix-hero-r .rv-lead { margin: 0; }
   .ix-sims { display: flex; flex-wrap: wrap; gap: 10px; }
-  .ix-sims form { margin: 0; }
-  .ix-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 calc(-1 * var(--card-pad-x)); padding: 0 var(--card-pad-x); }
-  .ix-table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
-  .ix-table th { text-align: left; padding: 6px 12px 10px 0; font-family: var(--font-mono); font-weight: 500; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap; }
-  .ix-table td { padding: 12px 12px 12px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
-  .ix-table tr:last-child td { border-bottom: 0; }
-  .ix-table tr.ix-new td { background: var(--info-tint); }
-  .ix-table tr.ix-new td:first-child { padding-left: 10px; border-radius: var(--radius-inner) 0 0 var(--radius-inner); }
-  .ix-table tr.ix-new td:last-child { border-radius: 0 var(--radius-inner) var(--radius-inner) 0; }
-  .ix-name { font-weight: 600; }
-  .ix-mono { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+  .ix-sims form { margin: 0; max-width: 100%; }
+  .ix-sims .rv-btn { max-width: 100%; white-space: normal; text-align: left; height: auto; min-height: 40px; }
+  @media (min-width: 900px) {
+    .ix-hero { grid-template-columns: 1fr 1fr; gap: 56px; align-items: end; }
+  }
+  .ix-name { font-weight: 500; }
+  .ix-name a { color: var(--text); }
+  .ix-new { margin-left: 8px; }
+  .ix-mono { font-family: var(--font-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .rv-table th, .rv-table td { white-space: nowrap; }
 </style>
 {% endblock %}
 {% block navend %}<a class="rv-btn rv-btn-sm" href="/">Refresh</a>{% endblock %}
 {% block content %}
-<section class="rv-glass">
-  <div class="rv-card-head">
-    <div class="rv-card-head-text">
-      <span class="rv-label">mock ats · inbound applications</span>
-      <h1 class="ix-title">Applications</h1>
-      <span class="rv-card-sub">Candidates who applied through the demo form. Simulate one to start a verification run.</span>
-    </div>
+<section class="ix-hero">
+  <div class="ix-hero-l">
+    <span class="rv-eyebrow">Mock ATS · inbound applications</span>
+    <h1 class="rv-h1">Applications</h1>
   </div>
-  <div class="ix-sims">
-    {% for f in fixtures %}
-      <form method="post" action="/_mock/apply">
-        <input type="hidden" name="fixture" value="{{ f }}">
-        <button type="submit" class="rv-btn{% if loop.first %} rv-btn-primary{% endif %}">Simulate application: {{ f }}</button>
-      </form>
-    {% else %}
-      <p class="rv-small" style="margin:0">No webhook fixtures found.</p>
-    {% endfor %}
+  <div class="ix-hero-r">
+    <p class="rv-lead">Simulate an applicant to send a signed webhook to the verifier. The report lands in Slack and back on the candidate page.</p>
+    <div class="ix-sims">
+      {% for f in fixtures %}
+        <form method="post" action="/_mock/apply">
+          <input type="hidden" name="fixture" value="{{ f }}">
+          <button type="submit" class="rv-btn{% if loop.first %} rv-btn-primary{% endif %}">Simulate application: {{ f }}{% if loop.first %} <span class="rv-arrow">→</span>{% endif %}</button>
+        </form>
+      {% else %}
+        <p class="rv-small rv-muted" style="margin:0">No webhook fixtures found.</p>
+      {% endfor %}
+    </div>
   </div>
 </section>
 
-<section class="rv-glass">
+<section class="rv-card">
   <div class="rv-card-head">
-    <div class="rv-card-head-text">
-      <h2 class="rv-card-title">All applications</h2>
-      <span class="rv-label">applications · newest first</span>
-    </div>
+    <span class="rv-num">01</span><b>Applications</b><span>newest first</span>
+    <span class="rv-card-end rv-chip rv-chip-info plain">{{ applications|length }}</span>
   </div>
   {% if applications %}
-  <div class="ix-scroll">
-    <table class="ix-table">
-      <thead><tr><th>candidate</th><th>job</th><th>applied</th><th>application id</th></tr></thead>
-      <tbody>
-      {% for a in applications %}
-        <tr{% if loop.first %} class="ix-new"{% endif %}>
-          <td class="ix-name"><a class="rv-link" href="/candidates/{{ a.candidate_id }}?application_id={{ a.application_id }}">{{ a.name }}</a></td>
-          <td>{{ a.job or "none" }}</td>
-          <td>{{ a.applied_at | when }}</td>
-          <td class="ix-mono">{{ a.application_id }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+  <div class="rv-card-body flush">
+    <div class="rv-table-wrap">
+      <table class="rv-table">
+        <thead><tr><th>Candidate</th><th>Job</th><th>Applied</th><th>Application id</th></tr></thead>
+        <tbody>
+        {% for a in applications %}
+          <tr>
+            <td class="ix-name"><a href="/candidates/{{ a.candidate_id }}?application_id={{ a.application_id }}">{{ a.name }}</a>{% if loop.first %}<span class="rv-chip rv-chip-accent plain ix-new">new</span>{% endif %}</td>
+            <td>{{ a.job or "none" }}</td>
+            <td>{{ a.applied_at | when }}</td>
+            <td class="ix-mono">{{ a.application_id }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
   {% else %}
-    <p class="rv-small" style="margin:0">No applications yet. Use a button above to simulate one.</p>
+  <div class="rv-card-body"><p class="rv-small rv-muted" style="margin:0">No applications yet. Use a button above to simulate one.</p></div>
   {% endif %}
 </section>
 {% endblock %}

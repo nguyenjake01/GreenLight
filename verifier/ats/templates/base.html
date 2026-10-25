@@ -4,32 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Mock ATS{% endblock %}</title>
-<script>try { var t = localStorage.getItem("rv-theme"); if (t === "dark" || t === "light") document.documentElement.setAttribute("data-theme", t); } catch (e) {}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
 <link rel="stylesheet" href="/static/rv/tokens.css">
 <link rel="stylesheet" href="/static/rv/rv.css">
 {% block head %}{% endblock %}
 </head>
 <body>
-{# The commit graph drifts on landing pages; reading pages set graph_mode = "still". #}
-<canvas id="rv-graph" class="rv-graph rv-graph-fixed" data-mode="{{ graph_mode | default('drift') }}" aria-hidden="true"></canvas>
+<div class="rv-bar"><b>Demo build</b> · applicant data and every AI call stay on this machine.</div>
+<header class="rv-header">
+  <div class="rv-header-in">
+    <a class="rv-brand" href="/"><span class="rv-brand-mark" aria-hidden="true">AT</span>Mock ATS <small>demo applicant tracking</small></a>
+    <nav class="rv-nav-links" aria-label="Mock ATS">{% block navlinks %}<a href="/"{% if nav == "applications" %} aria-current="page"{% endif %}>Applications</a>{% endblock %}</nav>
+    <span class="rv-nav-end">{% block navend %}{% endblock %}</span>
+  </div>
+</header>
 <main class="rv-page">
-  <nav class="rv-glass rv-nav" aria-label="Mock ATS">
-    <a class="rv-brand" href="/">Mock ATS<small>demo applicant tracking system</small></a>
-    <span class="rv-nav-links">{% block navlinks %}<a href="/"{% if nav == "applications" %} aria-current="page"{% endif %}>applications</a>{% endblock %}</span>
-    <span class="rv-nav-end">
-      {% block navend %}{% endblock %}
-      <span class="rv-toggle" role="group" aria-label="Theme">
-        <button type="button" data-set-theme="dark" aria-pressed="true">night</button>
-        <button type="button" data-set-theme="light" aria-pressed="false">day</button>
-      </span>
-    </span>
-  </nav>
   {% block content %}{% endblock %}
-  <p class="rv-foot">all ai runs on this machine · applicant data stays on the gb10 · mock ats, not a real product</p>
 </main>
-<script src="/static/rv/rv.js" defer></script>
+<footer class="rv-foot"><div class="rv-foot-in"><span>Mock ATS · not a real product</span><span>Resume Verifier writes notes and attachments here</span></div></footer>
 {% block scripts %}{% endblock %}
 </body>
 </html>

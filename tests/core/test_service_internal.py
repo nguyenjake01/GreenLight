@@ -78,8 +78,8 @@ class Recorder:
         return self.calls[-1]
 
 
-def act(client, payload, **kw):
-    return client.post("/internal/actions", json=payload, headers=TOKEN, **kw)
+def act(client, payload, headers=TOKEN, **kw):
+    return client.post("/internal/actions", json=payload, headers=headers, **kw)
 
 
 def block_action(action_id, value=None, *, selected=None, trigger_id=None, user=None):
@@ -248,7 +248,8 @@ def test_edit_claim_with_trigger_opens_modal(client, runs, app_id):
                                  trigger_id="trig.1"))
     assert r.status_code == 200 and r.json() == {"ack_payload": None}
     calls = [l for l in slack_log(runs) if l["call"] == "open_modal"]
-    assert len(calls) == 1 and calls[0]["text"] == "openclaw:rv:edit_claim"  # the callback_id
+    assert len(calls) == 1 and (
+        calls[0]["text"] == f"openclaw:rv:edit_claim:{app_id}:c3:1")  # the callback_id carries the ids
 
 
 def test_edit_claim_modal_arguments(client, monkeypatch, app_id):
@@ -373,6 +374,91 @@ def test_submission_for_unknown_application(client, monkeypatch):
     ack = act(client, submission("99999999")).json()["ack_payload"]
     assert ack["response_action"] == "errors"
     assert not rec.calls
+
+
+def suffixed(app_id, claim_id="c3", version=1, **overrides):
+    """A plugin-mode submission: ids in the callback_id, private_metadata empty."""
+    payload = submission(app_id, claim_id, version, **overrides)
+    payload["view"]["callback_id"] = f"openclaw:rv:edit_claim:{app_id}:{claim_id}:{version}"
+    payload["view"]["private_metadata"] = ""
+    return payload
+
+
+def thread_replies(runs, since=0):
+    return [l for l in slack_log(runs) if l["call"] == "post_thread"][since:]
+
+
+def wait_for_thread_reply(runs, since):
+    deadline = time.time() + 5
+    while time.time() < deadline and not thread_replies(runs, since):
+        time.sleep(0.05)
+    return thread_replies(runs, since)
+
+
+def test_suffixed_callback_id_without_private_metadata(client, monkeypatch, app_id):
+    rec = Recorder(monkeypatch, "edit_claim")
+    r = act(client, suffixed(app_id))
+    assert r.status_code == 200 and r.json() == {"ack_payload": None}
+    name, (a, c, changes, by) = rec.wait()
+    assert (a, c, by) == (app_id, "c3", "jordan")
+    assert changes["repo_name"] == "cubesolver"
+
+
+def test_suffixed_callback_id_stale_version(client, monkeypatch, app_id):
+    rec = Recorder(monkeypatch, "edit_claim")
+    ack = act(client, suffixed(app_id, version=0)).json()["ack_payload"]
+    assert ack["response_action"] == "errors"
+    time.sleep(0.1)
+    assert not rec.calls
+
+
+def test_suffixed_callback_id_bad_ids_are_ignored(client, monkeypatch, app_id):
+    rec = Recorder(monkeypatch, "edit_claim")
+    for cb in ("openclaw:rv:edit_claim:", f"openclaw:rv:edit_claim:{app_id}",
+               f"openclaw:rv:edit_claim:{app_id}:c3:x"):
+        payload = suffixed(app_id)
+        payload["view"]["callback_id"] = cb
+        assert act(client, payload).json() == {"ack_payload": None}
+    time.sleep(0.1)
+    assert not rec.calls
+
+
+def test_invalid_edit_with_ack_none_is_reported_in_thread(client, runs, monkeypatch, app_id):
+    rec = Recorder(monkeypatch, "edit_claim")
+    before = len(thread_replies(runs))
+    start = time.monotonic()
+    r = act(client, suffixed(app_id, start_year="abc"), headers={**TOKEN, "X-Verifier-Ack": "none"})
+    assert time.monotonic() - start < 1.0
+    assert r.json()["ack_payload"]["response_action"] == "errors"
+    replies = wait_for_thread_reply(runs, before)
+    assert len(replies) == 1
+    text = replies[0]["text"]
+    assert text.startswith("Couldn't save the edit to cubesolver: ") and "start_year: " in text
+    assert not rec.calls
+
+
+def test_stale_edit_with_ack_none_is_reported_in_thread(client, runs, app_id):
+    before = len(thread_replies(runs))
+    act(client, suffixed(app_id, version=0), headers={**TOKEN, "X-Verifier-Ack": "none"})
+    replies = wait_for_thread_reply(runs, before)
+    assert len(replies) == 1 and "The claims changed since you opened this" in replies[0]["text"]
+
+
+def test_invalid_edit_without_ack_none_is_not_reported_in_thread(client, runs, app_id):
+    before = len(thread_replies(runs))
+    r = act(client, suffixed(app_id, start_year="abc"))
+    assert r.json()["ack_payload"]["response_action"] == "errors"
+    time.sleep(0.3)
+    assert not thread_replies(runs, before)
+
+
+def test_valid_edit_with_ack_none_is_not_reported_in_thread(client, runs, monkeypatch, app_id):
+    rec = Recorder(monkeypatch, "edit_claim")
+    before = len(thread_replies(runs))
+    act(client, suffixed(app_id), headers={**TOKEN, "X-Verifier-Ack": "none"})
+    rec.wait()
+    time.sleep(0.2)
+    assert not thread_replies(runs, before)
 
 
 def test_other_callback_ids_are_ignored(client):

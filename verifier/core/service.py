@@ -243,25 +243,68 @@ def _input_value(entry: dict[str, Any]) -> Any:
     return entry.get("value")
 
 
-def _view_submission(payload: dict[str, Any]) -> dict[str, Any] | None:
-    """`ack_payload` for an Edit claim submission: field errors, or None to close the modal."""
-    view = payload.get("view") or {}
-    if view.get("callback_id") != CB_EDIT_CLAIM:
-        log.info("view_submission %r: nothing to do", view.get("callback_id"))
-        return None
+def _edit_ids(view: dict[str, Any]) -> tuple[str, str, Any] | None:
+    """(application_id, claim_id, claims_version) of an Edit claim submission.
+
+    From `private_metadata` when it parses (direct Slack), else from the suffixed callback_id
+    `openclaw:rv:edit_claim:<application_id>:<claim_id>:<claims_version>` (OpenClaw plugin mode,
+    where the handler never sees private_metadata)."""
     try:
         meta = json.loads(view.get("private_metadata") or "{}")
-        app_id, claim_id = str(meta["application_id"]), str(meta["claim_id"])
-        version = meta.get("claims_version")
+        return str(meta["application_id"]), str(meta["claim_id"]), meta.get("claims_version")
     except (ValueError, KeyError, TypeError):
-        log.warning("edit_claim submission with bad private_metadata")
+        pass
+    parts = str(view.get("callback_id") or "")[len(CB_EDIT_CLAIM) + 1:].split(":")
+    if len(parts) < 2 or not parts[0] or not parts[1]:
         return None
+    version: Any = None
+    if len(parts) > 2 and parts[2]:
+        try:
+            version = int(parts[2])
+        except ValueError:
+            return None
+    return parts[0], parts[1], version
+
+
+def _report_edit_errors(app_id: str, claim_id: str, errors: dict[str, str]) -> None:
+    """Thread reply for an invalid edit when the caller could not deliver the modal errors."""
+    name = claim_id
+    try:
+        claims = pipeline.get_state(app_id)["claims"]
+        claim = next((c for c in (claims or {"claims": []})["claims"]
+                      if c["claim_id"] == claim_id), None)
+        if claim is not None:
+            name = render._claim_name(claim) or claim_id
+    except Exception:  # the name is only decoration
+        log.debug("edit error report: no claim name for %s/%s", app_id, claim_id)
+    detail = "; ".join(m if k.startswith("_") or m == STALE_CLAIMS else f"{k}: {m}"
+                       for k, m in errors.items())
+    _reply_in_thread(app_id, f"Couldn't save the edit to {name}: {detail}")
+
+
+def _view_submission(payload: dict[str, Any], ack_none: bool = False) -> dict[str, Any] | None:
+    """`ack_payload` for an Edit claim submission: field errors, or None to close the modal.
+
+    `ack_none`: the caller already acked Slack and cannot deliver an ack body, so invalid or
+    stale edits are also reported in the application's thread."""
+    view = payload.get("view") or {}
+    callback_id = str(view.get("callback_id") or "")
+    if callback_id != CB_EDIT_CLAIM and not callback_id.startswith(CB_EDIT_CLAIM + ":"):
+        log.info("view_submission %r: nothing to do", view.get("callback_id"))
+        return None
+    ids = _edit_ids(view)
+    if ids is None:
+        log.warning("edit_claim submission without usable ids")
+        return None
+    app_id, claim_id, version = ids
     state = (view.get("state") or {}).get("values") or {}
     values = {block: _input_value(inputs["v"]) for block, inputs in state.items()
               if isinstance(inputs, dict) and isinstance(inputs.get("v"), dict)}
     first_block = next(iter(values), "behavior")
 
     def errors_ack(errors: dict[str, str]) -> dict[str, Any]:
+        if ack_none:
+            _background(_report_edit_errors, app_id, claim_id, errors)
         # Slack rejects error keys that are not input blocks of the view.
         fixed = {(k if k in values else first_block): v for k, v in errors.items()}
         return {"response_action": "errors", "errors": fixed}
@@ -279,7 +322,7 @@ def _view_submission(payload: dict[str, Any]) -> dict[str, Any] | None:
     return None
 
 
-def handle_action(payload: dict[str, Any]) -> dict[str, Any]:
+def handle_action(payload: dict[str, Any], ack_none: bool = False) -> dict[str, Any]:
     """Dispatch one Slack interaction; always `{"ack_payload": ...}`."""
     ack: dict[str, Any] | None = None
     kind = payload.get("type")
@@ -287,7 +330,7 @@ def handle_action(payload: dict[str, Any]) -> dict[str, Any]:
         if kind == "block_actions":
             _block_actions(payload)
         elif kind == "view_submission":
-            ack = _view_submission(payload)
+            ack = _view_submission(payload, ack_none)
         else:
             log.info("interaction type %r ignored", kind)
     except Exception:  # an odd payload must still be acked
@@ -304,7 +347,9 @@ def _add_internal_routes(app: FastAPI) -> None:
             payload = _parse_body(await request.body(), request.headers.get("content-type", ""))
         except (ValueError, UnicodeDecodeError) as e:
             return _bad_request(str(e))
-        return await run_in_threadpool(handle_action, payload)
+        # `X-Verifier-Ack: none`: the caller already acked Slack and can't deliver an ack body.
+        ack_none = request.headers.get("x-verifier-ack", "").strip().lower() == "none"
+        return await run_in_threadpool(handle_action, payload, ack_none)
 
     @app.get("/internal/verdict", dependencies=auth)
     def verdict(candidate: str = ""):

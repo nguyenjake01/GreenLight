@@ -1,0 +1,53 @@
+{
+  "name": "openclaw-resume-verifier",
+  "version": "0.1.0",
+  "description": "Resume Verifier: routes Slack button clicks to the verifier service and gives the OpenClaw agent verdict/recheck/explain tools",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "openclaw": {
+    "extensions": [
+      "./src/index.ts"
+    ],
+    "runtimeExtensions": [
+      "./dist/index.js"
+    ],
+    "compat": {
+      "pluginApi": ">=2026.5.22",
+      "minGatewayVersion": "2026.5.22"
+    },
+    "build": {
+      "openclawVersion": "2026.9.2",
+      "pluginSdkVersion": "2026.9.2"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "test": "node --test \"test/*.test.ts\"",
+    "check": "npm run typecheck && npm test",
+    "sync-skill": "node scripts/sync-skill.mjs"
+  },
+  "dependencies": {
+    "typebox": "1.3.18"
+  },
+  "peerDependencies": {
+    "openclaw": ">=2026.5.22"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "openclaw": "2026.9.2",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.22.3"
+  },
+  "files": [
+    "dist/",
+    "openclaw.plugin.json",
+    "skills/",
+    "AGENT_INSTRUCTIONS.md",
+    "README.md"
+  ]
+}

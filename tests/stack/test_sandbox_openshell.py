@@ -48,7 +48,8 @@ def fast(monkeypatch):
     monkeypatch.setattr(so, "openshell_bin", lambda: "openshell")
 
 
-def test_lifecycle_commands(tmp_path):
+def test_lifecycle_commands(tmp_path, monkeypatch):
+    monkeypatch.delenv("RUNCHECK_IMAGE", raising=False)  # a .env loaded by another test sets it
     r = FakeRunner()
     with so.open_sandbox(tmp_path, runner=r) as sb:
         assert sb.backend == "openshell"

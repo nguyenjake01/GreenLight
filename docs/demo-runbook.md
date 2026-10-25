@@ -34,6 +34,14 @@ If the browser is on another machine, start with `ATS_HOST=0.0.0.0 ATS_PUBLIC_UR
 
 Each run adds its own card; the mock ATS index lists every application, newest first.
 
+## Live upload
+
+A candidate can apply on the mock ATS careers page, `http://localhost:8100/apply` (name, email, optional GitHub profile, resume PDF up to 5 MB). It fires the same signed webhook as the Simulate buttons.
+
+- A new candidate needs `GITHUB_FETCH_MODE=live`. Replay mode only has the recorded candidates. Live mode calls GitHub with `GITHUB_TOKEN`, and the run checks git-clone the candidate's repos.
+- To hide the Simulate buttons and show a link to the careers page instead, start with `MOCK_ATS_HIDE_SIMULATE=1 bash scripts/demo_up.sh`.
+- The canned runs still work from a terminal when the buttons are hidden: `curl -s -X POST localhost:8100/_mock/apply -H 'content-type: application/json' -d '{"fixture":"henry"}'`
+
 ## If something goes wrong
 
 - **Card lost its buttons** (a click landed while OpenClaw was restarting or reloading): `RUNS_DIR=<runs dir> bash scripts/refresh_card.sh <application_id>`. The application id is in the card's candidate URL and on the mock ATS index.

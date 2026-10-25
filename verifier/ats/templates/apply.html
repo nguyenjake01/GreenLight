@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% set nav = "apply" %}
+{% block title %}{% if done %}Application received{% else %}Apply{% endif %} · Mock ATS{% endblock %}
+{% block head %}
+<style>
+  .ap-wrap { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; padding: 8px 0 24px; }
+  .ap-wrap h1, .ap-wrap .rv-lead { margin: 0; }
+  .ap-form { display: flex; flex-direction: column; gap: 20px; }
+  .ap-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .ap-row { display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 560px) { .ap-row { grid-template-columns: 1fr 1fr; } }
+  .ap-field label, .ap-label { font-size: 13px; font-weight: 500; color: var(--text); }
+  .ap-field input[type=text], .ap-field input[type=email], .ap-field input[type=url] {
+    height: 40px; width: 100%; box-sizing: border-box; padding: 0 12px; border-radius: 4px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    font: 400 14.5px/1 var(--font-sans);
+  }
+  .ap-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-line); }
+  .ap-field.has-error input, .ap-field.has-error .ap-drop { border-color: var(--bad); }
+  .ap-err { font-size: 13px; color: var(--bad); margin: 0; }
+  .ap-drop { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+    min-height: 96px; padding: 16px; text-align: center; border: 1px dashed var(--border-strong); border-radius: 4px;
+    background: var(--surface); cursor: pointer; overflow: hidden; }
+  .ap-drop:hover, .ap-drop.over, .ap-drop:focus-within { border-color: var(--accent); background: var(--accent-tint); }
+  .ap-drop input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+  .ap-drop-name { font-weight: 500; font-size: 14.5px; color: var(--text); max-width: 100%; overflow-wrap: anywhere; }
+  .ap-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .ap-ok { display: inline-flex; width: 28px; height: 28px; align-items: center; justify-content: center; border-radius: 50%; background: var(--accent-tint); color: var(--accent-text); border: 1px solid var(--accent-line); }
+</style>
+{% endblock %}
+{% block content %}
+<div class="ap-wrap">
+{% if done %}
+  <span class="rv-eyebrow">Careers · {{ job_name }}</span>
+  <h1 class="rv-h1">Application received</h1>
+  <p class="rv-lead">Thanks{% if name %}, {{ name }}{% endif %}. Your application for {{ job_name }} is in. We are checking your resume now and will be in touch.</p>
+  <section class="rv-card">
+    <div class="rv-card-head"><span class="rv-num">01</span><b>What happens next</b></div>
+    <div class="rv-card-body">
+      <p style="margin:0">The verifier is checking your application. A recruiter reviews the result before anyone replies.</p>
+      <p class="rv-small rv-muted" style="margin:12px 0 0">Reference <span class="rv-mono">{{ application_id }}</span>{% if webhook_status %} · hand-off to the verifier: <span class="rv-mono">{{ webhook_status }}</span>{% endif %}</p>
+    </div>
+  </section>
+  <div class="ap-actions"><a class="rv-btn" href="/apply">Back to the careers page</a></div>
+{% else %}
+  <span class="rv-eyebrow">Careers · {{ job_name }}</span>
+  <h1 class="rv-h1">Apply</h1>
+  <p class="rv-lead">You are applying for {{ job_name }}. Add your details and your resume as a PDF.</p>
+  <section class="rv-card">
+    <div class="rv-card-head"><span class="rv-num">01</span><b>Your details</b></div>
+    <div class="rv-card-body">
+      <form class="ap-form" method="post" action="/apply" enctype="multipart/form-data" novalidate>
+        <div class="ap-row">
+          <div class="ap-field{% if errors.first_name %} has-error{% endif %}">
+            <label for="first_name">First name</label>
+            <input type="text" id="first_name" name="first_name" value="{{ values.first_name or '' }}" autocomplete="given-name" maxlength="80" required>
+            {% if errors.first_name %}<p class="ap-err">{{ errors.first_name }}</p>{% endif %}
+          </div>
+          <div class="ap-field{% if errors.last_name %} has-error{% endif %}">
+            <label for="last_name">Last name</label>
+            <input type="text" id="last_name" name="last_name" value="{{ values.last_name or '' }}" autocomplete="family-name" maxlength="80" required>
+            {% if errors.last_name %}<p class="ap-err">{{ errors.last_name }}</p>{% endif %}
+          </div>
+        </div>
+        <div class="ap-field{% if errors.email %} has-error{% endif %}">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" value="{{ values.email or '' }}" autocomplete="email" required>
+          {% if errors.email %}<p class="ap-err">{{ errors.email }}</p>{% endif %}
+        </div>
+        <div class="ap-field{% if errors.github_url %} has-error{% endif %}">
+          <label for="github_url">GitHub profile <span class="rv-muted">(optional)</span></label>
+          <input type="url" id="github_url" name="github_url" value="{{ values.github_url or '' }}" placeholder="https://github.com/your-username" inputmode="url">
+          {% if errors.github_url %}<p class="ap-err">{{ errors.github_url }}</p>{% else %}<span class="rv-small rv-muted">Link to your profile, not a single repository.</span>{% endif %}
+        </div>
+        <div class="ap-field{% if errors.resume %} has-error{% endif %}">
+          <span class="ap-label" id="resume_label">Resume</span>
+          <div class="ap-drop" id="drop">
+            <input type="file" id="resume" name="resume" accept="application/pdf,.pdf" aria-labelledby="resume_label" required>
+            <span class="ap-drop-name" id="drop_name">Choose a PDF or drop it here</span>
+            <span class="rv-small rv-muted">PDF only, up to 5 MB</span>
+          </div>
+          {% if errors.resume %}<p class="ap-err">{{ errors.resume }}</p>{% endif %}
+        </div>
+        <div class="ap-actions">
+          <button type="submit" class="rv-btn rv-btn-primary">Submit application <span class="rv-arrow">→</span></button>
+        </div>
+      </form>
+    </div>
+  </section>
+{% endif %}
+</div>
+{% endblock %}
+{% block scripts %}
+{% if not done %}
+<script>
+  (function () {
+    var input = document.getElementById("resume"), name = document.getElementById("drop_name"),
+        drop = document.getElementById("drop");
+    if (!input) return;
+    input.addEventListener("change", function () {
+      name.textContent = input.files && input.files.length ? input.files[0].name : "Choose a PDF or drop it here";
+    });
+    ["dragenter", "dragover"].forEach(function (ev) { input.addEventListener(ev, function () { drop.classList.add("over"); }); });
+    ["dragleave", "drop"].forEach(function (ev) { input.addEventListener(ev, function () { drop.classList.remove("over"); }); });
+  })();
+</script>
+{% endif %}
+{% endblock %}

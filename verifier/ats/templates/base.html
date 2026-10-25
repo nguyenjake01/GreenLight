@@ -15,7 +15,7 @@
 <header class="rv-header">
   <div class="rv-header-in">
     <a class="rv-brand" href="/"><span class="rv-brand-mark" aria-hidden="true">AT</span>Mock ATS <small>demo applicant tracking</small></a>
-    <nav class="rv-nav-links" aria-label="Mock ATS">{% block navlinks %}<a href="/"{% if nav == "applications" %} aria-current="page"{% endif %}>Applications</a>{% endblock %}</nav>
+    <nav class="rv-nav-links" aria-label="Mock ATS">{% block navlinks %}<a href="/"{% if nav == "applications" %} aria-current="page"{% endif %}>Applications</a><a href="/apply"{% if nav == "apply" %} aria-current="page"{% endif %}>Apply</a>{% endblock %}</nav>
     <span class="rv-nav-end">{% block navend %}{% endblock %}</span>
   </div>
 </header>

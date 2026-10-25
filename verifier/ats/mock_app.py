@@ -54,6 +54,19 @@ ATTACHMENT_TYPES = ("resume", "cover_letter", "admin_only", "take_home_test", "o
                     "offer_letter", "signed_offer_letter", "other")
 TOKEN_TTL_S = 3600
 _FIXTURE_NAME = re.compile(r"^[A-Za-z0-9_-]+$")
+MAX_RESUME_BYTES = 5 * 1024 * 1024
+_EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+_GITHUB_URL = re.compile(r"^https://github\.com/[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/?$")
+_WEBHOOK_STATUS = re.compile(r"^[a-z0-9_]{1,40}$")
+
+
+def hide_simulate() -> bool:
+    """MOCK_ATS_HIDE_SIMULATE=1|true|yes hides the Simulate buttons. Read per request."""
+    return os.environ.get("MOCK_ATS_HIDE_SIMULATE", "").strip().lower() in ("1", "true", "yes")
+
+
+def _slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9_]", "", re.sub(r"\s+", "_", text.strip().lower()))
 
 
 def _secret() -> str:
@@ -182,10 +195,8 @@ def create_app(*, state_root: Path | None = None,
         if not path.is_file():
             raise NotFound(f"unknown fixture {fixture!r}")
         body = json.loads(path.read_text(encoding="utf-8"))
-        application = body["payload"]["application"]
-        candidate = application["candidate"]
-        attachments = candidate.get("attachments") or []
-        resume_att = next((a for a in attachments if a.get("type") == "resume"), None)
+        resume_att = next((a for a in (body["payload"]["application"]["candidate"].get(
+            "attachments") or []) if a.get("type") == "resume"), None)
         resume_bytes = resume_name = None
         if resume_att is not None:
             resume_name = Path(resume_att["filename"]).name
@@ -193,6 +204,19 @@ def create_app(*, state_root: Path | None = None,
             if not src.is_file():
                 raise NotFound(f"fixture resume {resume_name!r} not found")
             resume_bytes = src.read_bytes()
+        return submit_application(body, resume_name, resume_bytes)
+
+    def submit_application(body: dict, resume_name: str | None,
+                           resume_bytes: bytes | None) -> dict:
+        """Shared by the fixture path and the upload page: allocate ids, store the resume,
+        record the application, then sign and post the webhook."""
+        application = body["payload"]["application"]
+        candidate = application["candidate"]
+        attachments = candidate.get("attachments") or []
+        resume_att = next((a for a in attachments if a.get("type") == "resume"), None)
+        if resume_att is None and resume_bytes is not None:
+            resume_att = {"filename": resume_name, "type": "resume", "url": ""}
+            candidate["attachments"] = attachments + [resume_att]
 
         event_id = secrets.token_hex(16)
         with state.lock:
@@ -207,7 +231,7 @@ def create_app(*, state_root: Path | None = None,
             application["url"] = f"{public_url()}/candidates/{cand_id}?application_id={app_id}"
 
             file_id = None
-            if resume_att is not None:
+            if resume_att is not None and resume_bytes is not None:
                 file_id = f"f{state.next_id('file')}"
                 store.write_bytes(state.file_path(file_id, resume_name), resume_bytes)
                 resume_att["url"] = file_url(file_id, resume_name, absolute=True)
@@ -274,6 +298,96 @@ def create_app(*, state_root: Path | None = None,
         if is_form:
             return RedirectResponse("/", status_code=303)
         return result
+
+    # ── candidate-facing careers page: apply with an uploaded resume ──────────
+
+    def careers_job() -> dict:
+        """The one open role: job, stage and source taken from the first fixture."""
+        names = fixture_names()
+        if not names:
+            return {"jobs": [], "current_stage": None, "source": None}
+        first = json.loads((FIXTURES / "webhooks" / f"{names[0]}.json").read_text("utf-8"))
+        app_ = first["payload"]["application"]
+        return {"jobs": copy.deepcopy(app_.get("jobs") or []),
+                "current_stage": copy.deepcopy(app_.get("current_stage")),
+                "source": copy.deepcopy(app_.get("source"))}
+
+    def job_name(job: dict) -> str:
+        return job["jobs"][0].get("name") if job["jobs"] else "Open role"
+
+    @app.get("/apply", response_class=HTMLResponse)
+    def apply_form():
+        return render("apply.html", nav="apply", job_name=job_name(careers_job()),
+                      values={}, errors={})
+
+    @app.post("/apply")
+    async def apply_submit(request: Request):
+        job = careers_job()
+        form = await request.form()
+        values = {k: str(form.get(k) or "").strip()
+                  for k in ("first_name", "last_name", "email", "github_url")}
+        errors: dict[str, str] = {}
+        for key, label in (("first_name", "first name"), ("last_name", "last name")):
+            if not values[key]:
+                errors[key] = f"Enter your {label}."
+            elif len(values[key]) > 80:
+                errors[key] = f"Your {label} is too long (80 characters at most)."
+        if not values["email"]:
+            errors["email"] = "Enter your email address."
+        elif len(values["email"]) > 200 or not _EMAIL.match(values["email"]):
+            errors["email"] = "Enter a valid email address, like name@example.com."
+        if values["github_url"] and not _GITHUB_URL.match(values["github_url"]):
+            errors["github_url"] = "Use a profile link like https://github.com/your-username."
+        upload = form.get("resume")
+        data = b""
+        if upload is None or isinstance(upload, str) or not getattr(upload, "filename", ""):
+            errors["resume"] = "Attach your resume as a PDF."
+        else:
+            data = await upload.read(MAX_RESUME_BYTES + 1)
+            if not data:
+                errors["resume"] = "That file is empty. Attach your resume as a PDF."
+            elif len(data) > MAX_RESUME_BYTES:
+                errors["resume"] = "That file is over 5 MB. Attach a PDF under 5 MB."
+            elif not data.startswith(b"%PDF"):
+                errors["resume"] = "That file is not a PDF. Attach your resume as a PDF."
+        if errors:
+            return render("apply.html", 422, nav="apply", job_name=job_name(job),
+                          values=values, errors=errors)
+
+        websites = []
+        if values["github_url"]:
+            websites.append({"type": "other", "value": values["github_url"].rstrip("/")})
+        filename = f"{_slug(values['first_name']) or 'candidate'}_" \
+                   f"{_slug(values['last_name']) or 'applicant'}_resume.pdf"
+        body = {"action": "new_candidate_application", "payload": {"application": {
+            "candidate": {
+                "first_name": values["first_name"], "last_name": values["last_name"],
+                "email_addresses": [{"type": "personal", "value": values["email"]}],
+                "website_addresses": websites, "phone_numbers": [],
+                "social_media_addresses": [], "educations": [], "employments": [],
+                "tags": [], "custom_fields": {},
+                "attachments": [{"filename": filename, "type": "resume", "url": ""}]},
+            "jobs": job["jobs"], "current_stage": job["current_stage"],
+            "source": job["source"], "status": "active", "custom_fields": {}}}}
+        result = await run_in_threadpool(submit_application, body, filename, data)
+        wh = quote(str(result.get("webhook_status") or ""))
+        return RedirectResponse(
+            f"/apply/thanks?application_id={result['application_id']}&webhook={wh}",
+            status_code=303)
+
+    @app.get("/apply/thanks", response_class=HTMLResponse)
+    def apply_thanks(application_id: str = "", webhook: str = ""):
+        snap = state.snapshot()
+        app_rec = snap["applications"].get(application_id)
+        if app_rec is None:
+            return RedirectResponse("/apply", status_code=303)
+        cand = snap["candidates"].get(str(app_rec["candidate_id"]), {})
+        jobs = app_rec.get("jobs") or []
+        name = f"{cand.get('first_name', '')} {cand.get('last_name', '')}".strip()
+        return render("apply.html", nav="apply", done=True, name=name, values={}, errors={},
+                      job_name=jobs[0].get("name") if jobs else "Open role",
+                      application_id=application_id,
+                      webhook_status=webhook if _WEBHOOK_STATUS.match(webhook) else "")
 
     # ── files ─────────────────────────────────────────────────────────────────
 
@@ -367,7 +481,8 @@ def create_app(*, state_root: Path | None = None,
                 "job": jobs[0].get("name") if jobs else None,
                 "applied_at": app_rec.get("applied_at"),
             })
-        return render("index.html", applications=rows, fixtures=fixture_names())
+        return render("index.html", applications=rows, fixtures=fixture_names(),
+                      hide_simulate=hide_simulate())
 
     @app.get("/candidates/{candidate_id}", response_class=HTMLResponse)
     def candidate_page(candidate_id: str, application_id: str | None = None):

@@ -29,6 +29,10 @@
     <h1 class="rv-h1">Applications</h1>
   </div>
   <div class="ix-hero-r">
+    {% if hide_simulate %}
+    <p class="rv-lead">New applications arrive here from the careers page. The report lands in Slack and back on the candidate page.</p>
+    <div class="ix-sims"><a class="rv-btn rv-btn-primary" href="/apply">Open the careers page <span class="rv-arrow">→</span></a></div>
+    {% else %}
     <p class="rv-lead">Simulate an applicant to send a signed webhook to the verifier. The report lands in Slack and back on the candidate page.</p>
     <div class="ix-sims">
       {% for f in fixtures %}
@@ -40,6 +44,7 @@
         <p class="rv-small rv-muted" style="margin:0">No webhook fixtures found.</p>
       {% endfor %}
     </div>
+    {% endif %}
   </div>
 </section>
 
@@ -67,7 +72,7 @@
     </div>
   </div>
   {% else %}
-  <div class="rv-card-body"><p class="rv-small rv-muted" style="margin:0">No applications yet. Use a button above to simulate one.</p></div>
+  <div class="rv-card-body"><p class="rv-small rv-muted" style="margin:0">No applications yet.{% if not hide_simulate %} Use a button above to simulate one.{% endif %}</p></div>
   {% endif %}
 </section>
 {% endblock %}

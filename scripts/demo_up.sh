@@ -18,6 +18,9 @@
 #                            set it to the GB10's address if the browser is on another machine
 #   RUNS_DIR                 default: a fresh /tmp/rv-demo-XXXX
 #   GITHUB_FETCH_MODE        replay (default)
+#   MOCK_ATS_HIDE_SIMULATE   1|true|yes hides the "Simulate application" buttons on the mock ATS index and shows a link to the
+#                            candidate-facing careers page (/apply) instead. Export it before running; the mock ATS inherits it.
+#                            Canned runs still work from a terminal (see docs/demo-runbook.md, "Live upload").
 #   OPENCLAW_SANDBOX         rv-openclaw (the sandbox checked when SLACK=real)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -59,6 +62,10 @@ dk() { if id -nG | grep -qw docker; then bash -c "$*"; else sg docker -c "$*"; f
 
 echo "== Resume Verifier demo stack =="
 echo "runs: $RUNS_DIR"
+case "$(printf %s "${MOCK_ATS_HIDE_SIMULATE:-}" | tr A-Z a-z)" in
+  1|true|yes) export MOCK_ATS_HIDE_SIMULATE; echo "mock ATS: Simulate buttons hidden (MOCK_ATS_HIDE_SIMULATE on); candidates apply at /apply" ;;
+  *) echo "mock ATS: Simulate buttons shown (MOCK_ATS_HIDE_SIMULATE off)" ;;
+esac
 echo "modules: $VERIFIER_REAL   sandbox: $SANDBOX_BACKEND   run check: ${RUN_CHECK:-on}   slack: $SLACK"
 
 # ── Preflight ────────────────────────────────────────────────────────────────

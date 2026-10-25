@@ -130,6 +130,10 @@ cat <<GUIDE
                                        scripts/openclaw_install_plugin.sh, not here.
   Review / apply configuration ....... Apply configuration
 If it is interrupted, resume with:  nemoclaw onboard --resume
+If Apply fails with "Native local inference requires providers_v2_enabled=true on gateway 'nemoclaw'",
+enable it on NemoClaw's gateway (port 8080; our run-check gateway is separate), then resume:
+  openshell settings set -g nemoclaw --global --key providers_v2_enabled --value true --yes
+The vLLM "max_model_len=262144 ... unified-memory headroom" warning is advisory; onboarding continues.
 GUIDE
 
 # ---------------------------------------------------------------------------------------------

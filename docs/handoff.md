@@ -111,20 +111,13 @@ Also untracked: `docs/video-script.md` (from another session; not reviewed).
 - vLLM restart if needed: `sg docker -c "bash ~/Downloads/hackathon/a-bundle/start-vllm-offline.sh"`.
 
 ## Next steps (in order)
-1. **OpenClaw install.** The user approved it. Waiting on the user's Slack dashboard changes for the existing app
-   (`greenlight_helper`): Socket Mode on; App-Level Token with `connections:write` saved in `.env` as `SLACK_APP_TOKEN`;
-   Interactivity on; bot scopes `app_mentions:read channels:history channels:read groups:history groups:read im:history
-   im:read im:write users:read` (plus `commands` for a slash command); bot events `app_mention message.channels
-   message.groups message.im`; reinstall the app (re-copy `SLACK_BOT_TOKEN` if it changes); bot in the channel.
-   Then:
-   1. The user runs `bash scripts/openclaw_onboard.sh` in a terminal (wizard: accept the third-party notice; Local vLLM;
-      Slack on; Balanced). It never stops or re-downloads vLLM.
-   2. Start the stack with `VERIFIER_HOST=0.0.0.0 KEEP=1 SANDBOX_BACKEND=openshell SLACK=real bash scripts/full_run.sh`.
-   3. `bash scripts/openclaw_install_plugin.sh rv-openclaw` (builds, applies preset `rv-verifier`, uploads, installs,
-      configures, restarts, waits for Slack, checks sandbox → host reachability). `--dry-run` / `--verify-only` exist.
-   4. Click Re-check on a card. If clicks do nothing: `SLACK_ACTIONS=agent`, then `off`.
-   Unconfirmed: whether `host.openshell.internal` reaches the host here (fallback: host LAN IP + `--trusted-private-host`),
-   whether ufw blocks the Docker bridge, and whether OpenClaw hands button clicks to the plugin handler.
+1. **OpenClaw: installed (16:00).** Sandbox `rv-openclaw` (NemoClaw v0.0.137, OpenClaw 2026.9.2, Local vLLM, Balanced
+   policy + `slack` + `rv-verifier` presets). Onboarding needed `openshell settings set -g nemoclaw --global --key
+   providers_v2_enabled --value true --yes` on NemoClaw's own gateway (:8080), then `nemoclaw onboard --resume`.
+   `scripts/openclaw_install_plugin.sh rv-openclaw` passed: plugin loaded with 4 tools, Slack Socket Mode connected,
+   sandbox → `host.openshell.internal:8200` HTTP 200. The verifier must listen on 0.0.0.0
+   (`VERIFIER_HOST=0.0.0.0 KEEP=1 SANDBOX_BACKEND=openshell SLACK=real bash scripts/full_run.sh`).
+   Still to check: a real Re-check click from Slack (fallbacks `SLACK_ACTIONS=agent`, then `off`), and an @-mention.
 2. Demo prep (design doc ~line 2608 beat sheet): record in replay mode; J11's *Simulate application* button starts a run.
 3. Recorder quirk: treat GitHub's 204 for an empty repo's `contributors` like 404/409.
 

@@ -1,82 +1,87 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% if missing %}Not found{% else %}{{ name }}{% endif %} | Mock ATS</title>
-<style>
-  :root { --bg:#f6f7f9; --card:#fff; --ink:#1c2230; --muted:#667085; --line:#e3e6ec; --accent:#2b5fd9;
-          --badge-bg:#eef1f6; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#12151c; --card:#1b1f29; --ink:#e8ebf2; --muted:#9aa3b5; --line:#2c3240;
-            --accent:#7aa2ff; --badge-bg:#262c3a; }
-  }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--ink);
-         font:15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  a { color:var(--accent); }
-  header.top { background:var(--card); border-bottom:1px solid var(--line); padding:12px 24px;
-               display:flex; align-items:center; gap:16px; }
-  .brand { font-weight:700; letter-spacing:.02em; }
-  .brand small { font-weight:500; color:var(--muted); margin-left:8px; }
-  main { max-width:1200px; margin:0 auto; padding:24px; }
-  h1 { margin:0 0 4px; font-size:26px; }
-  h2 { font-size:16px; margin:0 0 12px; }
-  .meta { display:flex; flex-wrap:wrap; gap:6px 24px; color:var(--muted); margin-bottom:20px; }
-  .meta b { color:var(--ink); font-weight:600; }
-  .grid { display:grid; grid-template-columns:minmax(0,3fr) minmax(280px,2fr); gap:20px; align-items:start; }
-  @media (max-width: 900px) { .grid { grid-template-columns:1fr; } }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-bottom:20px; }
-  iframe.viewer { width:100%; height:78vh; min-height:520px; border:1px solid var(--line); border-radius:6px; background:#fff; }
-  table { width:100%; border-collapse:collapse; font-size:14px; }
-  th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
-  th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
-  .note { border-top:1px solid var(--line); padding:12px 0; }
-  .note:first-of-type { border-top:0; padding-top:0; }
-  .note-head { display:flex; flex-wrap:wrap; gap:4px 10px; align-items:center; color:var(--muted); font-size:13px; margin-bottom:6px; }
-  .badge { background:var(--badge-bg); color:var(--ink); border-radius:999px; padding:1px 9px; font-size:12px; font-weight:600; }
-  .note-body { overflow-wrap:anywhere; }
-  .muted { color:var(--muted); }
-  .actions { margin-left:auto; }
-</style>
-</head>
-<body>
-<header class="top">
-  <div class="brand">Mock ATS<small>demo applicant tracking system</small></div>
-  <a href="/">All applications</a>
-  <span class="actions"><a href="">Refresh</a></span>
-</header>
-<main>
-{% if missing %}
-  <h1>Not found</h1>
-  <p class="muted">No candidate {{ candidate_id }} (or that application) in this Mock ATS.</p>
-{% else %}
-  <h1>{{ name }}</h1>
-  <div class="meta">
-    <span>Job: <b>{{ application.job or "none" }}</b></span>
-    <span>Applied: <b>{{ application.applied_at | when }}</b></span>
-    <span>Source: <b>{{ application.source or "unknown" }}</b></span>
-    <span>Application id: <b>{{ application.id }}</b></span>
-  </div>
+{% extends "base.html" %}
+{% set graph_mode = "still" %}
+{% set nav = "candidate" %}
+{% block title %}{% if missing %}Not found{% else %}{{ name }}{% endif %} | Mock ATS{% endblock %}
 
-  <div class="grid">
-    <section>
-      <div class="card">
-        <h2>Resume{% if viewing %} <span class="muted">({{ viewing }}{% if viewing_annotated %}, annotated by the verifier{% endif %})</span>{% endif %}</h2>
-        {% if viewer_url %}
-          <iframe class="viewer" id="resume-viewer" src="{{ viewer_url }}" title="Resume viewer"></iframe>
-        {% else %}
-          <p class="muted">No resume on file.</p>
-        {% endif %}
+{% block head %}
+<style>
+  html, body { overflow-x: hidden; }
+  .cd-head { gap: 8px; }
+  .cd-name { margin: 0; font-family: var(--font-display); font-size: clamp(32px, 5vw, 44px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; overflow-wrap: anywhere; }
+  .cd-meta { display: flex; flex-wrap: wrap; gap: 6px 22px; color: var(--muted); font-size: 13.5px; align-items: center; }
+  .cd-meta b { color: var(--text); font-weight: 600; }
+  .cd-meta .cd-back { margin-left: auto; font-family: var(--font-mono); font-size: 12.5px; }
+  .cd-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr); gap: var(--gap); align-items: start; }
+  .cd-rail { display: flex; flex-direction: column; gap: var(--gap); min-width: 0; }
+  @media (max-width: 1040px) { .cd-grid { grid-template-columns: minmax(0, 1fr); } }
+  .cd-glass h2 { margin: 0; font-family: var(--font-display); font-size: 22px; font-weight: 650; line-height: 1.1; letter-spacing: -0.015em; }
+  .cd-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .cd-file { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); overflow-wrap: anywhere; }
+  .cd-gold { display: inline-flex; align-items: center; padding: 0 11px; border-radius: var(--radius-pill); border: 1px solid var(--gold); color: var(--gold); font-family: var(--font-mono); font-size: 11.5px; line-height: 1.9; white-space: nowrap; }
+  .cd-window { border: 1px solid var(--stroke); border-radius: var(--radius-sub); box-shadow: var(--shadow-window); overflow: hidden; background: #fff; }
+  iframe.viewer { display: block; width: 100%; height: 78vh; min-height: 520px; border: 0; background: #fff; }
+  .cd-scroll { overflow-x: auto; max-width: 100%; }
+  .cd-glass table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .cd-glass th, .cd-glass td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .cd-glass th { font-family: var(--font-mono); font-weight: 400; font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .cd-glass td { overflow-wrap: anywhere; }
+  .cd-glass td:last-child { white-space: nowrap; color: var(--muted); font-size: 12px; }
+  .cd-glass td:nth-child(2) { white-space: nowrap; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+  .cd-glass tbody tr:last-child td { border-bottom: 0; }
+  .note { border-top: 1px solid var(--line); padding: 12px 0; }
+  .note:first-of-type { border-top: 0; padding-top: 0; }
+  .note-head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; color: var(--muted); font-size: 12.5px; margin-bottom: 6px; }
+  .badge { display: inline-flex; align-items: center; height: 22px; padding: 0 var(--pill-pad-x); border-radius: var(--radius-pill); border: 1px solid var(--stroke); background: var(--chip-tint); color: var(--text); font-family: var(--font-mono); font-size: 11.5px; line-height: 1; white-space: nowrap; box-sizing: border-box; }
+  .note[data-vis="public"] .badge { border-color: var(--ok); color: var(--ok); background: var(--ok-tint); }
+  .note[data-vis="admin_only"] .badge { border-color: var(--gold); color: var(--gold); }
+  .note-body { overflow-wrap: anywhere; }
+</style>
+{% endblock %}
+
+{% block navend %}<a class="rv-btn rv-btn-sm" href="">Refresh</a>{% endblock %}
+
+{% block content %}
+{% if missing %}
+  <section class="rv-glass cd-glass">
+    <h2>Not found</h2>
+    <p class="rv-muted" style="margin:0">No candidate {{ candidate_id }} (or that application) in this Mock ATS.</p>
+  </section>
+{% else %}
+  <section class="rv-glass cd-head">
+    <span class="rv-label">candidate · {{ application.job or "none" }}</span>
+    <h1 class="cd-name">{{ name }}</h1>
+    <div class="cd-meta">
+      <span>Job: <b>{{ application.job or "none" }}</b></span>
+      <span>Applied: <b>{{ application.applied_at | when }}</b></span>
+      <span>Source: <b>{{ application.source or "unknown" }}</b></span>
+      <span>Application id: <b>{{ application.id }}</b></span>
+      <a class="cd-back" href="/">All applications</a>
+    </div>
+  </section>
+
+  <div class="cd-grid">
+    <section class="rv-glass cd-glass">
+      <div class="cd-title-row">
+        <h2>Resume</h2>
+        {% if viewing %}<span class="cd-file">{{ viewing }}</span>{% endif %}
+        {% if viewing and viewing_annotated %}<span class="cd-gold">annotated by the verifier</span>{% endif %}
       </div>
+      {% if viewer_url %}
+        <div class="cd-window">
+          <iframe class="viewer" id="resume-viewer" src="{{ viewer_url }}" title="Resume viewer"></iframe>
+        </div>
+      {% else %}
+        <p class="rv-muted" style="margin:0">No resume on file.</p>
+      {% endif %}
     </section>
 
-    <section>
-      <div class="card">
+    <div class="cd-rail">
+      <section class="rv-glass cd-glass">
         <h2>Attachments</h2>
         {% if attachments %}
+        <div class="cd-scroll">
         <table>
-          <thead><tr><th>File</th><th>Type</th><th>Uploaded</th></tr></thead>
+          <thead><tr><th>file</th><th>type</th><th>uploaded</th></tr></thead>
           <tbody>
           {% for a in attachments %}
             <tr>
@@ -87,13 +92,15 @@
           {% endfor %}
           </tbody>
         </table>
-        {% else %}<p class="muted">No attachments.</p>{% endif %}
-      </div>
+        </div>
+        {% else %}<p class="rv-muted" style="margin:0">No attachments.</p>{% endif %}
+      </section>
 
-      <div class="card">
+      <section class="rv-glass cd-glass">
         <h2>Notes</h2>
+        <div>
         {% for n in notes %}
-          <div class="note">
+          <div class="note" data-vis="{{ n.visibility }}">
             <div class="note-head">
               <span class="badge">{{ n.badge }}</span>
               <span>{{ n.created_at | when }}</span>
@@ -102,12 +109,11 @@
             <div class="note-body">{{ n.body | nl2br }}</div>
           </div>
         {% else %}
-          <p class="muted">No notes yet.</p>
+          <p class="rv-muted" style="margin:0">No notes yet.</p>
         {% endfor %}
-      </div>
-    </section>
+        </div>
+      </section>
+    </div>
   </div>
 {% endif %}
-</main>
-</body>
-</html>
+{% endblock %}

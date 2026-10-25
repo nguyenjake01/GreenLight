@@ -1,34 +1,36 @@
 # Resume Verifier: AI coding prompts (Oct 25, 2026)
 
-## How to use these prompts
+## How to use these prompts (build split v2)
 
-- **Before 10:00:** commit the final design doc to the repo as `docs/design-doc.md`. Agent A works in clone `rv-a/`, agent B in `rv-b/` (§11.1).
-- **Paste each prompt at the start of its window**, into the right agent. Paste the next one only after the previous module's done line passes and it's pushed.
+- **Henry runs every prompt on his AI account,** in three lanes (design doc §11.1): **lane H** in his clone on the GB10, **lanes A and B** in `rv-a/` and `rv-b/` on his laptop. The prompts say "agent A" and "agent B"; those are lanes A and B. Jake writes no code: he tags `contracts-v1`, records fixtures and verifies each lane A/B push from `main`.
+- **The design doc is in the repo** at `docs/design-doc.md`; every prompt reads it from there.
+- **Start rule:** paste a lane's next prompt once its previous module is pushed and everything in **Start when** is on `main`. Windows are targets, not triggers. A blocked lane waits; it never skips ahead. Don't wait for Jake's check; he verifies in parallel, and a failure becomes a fix prompt in that lane before its next module.
+- **Priority when stretched:** lane H, then whichever lane is on the critical path (J2, J7, J9, J10 hold up other lanes). Jake tells Henry which prompt is next.
 - **Push routine (every module):** module tests and `python -m verifier.demo --stub` pass → `git pull --rebase` → push to `main`.
-- **Henry's prompts (H2–H6)** are optional, for his coding agent. H1 (bring-up) is manual.
+- **H1 (bring-up) is manual.** H2's agent starts at 10:30 on its offline parts while Henry finishes H1.
 
-| Window | Agent | Prompt |
-|---|---|---|
-| 10:00–10:30 | Jake, agent A | `2026-10-25-prompt-J01A-contracts.md` |
-| 10:00–10:30 | Jake, agent B | `2026-10-25-prompt-J01B-contracts.md` |
-| 10:30–11:30 | Jake, agent A | `2026-10-25-prompt-J02-fetcher.md` |
-| 10:30–11:45 | Jake, agent B | `2026-10-25-prompt-J03-mock-ats.md` |
-| 10:30–11:45 | Henry | `2026-10-25-prompt-H02-extraction.md` |
-| 11:30–11:45 | Jake, agent A | `2026-10-25-prompt-J04-link-github.md` |
-| 11:45–12:30 | Jake, agent B | `2026-10-25-prompt-J06-renderers.md` |
-| 11:45–12:30 | Henry | `2026-10-25-prompt-H03-slack.md` |
-| 11:45–13:15 | Jake, agent A | `2026-10-25-prompt-J05-rubric.md` |
-| 12:30–13:00 | Jake, agent B | `2026-10-25-prompt-J07-orchestrator.md` |
-| 12:30–13:30 | Henry | `2026-10-25-prompt-H04-buttons.md` |
-| 13:00–14:15 | Jake, agent B | `2026-10-25-prompt-J08-annotated-pdf.md` |
-| 13:15–13:45 | Jake, agent A | `2026-10-25-prompt-J09-internal-api.md` |
-| 13:30–14:00 | Henry | `2026-10-25-prompt-H05-mentions.md` |
-| 13:45–14:45 | Jake, agent A | `2026-10-25-prompt-J10-run-harness.md` |
-| 14:00–16:00 | Henry | `2026-10-25-prompt-H06-run-check.md` |
-| 14:15–14:45 | Jake, agent B | `2026-10-25-prompt-J11-candidate-page.md` |
-| 14:45–15:05 | Jake, agent B | `2026-10-25-prompt-J12-edit-claim.md` |
-| 14:45–15:30 | Jake, agent A | `2026-10-25-prompt-J13-oss-contribution.md` |
-| 15:05–15:35 | Jake, agent B | `2026-10-25-prompt-J14-generate.md` |
+| Target window | Lane | Prompt | Start when (on `main`) |
+|---|---|---|---|
+| 10:00–10:30 | A | `2026-10-25-prompt-J01A-contracts.md` | The docs are in the repo |
+| 10:00–10:30 | B | `2026-10-25-prompt-J01B-contracts.md` | Lane A's scaffold is pushed (~10:05) |
+| 10:30–11:30 | A | `2026-10-25-prompt-J02-fetcher.md` | Jake tagged `contracts-v1` |
+| 10:30–11:45 | B | `2026-10-25-prompt-J03-mock-ats.md` | Jake tagged `contracts-v1` |
+| 10:30–11:45 | H | `2026-10-25-prompt-H02-extraction.md` | `contracts-v1` for the offline parts; H1's model serving for the GB10 parts |
+| 11:30–11:45 | A | `2026-10-25-prompt-J04-link-github.md` | J2 pushed |
+| 11:45–12:30 | B | `2026-10-25-prompt-J06-renderers.md` | J3 pushed |
+| 11:45–12:30 | H | `2026-10-25-prompt-H03-slack.md` | H1's Slack app connected (earlier if the model is slow) |
+| 11:45–13:15 | A | `2026-10-25-prompt-J05-rubric.md` | J4 pushed; Jake's 11:45 recording committed |
+| 12:30–13:00 | B | `2026-10-25-prompt-J07-orchestrator.md` | J6 pushed |
+| 12:30–13:30 | H | `2026-10-25-prompt-H04-buttons.md` | H3 pushed; test against `fake_actions_server.py` until J9 lands |
+| 13:00–14:15 | B | `2026-10-25-prompt-J08-annotated-pdf.md` | J7 pushed |
+| 13:15–13:45 | A | `2026-10-25-prompt-J09-internal-api.md` | J5 pushed; **lane B's J7** on `main` |
+| 13:30–14:00 | H | `2026-10-25-prompt-H05-mentions.md` | H4's plugin in; **lane A's J9** for the done line |
+| 13:45–14:45 | A | `2026-10-25-prompt-J10-run-harness.md` | J9 pushed; J2's repo archives committed |
+| 14:00–16:00 | H | `2026-10-25-prompt-H06-run-check.md` | H5 pushed; **lane A's J10** for the done line |
+| 14:15–14:45 | B | `2026-10-25-prompt-J11-candidate-page.md` | J8 pushed |
+| 14:45–15:05 | B | `2026-10-25-prompt-J12-edit-claim.md` | J11 pushed; **lane A's J5 and J9**; CP2's Musts merged |
+| 14:45–15:30 | A | `2026-10-25-prompt-J13-oss-contribution.md` | J10 pushed; CP2's Musts merged |
+| 15:05–15:35 | B | `2026-10-25-prompt-J14-generate.md` | J12 pushed (lane A's J9 already in) |
 
 ## Prompt J1A: J1: Contracts + thin runner, store core, `read_resume`
 
@@ -43,9 +45,9 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §5.1, §6.1, §6.2, �
 
 ### J1. Contracts + thin runner, store core, `read_resume`
 
-**Owner:** Jake, agents A and B · **Window:** 10:00–10:30; `contracts/` is frozen and tagged `contracts-v1` at 10:30 · **Estimate:** 0.5 h
-**Where:** Jake's laptop
-**Before 10:00:** Henry has reviewed Part C; both resume PDFs exist; the project repo exists (empty).
+**Owner:** Henry's lanes A and B (Jake reviews; build split v2, §11.1) · **Window:** 10:00–10:30; `contracts/` is frozen and tagged `contracts-v1` at 10:30 · **Estimate:** 0.5 h
+**Where:** Henry's laptop
+**Before 10:00:** Henry has reviewed Part C; both resume PDFs exist; the project repo exists (docs only).
 **Spec sources:** Part C in full; §6.1–6.4; §7; §11.4
 
 **Timing within the window**
@@ -165,9 +167,9 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §5.1, §6.1, §6.2, �
 
 ### J1. Contracts + thin runner, store core, `read_resume`
 
-**Owner:** Jake, agents A and B · **Window:** 10:00–10:30; `contracts/` is frozen and tagged `contracts-v1` at 10:30 · **Estimate:** 0.5 h
-**Where:** Jake's laptop
-**Before 10:00:** Henry has reviewed Part C; both resume PDFs exist; the project repo exists (empty).
+**Owner:** Henry's lanes A and B (Jake reviews; build split v2, §11.1) · **Window:** 10:00–10:30; `contracts/` is frozen and tagged `contracts-v1` at 10:30 · **Estimate:** 0.5 h
+**Where:** Henry's laptop
+**Before 10:00:** Henry has reviewed Part C; both resume PDFs exist; the project repo exists (docs only).
 **Spec sources:** Part C in full; §6.1–6.4; §7; §11.4
 
 **Timing within the window**
@@ -285,8 +287,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §0.6, §7.4, §14.
 
 ### J2. GitHub fetcher, matching, recorder
 
-**Owner:** Jake, agent A · **Window:** 10:30–11:30 (must be done before the 11:45 recording) · **Estimate:** 1 h
-**Where:** Jake's laptop. The recording at 11:45 also runs here, on the phone hotspot.
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 10:30–11:30 (must be done before the 11:45 recording) · **Estimate:** 1 h
+**Where:** Henry's laptop (`rv-a/`). The official 11:45 recording runs on Jake's laptop, on the phone hotspot (§14).
 **Files:** `core/fetch.py`, `core/match.py`, `tests/core/test_fetch.py`, `tests/core/test_match.py`
 **Depends on:** J1 (contracts, `store`, `snapshot`); `GITHUB_TOKEN`; `llm` through the registry for the match fallback (stub until H2)
 **Interfaces:** §8.3 `fetch`; §7.4; `Snapshot` and `cache_key` (§8.2)
@@ -341,7 +343,7 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §0.6, §7.4, §14.
 4. Writes bodies to `raw/<body_sha256>.json` through `store`. Writes `evidence.json` once, with `responses` and `misses` sorted by key and `decisions` in claim order.
 5. Returns `Snapshot.load(...)`. Raises only `FetchError`, for local failures (disk, a corrupt cache file).
 
-**Recorder CLI** (Jake's laptop only)
+**Recorder CLI** (laptops only, never the GB10)
 ```
 python -m verifier.core.fetch record --login henrychen4736 --login <fake-login> \
   --claims fixtures/claims/henrychen4736.json --claims fixtures/claims/<fake-login>.json --clone
@@ -393,8 +395,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §0.7, §12.
 
 ### J3. Mock ATS, Greenhouse adapter, Harvest v3, webhook route
 
-**Owner:** Jake, agent B · **Window:** 10:30–11:45 · **Estimate:** 1.25 h
-**Where:** Jake's laptop, with both servers on `localhost`. At CP1, Henry runs the mock ATS on the GB10 host.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 10:30–11:45 · **Estimate:** 1.25 h
+**Where:** Henry's laptop, with both servers on `localhost`. At CP1, Henry runs the mock ATS on the GB10 host.
 **Files:** `ats/mock_app.py`, `ats/apply.py`, `ats/adapter.py`, `core/service.py` (app, webhook route, health; J9 adds `/internal/*`), `tests/ats/test_mock_app.py`, `tests/ats/test_adapter.py`, `tests/core/test_service_webhook.py`
 **Depends on:** J1; `fixtures/webhooks/*.json`, `fixtures/resumes/*.pdf`
 **Interfaces:** §8.3 `ats`; §8.4 (webhook and health rows); the Greenhouse formats below
@@ -587,8 +589,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §4.
 
 ### J4. `link_github`
 
-**Owner:** Jake, agent A · **Window:** 11:30–11:45 [new slot] · **Estimate:** 0.25 h
-**Where:** Jake's laptop
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 11:30–11:45 [new slot] · **Estimate:** 0.25 h
+**Where:** Henry's laptop
 **Files:** `core/resume.py` (adds `link_github`; `read_resume` is from J1), `tests/core/test_link_github.py`
 **Depends on:** J1 (`read_resume`, fixtures)
 **Interfaces:** §8.3 `resume`; `Candidate` (§8.2); §4 Must #1
@@ -644,8 +646,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §10, §11.1.
 
 ### J6. Card and thread renderers
 
-**Owner:** Jake, agent B · **Window:** 11:45–12:30 · **Estimate:** 0.75 h
-**Where:** Jake's laptop. The visual check uses Slack's Block Kit Builder in a browser; real cards in a test channel are optional after H3 (§11.1).
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 11:45–12:30 · **Estimate:** 0.75 h
+**Where:** Henry's laptop. Jake does the visual check in Slack's Block Kit Builder in a browser; real cards in a test channel are optional after H3 (§11.1).
 **Files:** `core/render.py`, `tests/core/test_render.py`, `fixtures/render/henry_card.json` (golden card)
 **Depends on:** J1 (types; the claims, verdict, run trace and webhook fixtures)
 **Interfaces:** §8.3 `render`; §8.5; `CardOptions` (§8.2)
@@ -832,8 +834,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §6, §7.6, §11.4.
 
 ### J5. Rubric (`project`, `skill`) + golden test
 
-**Owner:** Jake, agent A · **Window:** 11:45–13:15 (mostly before CP1; the golden test right after) · **Estimate:** 1.5 h
-**Where:** Jake's laptop
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 11:45–13:15 (mostly before CP1; the golden test right after) · **Estimate:** 1.5 h
+**Where:** Henry's laptop
 **Files:** `core/rubric.py`, `tests/core/test_rubric.py`, `tests/core/test_golden.py`, `fixtures/golden/<case>/`, `fixtures/expected/henrychen4736.labels.json`, `fixtures/expected/<fake-login>.labels.json`
 **Depends on:** J1 (contracts, `store`, `snapshot`); J2 (`match.py`, and the snapshots recorded at 11:45); §11.4 (expected labels)
 **Interfaces:** §8.3 `rubric`; §7.6
@@ -953,8 +955,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §5.1, §5.6.
 
 ### J7. Orchestrator
 
-**Owner:** Jake, agent B · **Window:** 12:30–13:00 · **Estimate:** 0.5 h (tight; J1's thin runner covers CP1 if this runs over)
-**Where:** Jake's laptop. At CP1, Henry runs it on the GB10 as part of the walking skeleton.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 12:30–13:00 · **Estimate:** 0.5 h (tight; J1's thin runner covers CP1 if this runs over)
+**Where:** Henry's laptop. At CP1, Henry runs it on the GB10 as part of the walking skeleton.
 **Files:** `core/pipeline.py` (replaces J1's v0), `core/store.py` (adds the `meta.json` helpers), `tests/core/test_pipeline.py`
 **Depends on:** J1, J3 (adapter), J6 (render); everything else through the registry (stubs are fine)
 **Interfaces:** §8.3 `pipeline`; §5.1–5.6; §8.5; `CardOptions`
@@ -1112,8 +1114,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §10.
 
 ### J8. Annotated PDF
 
-**Owner:** Jake, agent B · **Window:** 13:00–14:15 · **Estimate:** 1.25 h
-**Where:** Jake's laptop. Pop-ups are checked in Firefox, whose built-in PDF viewer is pdf.js.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 13:00–14:15 · **Estimate:** 1.25 h
+**Where:** Henry's laptop. Jake checks pop-ups in Firefox, whose built-in PDF viewer is pdf.js.
 **Files:** `core/annotate.py`, `tests/core/test_annotate.py`
 **Depends on:** J1 (`store`; Henry's resume PDF and the claims and verdict fixtures); PyMuPDF
 **Interfaces:** §8.3 `annotate`
@@ -1174,8 +1176,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4.
 
 ### J9. Internal API
 
-**Owner:** Jake, agent A · **Window:** 13:15–13:45 [new slot] · **Estimate:** 0.5 h
-**Where:** Jake's laptop, tested with `curl` against a stub run. At ~13:45, Henry points his OpenClaw plugin at the GB10's verifier for H4 and H5.
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 13:15–13:45 [new slot] · **Estimate:** 0.5 h
+**Where:** Henry's laptop, tested with `curl` against a stub run. At ~13:45, Henry points his OpenClaw plugin at the GB10's verifier for H4 and H5.
 **Files:** `core/service.py` (adds the `/internal/*` routes), `tests/core/test_service_internal.py`
 **Depends on:** J3 (the service skeleton), J7 (pipeline functions and read helpers), J6 (the modal placeholder); `slack.open_modal` through the registry
 **Interfaces:** §8.4, §8.5
@@ -1309,8 +1311,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §7.5.
 
 ### J10. Run harness + Docker backend
 
-**Owner:** Jake, agent A · **Window:** 13:45–14:45 · **Estimate:** 1 h
-**Where:** Jake's laptop, with Docker (`SANDBOX_BACKEND=docker` in the laptop's `.env`). Without Docker there by 13:45, the live check moves to the GB10 with Henry. At CP2, H6's done line runs this harness on the OpenShell backend.
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 13:45–14:45 · **Estimate:** 1 h
+**Where:** Henry's laptop, with Docker (`SANDBOX_BACKEND=docker` in the laptop's `.env`). Without Docker there by 13:45, the live check moves to the GB10. At CP2, H6's done line runs this harness on the OpenShell backend.
 **Files:** `core/harness.py`, `core/rubric.py` (adds the `run` check), `docker/runcheck.Dockerfile` [new], `tests/core/test_harness.py`, `tests/core/test_rubric_run.py`, `tests/core/fixtures_repos/` (tiny test repos)
 **Depends on:** J1 (contracts, `store`, `snapshot`); J2 (repo archives in `fixtures/repos/`); J5 (rubric); `sandbox`, `agent` and `judge` through the registry (stubs until H6)
 **Interfaces:** §8.3 `harness` and `sandbox`; §7.5; the `run` row of J5's check table
@@ -1318,7 +1320,7 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §7.5.
 **`run_check(snapshot, claim, repo_full_name, *, mode)`**
 1. **Check out the repo** into a temp folder:
    - `replay`: extract `fixtures/repos/<owner>__<name>.tar.gz`; `commit_sha` comes from its `.json` sidecar. A missing archive → `SandboxError("repo not recorded: owner/name")`.
-   - `record` / `live` (Jake's laptop only; the GB10 always replays): `git clone --depth 1`; `commit_sha` from `git rev-parse HEAD`.
+   - `record` / `live` (laptops only; the GB10 always replays): `git clone --depth 1`; `commit_sha` from `git rev-parse HEAD`.
    - Repos over 50 MB → `SandboxError("repo too large")`.
 2. **Read the README** (`README.md`, `README.rst`, `README.txt` or `README` at the root), truncated to 8,000 characters, for the agent only.
 3. **Open the sandbox:** `registry.get("sandbox").open_sandbox(repo_dir)`.
@@ -1509,8 +1511,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §4, §10.
 
 ### J11. Mock candidate page
 
-**Owner:** Jake, agent B · **Window:** 14:15–14:45 · **Estimate:** 0.5 h
-**Where:** Jake's laptop, in a browser at `http://localhost:8100`. At CP2, Henry runs the mock ATS on the GB10 host and sets `ATS_PUBLIC_URL` to the GB10's hotspot address, so the Slack *Open in Greenhouse* button and this page open from the laptops.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 14:15–14:45 · **Estimate:** 0.5 h
+**Where:** Henry's laptop, in a browser at `http://localhost:8100`. At CP2, Henry runs the mock ATS on the GB10 host and sets `ATS_PUBLIC_URL` to the GB10's hotspot address, so the Slack *Open in Greenhouse* button and this page open from the laptops.
 **Files:** `ats/mock_app.py` (adds the page routes), `ats/templates/candidate.html`, `ats/templates/index.html` [new], `ats/static/pdfjs/` (vendored), `tests/ats/test_candidate_page.py`
 **Depends on:** J3 (mock state and file serving); J8 (annotated PDFs; the stub's plain copy works until then)
 **Interfaces:** §4 Must #6; carried from v3 §10: one page, showing only what real Greenhouse can show (notes and attachments)
@@ -1563,8 +1565,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §5.3.
 
 ### J12. Edit claim
 
-**Owner:** Jake, agent B · **Window:** 14:45–15:05 · **Estimate:** 0.33 h (moved from A; built before J14, per the cut order)
-**Where:** Jake's laptop, driven by `fixtures/slack/edit_submit.json` through J9. The first real click happens on the GB10 in the 16:15 dry runs.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 14:45–15:05 · **Estimate:** 0.33 h (moved from A; built before J14, per the cut order)
+**Where:** Henry's laptop, driven by `fixtures/slack/edit_submit.json` through J9. The first real click happens on the GB10 in the 16:15 dry runs.
 **Files:** `core/render.py` (the real `render_edit_modal` and `render_label_change`), `core/pipeline.py` (the real `edit_claim` and `validate_edit`), `tests/core/test_edit_claim.py`
 **Depends on:** J5, J6, J7 (flow helpers, write-back), J9 (routing and validation)
 **Interfaces:** §8.3 `render` and `pipeline`; §8.5 (modal); §5.3 (Edit claim flow)
@@ -1635,8 +1637,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §6.
 
 ### J13. `oss_contribution`
 
-**Owner:** Jake, agent A · **Window:** 14:45–15:30 · **Estimate:** 0.75 h · **First to cut** (`CUT=oss`)
-**Where:** Jake's laptop
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 14:45–15:30 · **Estimate:** 0.75 h · **First to cut** (`CUT=oss`)
+**Where:** Henry's laptop
 **Files:** `core/rubric.py` (the contribution checks), `tests/core/test_rubric_oss.py`, the `fake` golden case and `fixtures/expected/<fake-login>.labels.json` (both updated)
 **Depends on:** J2 (it already records the contribution requests, at 11:45); J5 (rubric structure)
 **Interfaces:** the `oss_contribution` rows below; carried from v3 §6
@@ -1698,8 +1700,8 @@ In `docs/design-doc.md`: Part C (§8–9), §11.1–11.4, §7.7.
 
 ### J14. More context / Suggest questions
 
-**Owner:** Jake, agent B · **Window:** 15:05–15:35 · **Estimate:** 0.5 h · Cut second (`CUT=generate`)
-**Where:** Jake's laptop with the `llm` stub. Real text first appears on the GB10 in the 16:15 dry runs, where Jake reads one of each.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 15:05–15:35 · **Estimate:** 0.5 h · Cut second (`CUT=generate`)
+**Where:** Henry's laptop with the `llm` stub. Real text first appears on the GB10 in the 16:15 dry runs, where Jake reads one of each.
 **Files:** `core/generate.py`, `core/prompts/context-v1.md` and `questions-v1.md` [new], `core/pipeline.py` (the real `generate`), `core/render.py` (the real `render_generated`), `tests/core/test_generate.py`
 **Depends on:** J6, J7, J9 (routing); `llm` through the registry
 **Interfaces:** §8.3 `generate`, `pipeline.generate` and `render_generated`; §7.7; D6–D8

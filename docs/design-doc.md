@@ -1,8 +1,10 @@
 # Resume Verifier: Final Design Doc
 
-*Dell x NVIDIA AI Hackathon SF, Oct 25, 2026 · Team: Jake + Henry · Written Oct 24–25, 2026 (planning sessions 4–5, step 9). Supersedes design notes v1–v3. This is the single source of truth; the AI coding prompts built from Part D are in `claude/2026-10-25-coding-prompts-all.md`.*
+*Dell x NVIDIA AI Hackathon SF, Oct 25, 2026 · Team: Jake + Henry · Written Oct 24–25, 2026 (planning sessions 4–5, step 9). Supersedes design notes v1–v3. This is the single source of truth; the AI coding prompts built from Part D are in `docs/coding-prompts.md`.*
 
 **Status:** Final for the build, Oct 25, 2026. Parts A–E complete. After the 10:30 contracts freeze, `contracts/` changes only when Jake and Henry both agree (§13).
+
+**Build split v2 (Oct 25):** Jake is nearly out of AI coding usage, and Henry has more than ten times his limit. Henry's AI account now runs every coding agent, in three lanes (H, A, B); Jake writes no code and handles reviews, checks, fixture recording and the demo (§11.1). Where this doc calls a module, file or area Jake's (§5.2, §6.1, §8.1, §13), read it as the `core/` and `ats/` code area: Henry's lanes A and B build it, and Jake reviews it.
 
 **Conventions**
 - **[new]** = added in this doc, not in v3 (gap-fills). Everything unmarked is a settled decision carried over.
@@ -22,8 +24,8 @@
 - **Hardware:** NVIDIA GB10 Grace Blackwell (ARM64), DGX OS 7 (Ubuntu 24.04 base), 128 GB unified memory, 2 TB SSD. Docker and the NVIDIA Container Toolkit preinstalled. Containers must be `linux/arm64`. **The GB10 is handed out at the venue**, so every stack smoke test happens at 10:00.
 - **Judging:** technical execution, business value, local-first design, demo quality.
 - **Team:**
-  - **Henry:** the NemoClaw/OpenClaw/OpenShell stack. Owns every module that touches it.
-  - **Jake:** product and planning. Codes only through AI coding tools, running two agents in parallel. Comfortable in Python and Java (CS61A/61B); hasn't run a web server before, so specs for his modules spell out the server pieces.
+  - **Henry:** the NemoClaw/OpenClaw/OpenShell stack, and every coding agent (build split v2): his stack lane plus lanes A and B, which build the `core/` and `ats/` modules (§11.1).
+  - **Jake:** product and planning. Writes no code on build day (nearly out of AI usage); reviews and tags the contracts, records GitHub fixtures, verifies each lane A/B push from `main`, and owns the demo. Comfortable in Python and Java (CS61A/61B); hasn't run a web server before, so the `core/` and `ats/` specs spell out the server pieces he'll check by hand.
 
 ## 2. Problem and positioning
 
@@ -77,7 +79,7 @@
 | D15 | **Greenhouse = system of record; Slack = the agent's home** | The report lives in Greenhouse (note + annotated resume). Slack is required by the challenge and covers alerts, live run updates and Q&A. The mock shows only what real Greenhouse can show. |
 | D16 | **Model: Qwen3.6-35B-A3B-NVFP4** (already downloaded) | Nemotron 3 Nano isn't measurably better for this task; Qwen is NemoClaw's validated DGX Spark default. |
 | D17 | **Real public GitHub profiles only with accurate claims; 🔴 only on our own fake test account** | Privacy; no on-stage accusation of a real person. |
-| D18 | **Build split by stack dependence** | Henry owns everything that touches NemoClaw (testable only on the GB10). Jake owns the pure-Python deterministic modules (testable against fixtures anywhere). |
+| D18 | **Code split by stack dependence; all agents on Henry's account (v2)** | `stack/` touches NemoClaw (testable only on the GB10); `core/` and `ats/` are pure-Python deterministic modules (testable against fixtures anywhere). Henry runs the agents for both, in separate lanes; Jake reviews and verifies (§11.1). |
 | D19 | **Contracts freeze at 10:30 with working stubs** | The pipeline runs end to end with fakes from the start; real modules swap in behind a config flag. |
 | D20 | **Annotated PDF uploads as `type: "other"` on the application; every re-check adds a new note** | Harvest v3 puts attachments on applications; uploading a `resume` demotes the original. Candidate notes can't be edited. |
 | D21 | **Demo and video run in replay mode** | Off GitHub responses recorded at the venue (11:45, phone hotspot). |
@@ -284,7 +286,7 @@ All config comes from environment variables, loaded from a `.env` file (never co
 | `VERIFIER_WEBHOOK_URL` | `http://localhost:8200/webhooks/greenhouse` | Where the mock ATS sends webhooks; Henry sets the real address at bring-up |
 | `ATS_PUBLIC_URL` | `http://localhost:8100` | Base URL the mock ATS puts in `application.url` |
 | `INTERNAL_TOKEN` | — | Shared secret header `X-Verifier-Token` on `/internal/*` endpoints |
-| `SANDBOX_BACKEND` | `openshell` | `openshell` / `docker`; Jake's laptop uses `docker` |
+| `SANDBOX_BACKEND` | `openshell` | `openshell` / `docker`; the laptops use `docker` |
 | `RUNCHECK_IMAGE` | `resume-verifier-runcheck:latest` | Image for run-check sandboxes, built from `docker/runcheck.Dockerfile` (J10) [new] |
 | `RUN_CHECK` | `on` | `on` / `baseline_only` / `off` (supports the cut rules) |
 | `SLACK_ACTIONS` | `plugin` | `plugin` / `agent` / `off`: how button clicks reach the verifier (H4). `agent` drops Edit claim; `off` keeps only the URL buttons |
@@ -297,7 +299,7 @@ The venue has internet, so these install at 10:00 (`pip install`, `apt install`)
 - Python 3.12 (DGX OS 7 ships 3.12).
 - Python packages: `fastapi`, `uvicorn`, `httpx`, `jsonschema`, `python-dotenv`, `pymupdf`, `slack_sdk`, `jinja2`, `python-multipart`, `pytest`.
 - OpenClaw plugin (H4–H5): Node 24.16+, npm, TypeScript, `typebox`.
-- System: `poppler-utils` (pdftotext), `g++`, `make`, `nodejs` + `npm`, `docker` (preinstalled). Docker is also needed on Jake's laptop for J10 [new].
+- System: `poppler-utils` (pdftotext), `g++`, `make`, `nodejs` + `npm`, `docker` (preinstalled). Docker is also needed on Henry's laptop for J10 [new].
 - Assets: pdf.js prebuilt distribution.
 - Run-check toolchain image (`RUNCHECK_IMAGE`, J10): one `linux/arm64` image with python3, node, g++, make, `cmake` and `pytest`, plus the demo repos' dependencies.
 
@@ -508,7 +510,7 @@ Tracks pointers and side-effect state, so re-checks, edits and card updates know
 
 # Part C — Contracts
 
-Everything in this part lives in `verifier/contracts/` and freezes at 10:30 (tag `contracts-v1`). Jake's two agents write it between 10:00 and 10:30: agent A the types, interfaces, stubs, registry and `config.py`, plus the thin runner (`core/pipeline.py` v0) and `demo.py`; agent B the JSON Schemas and the fixtures in §9, plus `store.py` core and `read_resume` (§11 J1) [new]. The runner and `demo.py` may land after the freeze, as long as they're in before the first module push. Files nobody needs before late morning can land after the freeze, since their formats are fixed here (Part E). Real modules then replace stubs one at a time.
+Everything in this part lives in `verifier/contracts/` and freezes at 10:30 (tag `contracts-v1`). Henry's lanes A and B write it between 10:00 and 10:30 (build split v2, §11.1): agent A the types, interfaces, stubs, registry and `config.py`, plus the thin runner (`core/pipeline.py` v0) and `demo.py`; agent B the JSON Schemas and the fixtures in §9, plus `store.py` core and `read_resume` (§11 J1) [new]. The runner and `demo.py` may land after the freeze, as long as they're in before the first module push. Files nobody needs before late morning can land after the freeze, since their formats are fixed here (Part E). Real modules then replace stubs one at a time.
 
 ## 8. Contracts spec
 
@@ -1157,6 +1159,8 @@ Specs give, as applicable: owner, window (from the timeline, Part E), estimate, 
 
 Henry's total is about 6–7.5 hours. If bring-up runs long, the slip plan in Part E applies.
 
+**Lane H** (build split v2, §11.1): H2–H6 run as AI coding prompts on Henry's account, in his GB10 clone; H1 stays manual. H2's agent starts at 10:30 on its offline parts while Henry is still on H1. Cross-lane waits are in §11.2.
+
 ### H1. Stack bring-up
 
 **Owner:** Henry · **Window:** 10:00 until done (target ~10:30; may run to ~12:00, the top schedule risk) · **Estimate:** 0.5–2 h
@@ -1388,58 +1392,98 @@ Each tool returns the endpoint's JSON as text. A 404 returns "No application fou
 
 ## 11. Jake's modules
 
-Jake builds through two AI coding agents running in parallel, **agent A** and **agent B**. Each module below is one agent's job in one window, numbered in timeline order. Estimates come from v3 §0.3 (judgment, including review and debugging); J4 and J9 are new and estimated here. Specs follow §10's template, plus a **Where** line naming the machine the work happens on.
+These modules make up the `core/` and `ats/` code area. Under build split v2, Henry's AI coding agents build them in two lanes, **lane A** and **lane B**, alongside his stack lane H (§10). The prompts still say "agent A" and "agent B"; those are the lanes. Jake reviews and verifies this area but writes no code. Each module below is one lane's job, numbered in timeline order. Estimates come from v3 §0.3 (judgment, including review and debugging); J4 and J9 are new and estimated here. Specs follow §10's template, plus a **Where** line naming the machine the work happens on.
 
-### 11.1 Who works where [new]
+### 11.1 Who builds and where [build split v2]
+
+**Why it changed:** Jake is nearly out of AI coding usage, and Henry has more than ten times his limit. So every coding agent runs on Henry's account, and Jake takes the build-day work that needs a person but no AI.
+
+**Lanes** (all on Henry's AI account)
+
+| Lane | Modules, in order | Works in | Driven by |
+|---|---|---|---|
+| **H** | H1 (by hand), then H2–H6 | Henry's clone on the GB10 | Henry |
+| **A** | J1A → J2 → J4 → J5 → J9 → J10 → J13 | `rv-a/` on Henry's laptop | Henry pastes prompts; Jake verifies each push |
+| **B** | J1B → J3 → J6 → J7 → J8 → J11 → J12 → J14 | `rv-b/` on Henry's laptop | Henry pastes prompts; Jake verifies each push |
+
+- **Same module order as v1,** so the one-file-one-agent handoffs in §11.2 still hold (`pipeline.py`, `service.py`, `resume.py`).
+- **Start rule:** a lane starts its next prompt once (1) its previous module is pushed and (2) everything in that module's **Start when** column (§11.2) is on `main`. Clock windows are targets, not triggers. A blocked lane waits; it never starts a later module out of order.
+- **Lane H runs alongside H1.** H2's agent starts at 10:30 on its offline parts (`llm_chat` against `httpx.MockTransport`, post-processing on canned outputs) while Henry finishes bring-up by hand; the GB10 extraction waits for the model.
+- **When Henry is stretched,** lane H comes first, since nothing else can touch the stack. After that, the lane on the critical path to the next checkpoint (§12.2) goes first. Jake keeps the prompt queue and tells Henry which prompt is next.
+- **Henry doesn't wait on Jake's check.** He pastes a lane's next prompt as soon as its agent reports the done line and pushes. Jake's verification runs in parallel, and a failure becomes a fix prompt in that lane before its next module.
+
+**Jake's job (no AI coding)**
+- **Before 10:00:** the docs are committed (`docs/design-doc.md`, `docs/coding-prompts.md`). He gets the fake candidate's details ready for the fixtures, sets up his laptop and keeps the prompt queue.
+- **10:30:** he pulls `main`, runs `python -m verifier.demo --stub` and `pytest tests/core`, reviews `contracts/` with Henry, and tags `contracts-v1`.
+- **After each lane A/B push:** he pulls on his laptop, reruns that module's tests and `demo --stub`, and does the hands-on checks its spec names: Block Kit Builder for J6, Firefox's pdf.js for J8 and J11, `curl` for J3 and J9. Then he tells Henry it passed or what failed.
+- **Recording (§14):** the 11:45 run, the CP1 top-up and the option-A pass, plus the commits, the sample-snapshot swap and the expected-labels update. He writes the option-A claims files by hand.
+- **Reviews:** golden-file diffs (`UPDATE_GOLDEN=1`, J5); generated text in the dry runs (J14); Slack and the logs at CP1 and CP2; the video script and cut calls.
+- **His only pushes** are the `contracts-v1` tag and fixture commits. He never edits code; problems go back to the lane that owns the file.
 
 **Machines**
 
 | Machine | Who | What happens there |
 |---|---|---|
-| **Jake's laptop** | Jake's agents A and B | All of Jake's modules are written and tested here, against stubs and fixtures. No model, OpenShell, OpenClaw or Slack needed. GitHub recording also runs here (J2). |
-| **GB10** | Henry operates it | The stack and Henry's modules; every full-system run (CP1, CP2, dry runs, the video). |
-| **Henry's laptop** | Henry | Henry's offline work and his terminal to the GB10. |
+| **Henry's laptop** | Henry; lanes A and B | Lanes A and B write and test the `core/` and `ats/` modules against stubs and fixtures. No model, OpenShell, OpenClaw or Slack needed. Also Henry's terminal to the GB10. |
+| **GB10** | Henry; lane H | H1, lane H's GB10 tests, and every full-system run (CP1, CP2, dry runs, the video). |
+| **Jake's laptop** | Jake | The official GitHub recordings (§14) and verification of each push from `main`. No AI coding tool needed. |
 
-- **Jake's laptop setup** (before 10:00; setup is allowed beforehand): Python 3.12, git, `pdftotext` (`apt install poppler-utils` or `brew install poppler`), the AI coding tool, and a `GITHUB_TOKEN`. Docker is needed for J10 by 13:45; without it, J10's live check moves to the GB10 with Henry.
-- **Two clones:** agents A and B each work in their own clone of the repo (`rv-a/`, `rv-b/`), so they never share a working copy.
-- **Henry's modules (§10)** are tested on the GB10. Their Tests sections already say which parts run offline.
-- **One-machine setup (§15, open):** if adopted, Jake's agents move to his own user on the GB10, and "Jake's laptop" below means that workspace. Nothing else changes.
+- **Henry's laptop setup** (before 10:00; setup is allowed beforehand): Python 3.12, git, `pdftotext` (`apt install poppler-utils` or `brew install poppler`), the AI coding tool, a `GITHUB_TOKEN` (J2's record-then-replay done line), and Docker for J10 by 13:45. Without Docker, J10's live check moves to the GB10.
+- **Three clones:** Henry's own (lane H, on the GB10), plus `rv-a/` and `rv-b/` on his laptop. Each lane works only in its own clone, so no two lanes share a working copy.
+- **Jake's laptop setup:** Python 3.12, git, `pdftotext`, a `GITHUB_TOKEN`, and a clone with `pip install -e .`.
+- **Lane H's modules (§10)** are tested on the GB10. Their Tests sections already say which parts run offline.
+- **One-machine setup (§15, open):** if adopted, lanes A and B move to Henry's user on the GB10, and "Henry's laptop" in this section means that workspace. Nothing else changes.
 
 **Rules**
-- **Every Jake done line is reachable on the laptop.** GB10 integration is covered by Henry's done lines (H3–H6) and the checkpoints.
-- **Full-system runs on the GB10 use `main`.** Henry pulls and starts the processes (§6.4); Jake watches Slack and the logs. CP1 runs J1–J7 as the walking skeleton; J9 meets Henry's plugin at ~13:45; CP2 adds J8, J10 and J11; J12–J14 first run there in the 16:15 dry runs. Henry's own module work on the GB10 uses his own clone.
-- **The GB10 never records GitHub responses.** It replays the committed cache; all recording happens on Jake's laptop (J2).
+- **Every lane A/B done line is reachable on a laptop.** GB10 integration is covered by lane H's done lines (H3–H6) and the checkpoints.
+- **Full-system runs on the GB10 use `main`.** Henry pulls and starts the processes (§6.4); Jake watches Slack and the logs. CP1 runs J1–J7 as the walking skeleton; J9 meets lane H's plugin at ~13:45; CP2 adds J8, J10 and J11; J12–J14 first run there in the 16:15 dry runs.
+- **The GB10 never records GitHub responses.** It replays the committed cache. Recording happens only on laptops: J2's done-line check on Henry's, and the official recordings on Jake's (§14).
 - **Code and fixtures move only through GitHub.** The recorded cache and repo snapshots are committed; `runs/` and `.env` never are.
-- **Each machine has its own `.env`,** copied from `.env.example` (J1). It has working local values for everything except `GITHUB_TOKEN` and the Slack and LLM settings, which exist only on the GB10.
-- **Optional:** with `SLACK_BOT_TOKEN` and a test channel in his `.env`, Jake can set `VERIFIER_REAL=slack` (after H3) to see real cards from the laptop. Buttons don't work on those cards.
+- **Each machine has its own `.env`,** copied from `.env.example` (J1). It has working local values for everything except `GITHUB_TOKEN` and the Slack and LLM settings; the Slack and LLM settings exist only on the GB10.
+- **Optional:** with `SLACK_BOT_TOKEN` and a test channel in a laptop's `.env`, `VERIFIER_REAL=slack` (after H3) shows real cards from that laptop. Buttons don't work on those cards.
 
 ### 11.2 Module overview
 
-| # | Module | Agent | Window | Est. | Done line |
-|---|---|---|---|---|---|
-| J1 | Contracts + thin runner, store core, `read_resume` | A + B | 10:00–10:30 | 0.5 h | `demo --stub` exits 0 with its built-in checks; `contracts-v1` tagged |
-| J2 | GitHub fetcher, matching, recorder | A | 10:30–11:30 | 1 h | Record then replay gives identical evidence for Henry |
-| J3 | Mock ATS, adapter, Harvest v3, webhook route | B | 10:30–11:45 | 1.25 h | Signed apply accepted; resume downloaded; private note and `other` attachment in the mock |
-| J4 | `link_github` | A | 11:30–11:45 | 0.25 h | Henry links to `henrychen4736`; a different Greenhouse login becomes the conflict |
-| J5 | Rubric (`project`, `skill`) + golden test | A | 11:45–13:15 | 1.5 h | Henry's expected labels and the fake's two hard reasons; golden test passes |
-| J6 | Card and thread renderers | B | 11:45–12:30 | 0.75 h | Valid Block Kit, ≤ 50 blocks, matches the card mockup |
-| J7 | Orchestrator | B | 12:30–13:00 | 0.5 h | `demo --stub` passes on it, then with each real module swapped in |
-| J8 | Annotated PDF | B | 13:00–14:15 | 1.25 h | Dots and highlights on Henry's resume; pop-ups open in pdf.js; notes page |
-| J9 | Internal API | A | 13:15–13:45 | 0.5 h | Every §8.4 endpoint answers to spec against a stub run |
-| J10 | Run harness + Docker backend | A | 13:45–14:45 | 1 h | cubesolver baseline recorded; a failed run caps the claim at 🟡 ⚠️ |
-| J11 | Mock candidate page | B | 14:15–14:45 | 0.5 h | Shows the annotated PDF and the notes list |
-| J12 | Edit claim | B | 14:45–15:05 | 0.33 h | `claims.v2` saved, verdict recomputed on the same snapshot, change logged in the thread |
-| J13 | `oss_contribution` | A | 14:45–15:30 | 0.75 h | The option-C merged PR comes out 🟢 |
-| J14 | More context / Suggest questions | B | 15:05–15:35 | 0.5 h | Text saved to `generated/` and posted in the thread |
+| # | Module | Lane | Target window | Est. | Start when (on `main`, after the lane's previous module is pushed) | Done line |
+|---|---|---|---|---|---|---|
+| J1 | Contracts + thin runner, store core, `read_resume` | A + B | 10:00–10:30 | 0.5 h | A: the docs are in the repo. B: A's scaffold is pushed (~10:05) | `demo --stub` exits 0 with its built-in checks; Jake tags `contracts-v1` |
+| J2 | GitHub fetcher, matching, recorder | A | 10:30–11:30 | 1 h | `contracts-v1` tagged | Record then replay gives identical evidence for Henry |
+| J3 | Mock ATS, adapter, Harvest v3, webhook route | B | 10:30–11:45 | 1.25 h | `contracts-v1` tagged | Signed apply accepted; resume downloaded; private note and `other` attachment in the mock |
+| J4 | `link_github` | A | 11:30–11:45 | 0.25 h | Lane order only | Henry links to `henrychen4736`; a different Greenhouse login becomes the conflict |
+| J5 | Rubric (`project`, `skill`) + golden test | A | 11:45–13:15 | 1.5 h | Jake's 11:45 recording is committed (cache and sample snapshot) | Henry's expected labels and the fake's two hard reasons; golden test passes |
+| J6 | Card and thread renderers | B | 11:45–12:30 | 0.75 h | Lane order only | Valid Block Kit, ≤ 50 blocks, matches the card mockup |
+| J7 | Orchestrator | B | 12:30–13:00 | 0.5 h | J3 and J6 (both lane B, already in) | `demo --stub` passes on it, then with each real module swapped in |
+| J8 | Annotated PDF | B | 13:00–14:15 | 1.25 h | Lane order only | Dots and highlights on Henry's resume; pop-ups open in pdf.js; notes page |
+| J9 | Internal API | A | 13:15–13:45 | 0.5 h | J3, J6 and **J7 from lane B** | Every §8.4 endpoint answers to spec against a stub run |
+| J10 | Run harness + Docker backend | A | 13:45–14:45 | 1 h | J2's repo archives committed (11:45 `--clone`); J5 (lane A, already in) | cubesolver baseline recorded; a failed run caps the claim at 🟡 ⚠️ |
+| J11 | Mock candidate page | B | 14:15–14:45 | 0.5 h | J3 and J8 (lane B, already in) | Shows the annotated PDF and the notes list |
+| J12 | Edit claim | B | 14:45–15:05 | 0.33 h | **J5 and J9 from lane A**; CP2's Musts merged (§12.4) | `claims.v2` saved, verdict recomputed on the same snapshot, change logged in the thread |
+| J13 | `oss_contribution` | A | 14:45–15:30 | 0.75 h | CP2's Musts merged (§12.4) | The option-C merged PR comes out 🟢 |
+| J14 | More context / Suggest questions | B | 15:05–15:35 | 0.5 h | **J9 from lane A** | Text saved to `generated/` and posted in the thread |
 
-- About 5.5 h per agent, leaving ~45 min (A) and ~40 min (B) before the 16:15 feature freeze. Every Must lands by CP2.
+**Cross-lane waits** (everything else is lane order)
+
+| Waiting | On | Until then |
+|---|---|---|
+| H2's GB10 extraction | H1: model serving | H2's agent does the offline parts |
+| H3 | H1: Slack app connected | Slip plan: H3 can go before H2's GB10 part (§12.3) |
+| J5 | Jake's 11:45 recording | Nothing to wait for in practice: J4 ends at 11:45 |
+| CP1 recording top-up (Jake) | H2's real claims files | The hand-written claims fixtures |
+| J9 | Lane B's J7 | Due 13:00, J9 starts 13:15 |
+| H4's real endpoints, H5's done line | Lane A's J9 (~13:45) | `tests/stack/fake_actions_server.py` |
+| J12, J14 | Lane A's J9 (J12 also J5) | Due 13:45, well before 14:45 |
+| H6's done line | Lane A's J10 (~14:45) and H2's `llm_chat` | H6 builds and tests against a fake sandbox and scripted model replies |
+
+**Critical path:** J1 → J2 → Jake's 11:45 recording → J5 → CP1 (13:00). A second chain runs J7 (B) → J9 (A) → H4/H5 (H) and J12/J14 (B); a third runs J10 (A) → H6's done line (H). A slip in J2, J7, J9 or J10 delays another lane, so those prompts get Henry's attention first.
+
+- About 5.5 h per lane, leaving ~45 min (A) and ~40 min (B) before the 16:15 feature freeze. Every Must lands by CP2.
 - **Changes from v3's schedule:**
   - Edit claim moved from A to B. It edits `pipeline.py` and `render.py`, like More context, so the two would otherwise collide; B builds it first, per the cut order.
   - New slots for J4 and J9.
   - J1 gains the thin runner, store core and `read_resume`.
 - **One file, one agent at a time.** The windows guarantee it: `pipeline.py` passes from A (J1) to B (J7), `service.py` from B (J3) to A (J9), and `resume.py` from B (J1) to A (J4).
 
-### 11.3 Rules for Jake's agents [new]
+### 11.3 Rules for lanes A and B [new]
 
 Every prompt built from these specs carries these rules:
 - Read Part C (§8–9) and the sections the spec cites. After 10:30, `contracts/` changes only if Jake and Henry both agree (Part E).
@@ -1479,9 +1523,9 @@ Every prompt built from these specs carries these rules:
 
 ### J1. Contracts + thin runner, store core, `read_resume`
 
-**Owner:** Jake, agents A and B · **Window:** 10:00–10:30; `contracts/` is frozen and tagged `contracts-v1` at 10:30 · **Estimate:** 0.5 h
-**Where:** Jake's laptop
-**Before 10:00:** Henry has reviewed Part C; both resume PDFs exist; the project repo exists (empty).
+**Owner:** Henry's lanes A and B (Jake reviews; build split v2, §11.1) · **Window:** 10:00–10:30; `contracts/` is frozen and tagged `contracts-v1` at 10:30 · **Estimate:** 0.5 h
+**Where:** Henry's laptop
+**Before 10:00:** Henry has reviewed Part C; both resume PDFs exist; the project repo exists (docs only).
 **Spec sources:** Part C in full; §6.1–6.4; §7; §11.4
 
 **Timing within the window**
@@ -1575,8 +1619,8 @@ def next_verdict_n(run_dir: Path) -> int
 
 ### J2. GitHub fetcher, matching, recorder
 
-**Owner:** Jake, agent A · **Window:** 10:30–11:30 (must be done before the 11:45 recording) · **Estimate:** 1 h
-**Where:** Jake's laptop. The recording at 11:45 also runs here, on the phone hotspot.
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 10:30–11:30 (must be done before the 11:45 recording) · **Estimate:** 1 h
+**Where:** Henry's laptop (`rv-a/`). The official 11:45 recording runs on Jake's laptop, on the phone hotspot (§14).
 **Files:** `core/fetch.py`, `core/match.py`, `tests/core/test_fetch.py`, `tests/core/test_match.py`
 **Depends on:** J1 (contracts, `store`, `snapshot`); `GITHUB_TOKEN`; `llm` through the registry for the match fallback (stub until H2)
 **Interfaces:** §8.3 `fetch`; §7.4; `Snapshot` and `cache_key` (§8.2)
@@ -1631,7 +1675,7 @@ def next_verdict_n(run_dir: Path) -> int
 4. Writes bodies to `raw/<body_sha256>.json` through `store`. Writes `evidence.json` once, with `responses` and `misses` sorted by key and `decisions` in claim order.
 5. Returns `Snapshot.load(...)`. Raises only `FetchError`, for local failures (disk, a corrupt cache file).
 
-**Recorder CLI** (Jake's laptop only)
+**Recorder CLI** (laptops only, never the GB10)
 ```
 python -m verifier.core.fetch record --login henrychen4736 --login <fake-login> \
   --claims fixtures/claims/henrychen4736.json --claims fixtures/claims/<fake-login>.json --clone
@@ -1659,8 +1703,8 @@ python -m verifier.core.fetch record --login henrychen4736 --login <fake-login> 
 
 ### J3. Mock ATS, Greenhouse adapter, Harvest v3, webhook route
 
-**Owner:** Jake, agent B · **Window:** 10:30–11:45 · **Estimate:** 1.25 h
-**Where:** Jake's laptop, with both servers on `localhost`. At CP1, Henry runs the mock ATS on the GB10 host.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 10:30–11:45 · **Estimate:** 1.25 h
+**Where:** Henry's laptop, with both servers on `localhost`. At CP1, Henry runs the mock ATS on the GB10 host.
 **Files:** `ats/mock_app.py`, `ats/apply.py`, `ats/adapter.py`, `core/service.py` (app, webhook route, health; J9 adds `/internal/*`), `tests/ats/test_mock_app.py`, `tests/ats/test_adapter.py`, `tests/core/test_service_webhook.py`
 **Depends on:** J1; `fixtures/webhooks/*.json`, `fixtures/resumes/*.pdf`
 **Interfaces:** §8.3 `ats`; §8.4 (webhook and health rows); the Greenhouse formats below
@@ -1756,8 +1800,8 @@ python -m verifier.core.fetch record --login henrychen4736 --login <fake-login> 
 
 ### J4. `link_github`
 
-**Owner:** Jake, agent A · **Window:** 11:30–11:45 [new slot] · **Estimate:** 0.25 h
-**Where:** Jake's laptop
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 11:30–11:45 [new slot] · **Estimate:** 0.25 h
+**Where:** Henry's laptop
 **Files:** `core/resume.py` (adds `link_github`; `read_resume` is from J1), `tests/core/test_link_github.py`
 **Depends on:** J1 (`read_resume`, fixtures)
 **Interfaces:** §8.3 `resume`; `Candidate` (§8.2); §4 Must #1
@@ -1789,8 +1833,8 @@ python -m verifier.core.fetch record --login henrychen4736 --login <fake-login> 
 
 ### J5. Rubric (`project`, `skill`) + golden test
 
-**Owner:** Jake, agent A · **Window:** 11:45–13:15 (mostly before CP1; the golden test right after) · **Estimate:** 1.5 h
-**Where:** Jake's laptop
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 11:45–13:15 (mostly before CP1; the golden test right after) · **Estimate:** 1.5 h
+**Where:** Henry's laptop
 **Files:** `core/rubric.py`, `tests/core/test_rubric.py`, `tests/core/test_golden.py`, `fixtures/golden/<case>/`, `fixtures/expected/henrychen4736.labels.json`, `fixtures/expected/<fake-login>.labels.json`
 **Depends on:** J1 (contracts, `store`, `snapshot`); J2 (`match.py`, and the snapshots recorded at 11:45); §11.4 (expected labels)
 **Interfaces:** §8.3 `rubric`; §7.6
@@ -1886,8 +1930,8 @@ Lower bounds are inclusive: exactly 50% is a pass for a creator; exactly 20% is 
 
 ### J6. Card and thread renderers
 
-**Owner:** Jake, agent B · **Window:** 11:45–12:30 · **Estimate:** 0.75 h
-**Where:** Jake's laptop. The visual check uses Slack's Block Kit Builder in a browser; real cards in a test channel are optional after H3 (§11.1).
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 11:45–12:30 · **Estimate:** 0.75 h
+**Where:** Henry's laptop. Jake does the visual check in Slack's Block Kit Builder in a browser; real cards in a test channel are optional after H3 (§11.1).
 **Files:** `core/render.py`, `tests/core/test_render.py`, `fixtures/render/henry_card.json` (golden card)
 **Depends on:** J1 (types; the claims, verdict, run trace and webhook fixtures)
 **Interfaces:** §8.3 `render`; §8.5; `CardOptions` (§8.2)
@@ -1997,8 +2041,8 @@ Evidence summary only; not a hiring recommendation.
 
 ### J7. Orchestrator
 
-**Owner:** Jake, agent B · **Window:** 12:30–13:00 · **Estimate:** 0.5 h (tight; J1's thin runner covers CP1 if this runs over)
-**Where:** Jake's laptop. At CP1, Henry runs it on the GB10 as part of the walking skeleton.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 12:30–13:00 · **Estimate:** 0.5 h (tight; J1's thin runner covers CP1 if this runs over)
+**Where:** Henry's laptop. At CP1, Henry runs it on the GB10 as part of the walking skeleton.
 **Files:** `core/pipeline.py` (replaces J1's v0), `core/store.py` (adds the `meta.json` helpers), `tests/core/test_pipeline.py`
 **Depends on:** J1, J3 (adapter), J6 (render); everything else through the registry (stubs are fine)
 **Interfaces:** §8.3 `pipeline`; §5.1–5.6; §8.5; `CardOptions`
@@ -2073,8 +2117,8 @@ Evidence summary only; not a hiring recommendation.
 
 ### J8. Annotated PDF
 
-**Owner:** Jake, agent B · **Window:** 13:00–14:15 · **Estimate:** 1.25 h
-**Where:** Jake's laptop. Pop-ups are checked in Firefox, whose built-in PDF viewer is pdf.js.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 13:00–14:15 · **Estimate:** 1.25 h
+**Where:** Henry's laptop. Jake checks pop-ups in Firefox, whose built-in PDF viewer is pdf.js.
 **Files:** `core/annotate.py`, `tests/core/test_annotate.py`
 **Depends on:** J1 (`store`; Henry's resume PDF and the claims and verdict fixtures); PyMuPDF
 **Interfaces:** §8.3 `annotate`
@@ -2111,8 +2155,8 @@ Evidence summary only; not a hiring recommendation.
 
 ### J9. Internal API
 
-**Owner:** Jake, agent A · **Window:** 13:15–13:45 [new slot] · **Estimate:** 0.5 h
-**Where:** Jake's laptop, tested with `curl` against a stub run. At ~13:45, Henry points his OpenClaw plugin at the GB10's verifier for H4 and H5.
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 13:15–13:45 [new slot] · **Estimate:** 0.5 h
+**Where:** Henry's laptop, tested with `curl` against a stub run. At ~13:45, Henry points his OpenClaw plugin at the GB10's verifier for H4 and H5.
 **Files:** `core/service.py` (adds the `/internal/*` routes), `tests/core/test_service_internal.py`
 **Depends on:** J3 (the service skeleton), J7 (pipeline functions and read helpers), J6 (the modal placeholder); `slack.open_modal` through the registry
 **Interfaces:** §8.4, §8.5
@@ -2168,8 +2212,8 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 
 ### J10. Run harness + Docker backend
 
-**Owner:** Jake, agent A · **Window:** 13:45–14:45 · **Estimate:** 1 h
-**Where:** Jake's laptop, with Docker (`SANDBOX_BACKEND=docker` in the laptop's `.env`). Without Docker there by 13:45, the live check moves to the GB10 with Henry. At CP2, H6's done line runs this harness on the OpenShell backend.
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 13:45–14:45 · **Estimate:** 1 h
+**Where:** Henry's laptop, with Docker (`SANDBOX_BACKEND=docker` in the laptop's `.env`). Without Docker there by 13:45, the live check moves to the GB10. At CP2, H6's done line runs this harness on the OpenShell backend.
 **Files:** `core/harness.py`, `core/rubric.py` (adds the `run` check), `docker/runcheck.Dockerfile` [new], `tests/core/test_harness.py`, `tests/core/test_rubric_run.py`, `tests/core/fixtures_repos/` (tiny test repos)
 **Depends on:** J1 (contracts, `store`, `snapshot`); J2 (repo archives in `fixtures/repos/`); J5 (rubric); `sandbox`, `agent` and `judge` through the registry (stubs until H6)
 **Interfaces:** §8.3 `harness` and `sandbox`; §7.5; the `run` row of J5's check table
@@ -2177,7 +2221,7 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 **`run_check(snapshot, claim, repo_full_name, *, mode)`**
 1. **Check out the repo** into a temp folder:
    - `replay`: extract `fixtures/repos/<owner>__<name>.tar.gz`; `commit_sha` comes from its `.json` sidecar. A missing archive → `SandboxError("repo not recorded: owner/name")`.
-   - `record` / `live` (Jake's laptop only; the GB10 always replays): `git clone --depth 1`; `commit_sha` from `git rev-parse HEAD`.
+   - `record` / `live` (laptops only; the GB10 always replays): `git clone --depth 1`; `commit_sha` from `git rev-parse HEAD`.
    - Repos over 50 MB → `SandboxError("repo too large")`.
 2. **Read the README** (`README.md`, `README.rst`, `README.txt` or `README` at the root), truncated to 8,000 characters, for the agent only.
 3. **Open the sandbox:** `registry.get("sandbox").open_sandbox(repo_dir)`.
@@ -2266,8 +2310,8 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 
 ### J11. Mock candidate page
 
-**Owner:** Jake, agent B · **Window:** 14:15–14:45 · **Estimate:** 0.5 h
-**Where:** Jake's laptop, in a browser at `http://localhost:8100`. At CP2, Henry runs the mock ATS on the GB10 host and sets `ATS_PUBLIC_URL` to the GB10's hotspot address, so the Slack *Open in Greenhouse* button and this page open from the laptops.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 14:15–14:45 · **Estimate:** 0.5 h
+**Where:** Henry's laptop, in a browser at `http://localhost:8100`. At CP2, Henry runs the mock ATS on the GB10 host and sets `ATS_PUBLIC_URL` to the GB10's hotspot address, so the Slack *Open in Greenhouse* button and this page open from the laptops.
 **Files:** `ats/mock_app.py` (adds the page routes), `ats/templates/candidate.html`, `ats/templates/index.html` [new], `ats/static/pdfjs/` (vendored), `tests/ats/test_candidate_page.py`
 **Depends on:** J3 (mock state and file serving); J8 (annotated PDFs; the stub's plain copy works until then)
 **Interfaces:** §4 Must #6; carried from v3 §10: one page, showing only what real Greenhouse can show (notes and attachments)
@@ -2296,8 +2340,8 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 
 ### J12. Edit claim
 
-**Owner:** Jake, agent B · **Window:** 14:45–15:05 · **Estimate:** 0.33 h (moved from A; built before J14, per the cut order)
-**Where:** Jake's laptop, driven by `fixtures/slack/edit_submit.json` through J9. The first real click happens on the GB10 in the 16:15 dry runs.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 14:45–15:05 · **Estimate:** 0.33 h (moved from A; built before J14, per the cut order)
+**Where:** Henry's laptop, driven by `fixtures/slack/edit_submit.json` through J9. The first real click happens on the GB10 in the 16:15 dry runs.
 **Files:** `core/render.py` (the real `render_edit_modal` and `render_label_change`), `core/pipeline.py` (the real `edit_claim` and `validate_edit`), `tests/core/test_edit_claim.py`
 **Depends on:** J5, J6, J7 (flow helpers, write-back), J9 (routing and validation)
 **Interfaces:** §8.3 `render` and `pipeline`; §8.5 (modal); §5.3 (Edit claim flow)
@@ -2344,8 +2388,8 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 
 ### J13. `oss_contribution`
 
-**Owner:** Jake, agent A · **Window:** 14:45–15:30 · **Estimate:** 0.75 h · **First to cut** (`CUT=oss`)
-**Where:** Jake's laptop
+**Owner:** Henry's lane A (Jake reviews) · **Window:** 14:45–15:30 · **Estimate:** 0.75 h · **First to cut** (`CUT=oss`)
+**Where:** Henry's laptop
 **Files:** `core/rubric.py` (the contribution checks), `tests/core/test_rubric_oss.py`, the `fake` golden case and `fixtures/expected/<fake-login>.labels.json` (both updated)
 **Depends on:** J2 (it already records the contribution requests, at 11:45); J5 (rubric structure)
 **Interfaces:** the `oss_contribution` rows below; carried from v3 §6
@@ -2383,8 +2427,8 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 
 ### J14. More context / Suggest questions
 
-**Owner:** Jake, agent B · **Window:** 15:05–15:35 · **Estimate:** 0.5 h · Cut second (`CUT=generate`)
-**Where:** Jake's laptop with the `llm` stub. Real text first appears on the GB10 in the 16:15 dry runs, where Jake reads one of each.
+**Owner:** Henry's lane B (Jake reviews) · **Window:** 15:05–15:35 · **Estimate:** 0.5 h · Cut second (`CUT=generate`)
+**Where:** Henry's laptop with the `llm` stub. Real text first appears on the GB10 in the 16:15 dry runs, where Jake reads one of each.
 **Files:** `core/generate.py`, `core/prompts/context-v1.md` and `questions-v1.md` [new], `core/pipeline.py` (the real `generate`), `core/render.py` (the real `render_generated`), `tests/core/test_generate.py`
 **Depends on:** J6, J7, J9 (routing); `llm` through the registry
 **Interfaces:** §8.3 `generate`, `pipeline.generate` and `render_generated`; §7.7; D6–D8
@@ -2427,24 +2471,27 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 
 ### 12.1 Timeline
 
-**Before 10:00:** Henry reviews Part C; his review is the real agreement, and changes after the freeze are the expensive kind. Jake commits this doc to the repo as `docs/design-doc.md` and finishes his laptop setup (§11.1).
+**Before 10:00:** Henry reviews Part C; his review is the real agreement, and changes after the freeze are the expensive kind. Henry sets up his laptop with the `rv-a/` and `rv-b/` clones; Jake sets up his laptop for recording and checks (§11.1). This doc is already in the repo as `docs/design-doc.md`.
 
-| Time | Henry | Jake: agent A | Jake: agent B |
-|---|---|---|---|
-| 10:00–10:30 | H1 stack bring-up and smoke tests (may run to ~12:00) | J1: types, interfaces, stubs, registry, config; then the thin runner and `demo.py` (by ~11:30) | J1: schemas, fixtures, store core, `read_resume` |
-| **10:30** | **`contracts/` frozen and tagged `contracts-v1`** | | |
-| 10:30–11:45 | H2 `llm_chat` + claim extraction | J2 fetcher (to 11:30), then J4 `link_github` | J3 mock ATS, adapter, webhook route |
-| **11:45** | — | **Jake records fixtures on the phone hotspot (§14)** | — |
-| 11:45–13:00 | H3 Slack transport (to 12:30), then H4 button routing | J5 rubric (to 13:15) | J6 renderers (to 12:30), then J7 orchestrator |
-| **13:00 · CP1** | **Walking skeleton with real modules on the GB10 (§12.2)** | | |
-| 13:00–14:45 | H4 finishes (real endpoints from ~13:45); H5 @-mention tools (13:30–14:00); H6 run check from 14:00 | J5 golden test (to 13:15); J9 internal API (13:15–13:45); J10 run harness (13:45–14:45) | J8 annotated PDF (to 14:15), then J11 candidate page |
-| **14:45 · CP2** | **All Musts merged and demo-able (§12.2)** | | |
-| 14:45–16:15 | H6 run check (to 16:00) | J13 `oss_contribution` (to 15:30); then slack | J12 Edit claim (to 15:05), then J14 More context / Suggest questions (to 15:35); then slack |
-| **16:15** | **Feature freeze:** integration fixes and two full dry runs in replay mode; fix only demo-path bugs | | |
-| **17:00 / 17:30** | **Target / hard code freeze;** then record the video (≥ 30 min) and submit by 18:00 | | |
+All four columns are Henry's AI account except Jake's. Times are targets; each prompt starts by the start rule (§11.1, §11.2).
+
+| Time | Henry: H1 + lane H | Lane A | Lane B | Jake (no AI) |
+|---|---|---|---|---|
+| 10:00–10:30 | H1 stack bring-up and smoke tests, by hand (may run to ~12:00) | J1A: types, interfaces, stubs, registry, config; then the thin runner and `demo.py` (by ~11:30) | J1B: schemas, fixtures, store core, `read_resume` | Prompt queue; fake-candidate details; checks J1 pushes |
+| **10:30** | **`contracts/` frozen; Jake tags `contracts-v1` after reviewing it with Henry** | | | |
+| 10:30–11:45 | H1 continues if needed; lane H: H2 `llm_chat` + extraction (offline parts first, GB10 once the model serves) | J2 fetcher (to 11:30), then J4 `link_github` | J3 mock ATS, adapter, webhook route | Verifies J2 and J3 (`curl`) |
+| **11:45** | — | — | — | **Records fixtures on the phone hotspot and commits (§14); J5 can start** |
+| 11:45–13:00 | H3 Slack transport (to 12:30), then H4 button routing | J5 rubric (to 13:15) | J6 renderers (to 12:30), then J7 orchestrator | Verifies J4, J6 (Block Kit Builder), J7 |
+| **13:00 · CP1** | **Walking skeleton with real modules on the GB10 (§12.2)** | | | |
+| 13:00–14:45 | H4 finishes (real endpoints once J9 lands, ~13:45); H5 @-mention tools (13:30–14:00); H6 run check from 14:00 | J5 golden test (to 13:15); J9 internal API (13:15–13:45); J10 run harness (13:45–14:45) | J8 annotated PDF (to 14:15), then J11 candidate page | CP1 recording top-up; golden diff; verifies J8 and J11 (Firefox), J9 (`curl`), J10; option-A pass before CP2 |
+| **14:45 · CP2** | **All Musts merged and demo-able (§12.2)** | | | |
+| 14:45–16:15 | H6 run check (to 16:00) | J13 `oss_contribution` (to 15:30); then slack | J12 Edit claim (to 15:05), then J14 More context / Suggest questions (to 15:35); then slack | Verifies J12–J14; video script |
+| **16:15** | **Feature freeze:** integration fixes and two full dry runs in replay mode; fix only demo-path bugs | | | |
+| **17:00 / 17:30** | **Target / hard code freeze;** then record the video (≥ 30 min) and submit by 18:00 | | | |
 
 - **Why 10:30:** it's the earliest the contracts can exist as code, and it starts the chain contracts → fetcher (~11:30) → recording (11:45) → rubric → CP1 (13:00).
-- Estimates are judgment, not measured, and include review and debugging. Each agent has ~40–45 minutes of slack before the freeze (§11.2).
+- Estimates are judgment, not measured, and include review and debugging. Lanes A and B each have ~40–45 minutes of slack before the freeze (§11.2).
+- **Henry's load:** three agent lanes plus H1 by hand, where v1 gave Jake two lanes. Prompts A and B are self-contained, so a lane needs Henry only to paste its next prompt and to answer when an agent stops to ask. Jake's checks catch what a lane gets wrong.
 
 ### 12.2 Checkpoints
 
@@ -2466,7 +2513,8 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 - **Button routing:** `SLACK_ACTIONS=plugin` → `agent` → `off`, decided by 13:30 (H4).
 - **Run-check sandbox:** OpenShell, else Docker (`SANDBOX_BACKEND=docker`, J10).
 - **Orchestrator:** if J7 misses CP1, the thin runner carries CP1 (J1).
-- **Docker on Jake's laptop:** if it isn't there by 13:45, J10's live check moves to the GB10 with Henry (§11.1).
+- **Docker on Henry's laptop:** if it isn't there by 13:45, J10's live check moves to the GB10 (§11.1).
+- **Henry stretched across three lanes:** lane H first, then whichever of A and B is on the critical path (§11.2). Jake names the next prompt. If a lane falls more than ~30 minutes behind its target, apply the cut order (§12.4) early rather than letting lane H starve.
 
 ### 12.4 Cut rules (v3, now applied by config)
 
@@ -2483,9 +2531,9 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 ## 13. Integration and push rules
 
 **Ownership** (§6.1)
-- Henry: `verifier/stack/`. Jake: `verifier/core/`, `verifier/ats/`, `verifier/demo.py`. Shared: `fixtures/`.
-- `verifier/contracts/` is frozen at 10:30 (tag `contracts-v1`). It changes only when Jake and Henry both agree; then both of them, and their agents, re-read it.
-- Jake's two agents work in separate clones (`rv-a/`, `rv-b/`), and each file has one agent at a time (§11.2).
+- Lane H: `verifier/stack/`. Lanes A and B: `verifier/core/`, `verifier/ats/`, `verifier/demo.py` (Jake reviews). Shared: `fixtures/`; Jake commits the recorded cache and repo archives.
+- `verifier/contracts/` is frozen at 10:30 (tag `contracts-v1`). It changes only when Jake and Henry both agree; then every lane re-reads it.
+- Each lane works in its own clone (Henry's GB10 clone, `rv-a/`, `rv-b/`), and each file has one lane at a time (§11.2).
 
 **Stubs and real modules**
 - Every interface exists as a working stub from 10:30, so the pipeline always runs end to end (D19).
@@ -2498,15 +2546,15 @@ curl -s -X POST -H "X-Verifier-Token: dev-token" -H "Content-Type: application/j
 - Fixtures (recorded cache, repo archives, golden files) are committed like code; `runs/` and `.env` never are.
 
 **Machines** (§11.1)
-- Jake's modules are built and tested on his laptop. Full-system runs happen on the GB10 from `main`, started by Henry.
+- Lanes A and B build and test on Henry's laptop; Jake re-checks each push on his. Full-system runs happen on the GB10 from `main`, started by Henry.
 - Each machine has its own `.env`, copied from `.env.example`.
 - The GB10 never records GitHub responses; it replays the committed cache.
 
-**Prompts:** the AI coding prompts for every module (built from §10–§11) are in `claude/2026-10-25-coding-prompts-all.md`. Paste a module's prompt at the start of its window, and the next one only after the previous module's done line passes.
+**Prompts:** the AI coding prompts for every module (built from §10–§11) are in `docs/coding-prompts.md`. Henry pastes each into its lane by the start rule (§11.1): the lane's previous module is pushed and everything the module's **Start when** column lists is on `main`.
 
 ## 14. Fixture recording
 
-All recording runs on Jake's laptop on the phone hotspot; the GB10 only replays (v3 §0.6, updated).
+All official recordings run on Jake's laptop on the phone hotspot; the GB10 only replays (v3 §0.6, updated). Lane A records only to check J2's done line, on Henry's laptop.
 
 | When | What | Command |
 |---|---|---|
@@ -2527,7 +2575,8 @@ All recording runs on Jake's laptop on the phone hotspot; the GB10 only replays 
 | Note visibility | Resolved: `private` (D22) |
 | One-machine / SSH setup | Open (below) |
 | Henry's checklist results | Due from H1 |
-| Docker on Jake's laptop | Needed by 13:45 (J10) [new] |
+| Docker on Henry's laptop | Needed by 13:45 (J10) [new] |
+| Henry's laptop: `rv-a/`, `rv-b/` clones, Python 3.12, `pdftotext`, `GITHUB_TOKEN` | Before 10:00 (build split v2, §11.1) |
 | Repo access on the GB10 | Henry clones it with pull access at bring-up (H1) [new] |
 | ForgeGuard: does it execute code? | Pitch only, low priority (§2.1) |
 
@@ -2535,7 +2584,7 @@ All recording runs on Jake's laptop on the phone hotspot; the GB10 only replays 
 - About 20–40 minutes at bring-up.
 - Main risk: venue wifi often blocks devices from reaching each other. Put the GB10 and both laptops on the phone hotspot; an ethernet cable is the backup.
 - Needs an arm64 Linux build of the AI coding tool.
-- If adopted, Henry's checklist gains "AI coding tool runs on the GB10 (arm64)" and "both laptops can SSH in over the hotspot", and "Jake's laptop" in §11 means his GB10 user.
+- If adopted, Henry's checklist gains "AI coding tool runs on the GB10 (arm64)" and "both laptops can SSH in over the hotspot", and "Henry's laptop" in §11 means his GB10 user (lanes A and B run there).
 
 **Video and demo** (outside this doc's scope): the session 3 beat sheet is problem hook → Henry applies → Slack card → run check streaming in the thread → fake candidate 🔴 with two hard reasons → the annotated resume on the candidate page → @-mention → local-first close. Record in replay mode; J11's *Simulate application* button starts a run without a terminal on screen.
 

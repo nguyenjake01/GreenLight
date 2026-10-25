@@ -149,6 +149,8 @@ process.stdout.write(JSON.stringify([
   { path: p + "verifierUrl", value: process.argv[1] },
   { path: p + "token",       value: process.env.RV_TOKEN },
   { path: p + "slackActions", value: process.argv[2] },
+  // Bot replies go in the thread of the message that triggered them (design doc H5).
+  { path: "channels.slack.replyToMode", value: "all" },
 ]));'
 REMOTE_BATCH="/tmp/rv-config.batch.json"
 echo "+ RV_TOKEN=<INTERNAL_TOKEN> node -e '<build batch JSON>' $SANDBOX_URL $SLACK_ACTIONS \\"

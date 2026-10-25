@@ -5,6 +5,8 @@
 #   GB10:   docker build --platform linux/arm64 -t resume-verifier-runcheck -f docker/runcheck.Dockerfile .
 #   Demo repos' extra Python deps: --build-arg EXTRA_PIP="numpy"
 #
+# iproute2: the OpenShell supervisor needs /usr/sbin/ip to set up the network namespace
+# (without it `openshell sandbox create` fails with ContainerExited).
 # The sandbox runs this image with --network none, as uid 1000, with only /work and /tmp writable.
 FROM node:22-bookworm-slim AS node
 
@@ -13,7 +15,7 @@ FROM python:3.12-slim-bookworm
 ARG EXTRA_PIP=""
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends g++ make cmake git ca-certificates \
+ && apt-get install -y --no-install-recommends g++ make cmake git ca-certificates iproute2 \
       libxcb1 libgl1 libglib2.0-0 \
  && rm -rf /var/lib/apt/lists/*
 

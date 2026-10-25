@@ -19,7 +19,9 @@ filesystem_policy:
     - /lib
     - /etc
     - /proc
+    - /home      # else every exec's stderr starts with "~/.profile: Permission denied"
     - /dev/urandom
+    - /dev/zero
   read_write:
     - /work
     - /tmp

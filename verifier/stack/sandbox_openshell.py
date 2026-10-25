@@ -6,9 +6,26 @@ no-network policy ``openshell/runcheck-policy.yaml``, copies ``repo_dir`` to ``/
 sandbox afterwards.
 
 Every OpenShell command line lives in the "Command lines" section below, so they are easy to
-fix at bring-up. Each one is tagged DOCS (flag documented in the 0.0.116 docs / ``--help``)
-or GUESS (behavior not confirmed without a live gateway). Everything talks to the CLI through
-``subprocess``; a ``runner`` can be injected for tests.
+fix. Each one is tagged LIVE (confirmed against a real 0.0.116 gateway with the Docker compute
+driver on the GB10, 2026-10-25) or UNCONFIRMED (with the reason). Everything talks to the CLI
+through ``subprocess``; a ``runner`` can be injected for tests.
+
+Requirements the live check turned up (see also the notes on each command):
+
+* The CLI talks to the *active* gateway (``openshell gateway select``, or ``OPENSHELL_GATEWAY`` /
+  ``--gateway-endpoint`` in the environment); this module passes no gateway flag.
+* The supervisor builds a network namespace for the no-network policy, so ``RUNCHECK_IMAGE``
+  needs ``ip`` (apt package ``iproute2``) at /usr/sbin/ip, and /work must exist in the image.
+* ``process.run_as_user`` in the policy must be the image's user (uid 1000 in
+  ``docker/runcheck.Dockerfile``); set ``OPENSHELL_POLICY`` to use another policy file.
+* Add ``/home`` to the policy's ``read_only`` list: the exec endpoint starts a login shell as the
+  image user and without it every command's stderr begins with
+  ``/bin/bash: /home/<user>/.profile: Permission denied``.
+* The 256-PID limit is a gateway setting (Docker driver default is 2048). LIVE: start the gateway
+  with ``OPENSHELL_GATEWAY_CONFIG=<toml>`` containing ``[openshell.drivers.docker]`` /
+  ``sandbox_pids_limit = 256`` (HostConfig.PidsLimit 256; a fork bomb stopped at ~241).
+* ``/dev/zero`` is unreadable under the policy's Landlock rules (only /dev/null and
+  /dev/urandom are listed); add it to ``read_only`` if run-check commands need it.
 """
 from __future__ import annotations
 
@@ -29,6 +46,7 @@ from verifier.contracts.errors import SandboxError
 from verifier.contracts.types import ExecResult
 
 POLICY_PATH = Path(__file__).resolve().parent / "openshell" / "runcheck-policy.yaml"
+POLICY_ENV = "OPENSHELL_POLICY"             # optional override (e.g. image runs as another uid)
 
 OUTPUT_CAP = 1_000_000                      # 1 MB per stream (§8.3)
 TRUNCATION_MARKER = b"\n[truncated: output exceeded 1 MB]\n"
@@ -40,8 +58,8 @@ MAIN_CMD = ["sleep", "infinity"]            # the sandbox's canonical main proce
 CREATE_TIMEOUT_S = 300.0                    # image pull / sandbox provisioning
 UPLOAD_TIMEOUT_S = 300.0
 DELETE_TIMEOUT_S = 120.0
-READY_TIMEOUT_S = 90.0
 EXEC_GRACE_S = 5.0                          # CLI/host backstops sit this far beyond the in-sandbox kill
+STAGE_DIR = "/work/.rv-upload"              # `sandbox upload` nests the dir here; we hoist it
 
 
 # ══ Command lines (the only place OpenShell flags appear) ════════════════════════════════
@@ -56,63 +74,84 @@ def openshell_bin() -> str:
     return str(Path.home() / ".local" / "bin" / "openshell")
 
 
+def policy_path() -> Path:
+    return Path(os.environ.get(POLICY_ENV) or POLICY_PATH)
+
+
 def cmd_create(name: str, image: str, policy: Path) -> list[str]:
-    """DOCS (`sandbox create --help`): --name, --from <image ref>, --policy, --memory, --cpu,
-    --detach, --no-tty, trailing `-- <command>`. GUESS: that `create` returns once the sandbox
-    is Ready (we also poll with `cmd_exec` below). GUESS: a locally built image works with
-    --from (the Docker driver's default pull policy is IfNotPresent)."""
+    """LIVE. `sandbox create --name N --from IMAGE --policy P --memory 4Gi --cpu 2 --detach
+    --no-tty -- sleep infinity`:
+    * blocks until the sandbox is Ready (exec works the moment it returns, ~0.2 s with a local
+      image) and exits 0; if the container dies while provisioning it exits 1 with the reason
+      (e.g. "ContainerExited") and *leaves a sandbox in phase Error* that `delete` must remove;
+    * a local image (`functional-run-sandbox:arm64`, no registry) works with --from: the
+      Docker driver reports "Image already present" and never pulls;
+    * --memory/--cpu are applied (HostConfig.Memory = 4294967296, NanoCpus = 2e9).
+    Output (progress lines) goes to stdout and is ignored."""
     return [openshell_bin(), "sandbox", "create", "--name", name, "--from", image,
             "--policy", str(policy), "--memory", MEMORY, "--cpu", CPUS,
             "--detach", "--no-tty", "--", *MAIN_CMD]
 
 
 def cmd_upload(name: str, local: Path, dest: str) -> list[str]:
-    """DOCS (`sandbox upload <NAME> <LOCAL_PATH> [DEST]`, --no-git-ignore). GUESS: with an
-    explicit DEST of /work, a local *directory* lands as /work's contents rather than
-    /work/<basename> (docs only describe the basename rule for the default destination).
-    --no-git-ignore so the repo is copied as-is."""
+    """LIVE. `sandbox upload NAME LOCAL DEST --no-git-ignore`. A local *directory* always lands
+    at DEST/<basename of LOCAL> (an existing DEST, `/work`, is not replaced and a trailing
+    `/` or `/.` on LOCAL changes nothing; a missing DEST is created). So `_upload` uploads to
+    STAGE_DIR and hoists the contents. File modes, symlinks, dotfiles and empty files are
+    preserved. --no-git-ignore: .gitignore filtering applies only inside git repos, so the
+    flag keeps the copy verbatim there. Prints "Uploading ..." and a check mark to
+    stdout/stderr; exit 1 on a missing local path or sandbox ("sandbox not found")."""
     return [openshell_bin(), "sandbox", "upload", name, str(local), dest, "--no-git-ignore"]
 
 
 def cmd_exec(name: str, argv: list[str], timeout_s: int) -> list[str]:
-    """DOCS (`sandbox exec`): -n/--name, --workdir, --timeout (seconds, 0 = none), --no-tty,
-    --env KEY=VALUE, `-- <command...>`; the CLI exits with the remote command's exit code.
-    GUESS: the exit code / message the CLI uses when its own --timeout fires (see
-    `looks_like_timeout`). The real kill is `timeout -s KILL` inside the sandbox."""
+    """LIVE. `sandbox exec -n N --workdir /work --no-tty --timeout S --env HOME=/tmp -- argv...`:
+    * the CLI exits with the remote command's exit code, stdout and stderr stay separate;
+    * HOME=/tmp reaches the command (so `bash -lc` reads /tmp/.profile, not /home/...);
+    * the CLI's own --timeout S kills the wait and exits 124 with nothing on stderr (a plain
+      `sleep 10` with --timeout 2 returned 124 after 2.0 s);
+    * if the *top-level* remote process dies of a signal the CLI exits 1, not 137 (so
+      `inner_argv` runs the killer inside a bash that survives and reports 137);
+    * stdin is /dev/null in `subprocess_runner`, so readers get EOF."""
     return [openshell_bin(), "sandbox", "exec", "-n", name, "--workdir", WORKDIR,
             "--no-tty", "--timeout", str(timeout_s), "--env", f"HOME={EXEC_HOME}",
             "--", *argv]
 
 
-def cmd_ready_probe(name: str) -> list[str]:
-    """GUESS: a trivial exec succeeds only once the sandbox is Ready."""
-    return [openshell_bin(), "sandbox", "exec", "-n", name, "--no-tty", "--timeout", "30",
-            "--", "true"]
-
-
 def cmd_delete(name: str) -> list[str]:
-    """DOCS (`sandbox delete [NAME]...`)."""
+    """LIVE. `sandbox delete NAME`: exit 0 and "Deleted sandbox NAME" (also removes a sandbox
+    stuck in phase Error, and the container, in ~0.2 s); an unknown name exits 1 with
+    "sandbox not found"."""
     return [openshell_bin(), "sandbox", "delete", name]
 
 
+# Hoists what `sandbox upload` nested under STAGE_DIR/<basename> into /work.
+_HOIST = ('set -e; shopt -s dotglob nullglob; cd ' + STAGE_DIR + '; set -- *; '
+          '[ "$#" -eq 1 ] || { echo "unexpected upload layout" >&2; exit 3; }; '
+          'for f in "$1"/*; do mv "$f" /work/; done; cd /work; rm -rf ' + STAGE_DIR)
+
+
 def inner_argv(cmd: str, timeout_s: int) -> list[str]:
-    """What runs inside the sandbox: `bash -lc "<cmd>"` under a hard kill (kills the group)."""
-    return ["timeout", "-s", "KILL", str(timeout_s), "bash", "-lc", cmd]
+    """What runs inside the sandbox: `bash -lc "<cmd>"` under `timeout -s KILL`, run from an
+    outer bash that outlives the kill. LIVE: `timeout -s KILL` re-raises the signal on itself,
+    so run as the top-level process it makes the CLI exit 1; under the outer bash a timeout
+    gives exit 137, and the whole process group (background children too) is gone. The outer
+    bash adds a `_: line 1: N Killed  timeout ...` line to stderr when that happens."""
+    return ["bash", "-c", 'timeout -s KILL "$1" bash -lc "$2"; exit $?', "_",
+            str(timeout_s), cmd]
 
 
-def looks_like_timeout(returncode: int | None, stderr: bytes, duration_s: float,
-                       timeout_s: int) -> bool:
+def looks_like_timeout(returncode: int | None, duration_s: float, timeout_s: int,
+                       cli_timeout_s: int) -> bool:
     """True when the sandboxed command was killed by its time limit.
 
-    `timeout -s KILL` exits 137 (128+9) when it kills the command. GUESS: the CLI's own
-    --timeout reports a message containing "timed out" / "deadline".
+    LIVE: the in-sandbox `timeout -s KILL` gives 137 (128+9) after ~timeout_s; the CLI's own
+    --timeout (cli_timeout_s, the backstop) gives 124 after ~cli_timeout_s. A 137 long before
+    the limit is an OOM kill or a self-kill, i.e. an ordinary failure.
     """
     if returncode == 137 and duration_s >= timeout_s - 1.0:
         return True
-    if returncode not in (0, None) and duration_s >= timeout_s - 1.0:
-        low = stderr.lower()
-        return b"timed out" in low or b"timeout" in low or b"deadline" in low
-    return False
+    return returncode == 124 and duration_s >= cli_timeout_s - 1.0
 
 
 # ══ Process runner ═══════════════════════════════════════════════════════════════════════
@@ -204,11 +243,12 @@ class OpenShellSandbox:
 
     def exec(self, cmd: str, timeout_s: float) -> ExecResult:
         t = max(1, math.ceil(timeout_s))
-        argv = cmd_exec(self.name, inner_argv(cmd, t), t + int(EXEC_GRACE_S))
+        cli_timeout = t + int(EXEC_GRACE_S)
+        argv = cmd_exec(self.name, inner_argv(cmd, t), cli_timeout)
         started = time.monotonic()
-        res = self._run(argv, t + EXEC_GRACE_S + 5.0)
+        res = self._run(argv, cli_timeout + 5.0)
         duration = time.monotonic() - started
-        timed_out = res.timed_out or looks_like_timeout(res.returncode, res.stderr, duration, t)
+        timed_out = res.timed_out or looks_like_timeout(res.returncode, duration, t, cli_timeout)
         return {
             "exit_code": None if timed_out else res.returncode,
             "stdout": _cap(res.stdout, res.stdout_truncated),
@@ -218,34 +258,33 @@ class OpenShellSandbox:
         }
 
 
-_sleep = time.sleep
+def _fail(what: str, res: ProcResult) -> SandboxError:
+    why = "timed out" if res.timed_out else f"exit {res.returncode}"
+    return SandboxError(f"openshell sandbox {what} failed ({why}): "
+                        f"{_tail(res.stderr) or _tail(res.stdout)}")
 
 
-def _wait_ready(name: str, runner: Runner) -> None:
-    deadline = time.monotonic() + READY_TIMEOUT_S
-    last = ""
-    while True:
-        res = runner(cmd_ready_probe(name), 45.0)
-        if res.returncode == 0 and not res.timed_out:
-            return
-        last = _tail(res.stderr) or _tail(res.stdout)
-        if time.monotonic() >= deadline:
-            raise SandboxError(f"sandbox {name} not ready after {READY_TIMEOUT_S:.0f}s: {last}")
-        _sleep(1.0)
+def _upload(name: str, repo_dir: Path, runner: Runner) -> None:
+    """Copy repo_dir's contents to /work (the CLI would put it at /work/<basename>)."""
+    res = runner(cmd_upload(name, repo_dir, STAGE_DIR), UPLOAD_TIMEOUT_S)
+    if res.timed_out or res.returncode != 0:
+        raise _fail("upload", res)
+    res = runner(cmd_exec(name, ["bash", "-c", _HOIST], int(UPLOAD_TIMEOUT_S)), UPLOAD_TIMEOUT_S)
+    if res.timed_out or res.returncode != 0:
+        raise _fail("upload (hoist)", res)
 
 
 def _create(name: str, repo_dir: Path, runner: Runner) -> None:
-    res = runner(cmd_create(name, env("RUNCHECK_IMAGE"), POLICY_PATH), CREATE_TIMEOUT_S)
+    res = runner(cmd_create(name, env("RUNCHECK_IMAGE"), policy_path()), CREATE_TIMEOUT_S)
     if res.timed_out or res.returncode != 0:
-        why = "timed out" if res.timed_out else f"exit {res.returncode}"
-        raise SandboxError(f"openshell sandbox create failed ({why}): "
-                           f"{_tail(res.stderr) or _tail(res.stdout)}")
-    _wait_ready(name, runner)
-    res = runner(cmd_upload(name, repo_dir, WORKDIR), UPLOAD_TIMEOUT_S)
-    if res.timed_out or res.returncode != 0:
-        why = "timed out" if res.timed_out else f"exit {res.returncode}"
-        raise SandboxError(f"openshell sandbox upload failed ({why}): "
-                           f"{_tail(res.stderr) or _tail(res.stdout)}")
+        err = _fail("create", res)
+        if b"ContainerExited" in res.stderr + res.stdout:
+            # LIVE: the supervisor's reason is only in `openshell logs`, not in the CLI error.
+            err = SandboxError(f"{err} [hint: `openshell logs {name}`; RUNCHECK_IMAGE needs "
+                               "iproute2 (ip) and a /work directory, and the policy's "
+                               "run_as_user must match the image user]")
+        raise err
+    _upload(name, repo_dir, runner)
 
 
 def _delete(name: str, runner: Runner) -> None:

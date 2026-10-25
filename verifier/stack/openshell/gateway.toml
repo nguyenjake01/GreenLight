@@ -1,0 +1,4 @@
+# Gateway config for gateway.sh. The 256-PID limit is a driver setting, not a sandbox flag
+# (verified: HostConfig.PidsLimit = 256, a fork loop stops near 241).
+[openshell.drivers.docker]
+sandbox_pids_limit = 256

@@ -1,0 +1,191 @@
+{
+  "title": "extraction_output",
+  "type": "object",
+  "properties": {
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "project",
+              "skill",
+              "oss_contribution",
+              "unchecked"
+            ]
+          },
+          "section": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "source_text": {
+            "type": "string"
+          },
+          "repo_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "repo_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "role": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "creator",
+              "co-creator",
+              "maintainer",
+              null
+            ]
+          },
+          "language": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "min_stars": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "start_year": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "scale": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "small",
+              "substantial",
+              null
+            ]
+          },
+          "public_signal": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "link",
+              "open_source_wording",
+              "none",
+              null
+            ]
+          },
+          "behavior": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "skill_name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "skill_kind": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "language",
+              "framework_tool",
+              null
+            ]
+          },
+          "contrib_repo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "contrib_role": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "contributor",
+              "maintainer",
+              null
+            ]
+          },
+          "min_prs": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "employment",
+              "title",
+              "education",
+              "certification",
+              "impact_metric",
+              "private_work",
+              "other",
+              null
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "section",
+          "source_text",
+          "repo_url",
+          "repo_name",
+          "role",
+          "language",
+          "min_stars",
+          "start_year",
+          "scale",
+          "public_signal",
+          "behavior",
+          "skill_name",
+          "skill_kind",
+          "contrib_repo",
+          "contrib_role",
+          "min_prs",
+          "description",
+          "category"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "claims"
+  ],
+  "additionalProperties": false
+}

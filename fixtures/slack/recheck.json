@@ -1,0 +1,43 @@
+{
+  "actions": [
+    {
+      "action_id": "openclaw:rv:recheck",
+      "action_ts": "1761400100.123456",
+      "block_id": "card_actions",
+      "text": {
+        "emoji": true,
+        "text": "Re-check now",
+        "type": "plain_text"
+      },
+      "type": "button",
+      "value": "12345"
+    }
+  ],
+  "api_app_id": "A0VERIFIER",
+  "channel": {
+    "id": "C0HIRING",
+    "name": "hiring"
+  },
+  "container": {
+    "channel_id": "C0HIRING",
+    "is_ephemeral": false,
+    "message_ts": "1761400000.000100",
+    "type": "message"
+  },
+  "enterprise": null,
+  "is_enterprise_install": false,
+  "response_url": "https://hooks.slack.com/actions/T0TEAM/0000000000/REDACTED",
+  "team": {
+    "domain": "example",
+    "id": "T0TEAM"
+  },
+  "token": "REDACTED",
+  "trigger_id": "1234567890.1234567890.abcdef0123456789",
+  "type": "block_actions",
+  "user": {
+    "id": "U0RECRUITER",
+    "name": "jordan",
+    "team_id": "T0TEAM",
+    "username": "jordan"
+  }
+}

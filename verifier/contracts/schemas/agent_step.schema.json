@@ -1,0 +1,24 @@
+{
+  "title": "agent_step",
+  "type": "object",
+  "properties": {
+    "thought": {
+      "type": "string"
+    },
+    "cmd": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "done": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "thought",
+    "cmd",
+    "done"
+  ],
+  "additionalProperties": false
+}

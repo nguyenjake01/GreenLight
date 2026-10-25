@@ -1,0 +1,23 @@
+{
+  "title": "judge_outcome",
+  "type": "object",
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": [
+        "works_as_claimed",
+        "runs_but_mismatch",
+        "failed_to_run",
+        "could_not_attempt"
+      ]
+    },
+    "rationale": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "outcome",
+    "rationale"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,368 @@
+{
+  "account": {
+    "created_at": "2021-09-03",
+    "followers": 4,
+    "login": "henrychen4736",
+    "login_conflict": null,
+    "login_source": "resume_link",
+    "public_repos": 5
+  },
+  "application_id": "12345",
+  "claims": [
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "henrychen4736/Polytrack-ML"
+          },
+          "reason": "Repo henrychen4736/Polytrack-ML (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2026,
+            "repo_created_at": "2026-10-11"
+          },
+          "reason": "Created Oct 2026; claim says 2026",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 0,
+              "name": 35
+            },
+            "matched": 35,
+            "total": 35
+          },
+          "reason": "35 of 35 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "HTML": 9,
+              "JavaScript": 34,
+              "Python": 56,
+              "Shell": 1
+            }
+          },
+          "reason": "Python is the main language; JavaScript is 34% of the code",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c1",
+      "evidence_links": [
+        "https://github.com/henrychen4736/Polytrack-ML"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [
+        "Commits not linked to the GitHub account"
+      ],
+      "top_reason": "35 of 35 commits by the candidate; Python is the main language; JavaScript is 34% of the code",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "henrychen4736/CAC24"
+          },
+          "reason": "Repo henrychen4736/CAC24 (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2024,
+            "repo_created_at": "2024-10-24"
+          },
+          "reason": "Created Oct 2024; claim says 2024",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 5,
+              "name": 0
+            },
+            "matched": 5,
+            "total": 5
+          },
+          "reason": "5 of 5 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "Dart": 90,
+              "Python": 10
+            }
+          },
+          "reason": "Dart is the main language; Python is 10% of the code",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c2",
+      "evidence_links": [
+        "https://github.com/henrychen4736/CAC24"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "5 of 5 commits by the candidate; Dart is the main language; Python is 10% of the code",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "henrychen4736/cubesolver"
+          },
+          "reason": "Repo henrychen4736/cubesolver (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2024,
+            "repo_created_at": "2024-12-05"
+          },
+          "reason": "Created Dec 2024; claim says 2024",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 2,
+              "name": 0
+            },
+            "matched": 2,
+            "total": 2
+          },
+          "reason": "2 of 2 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "C++": 100
+            }
+          },
+          "reason": "C++ is the main language",
+          "result": "pass"
+        },
+        {
+          "check": "substance",
+          "reason": "Described as a complete project, but the repo is 3 KB with 2 commits on 1 day",
+          "result": "soft"
+        },
+        {
+          "check": "run",
+          "reason": "Built in 3.1s; works as claimed",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c3",
+      "evidence_links": [
+        "https://github.com/henrychen4736/cubesolver"
+      ],
+      "flags": [],
+      "label": "partial",
+      "notes": [],
+      "top_reason": "Described as a complete project, but the repo is 3 KB with 2 commits on 1 day",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 56,
+                "repo": "henrychen4736/Polytrack-ML"
+              },
+              {
+                "percent": 10,
+                "repo": "henrychen4736/CAC24"
+              }
+            ]
+          },
+          "reason": "Main language in 1 repo",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c4",
+      "evidence_links": [
+        "https://github.com/henrychen4736/Polytrack-ML",
+        "https://github.com/henrychen4736/CAC24"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Main language in 1 repo",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 90,
+                "repo": "henrychen4736/CAC24"
+              }
+            ]
+          },
+          "reason": "Main language in 1 repo",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c5",
+      "evidence_links": [
+        "https://github.com/henrychen4736/CAC24"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Main language in 1 repo",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 88,
+                "repo": "henrychen4736/henrychen4736.github.io"
+              },
+              {
+                "percent": 34,
+                "repo": "henrychen4736/Polytrack-ML"
+              }
+            ]
+          },
+          "reason": "In 2 repos, up to 88% of the code",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c6",
+      "evidence_links": [
+        "https://github.com/henrychen4736/henrychen4736.github.io",
+        "https://github.com/henrychen4736/Polytrack-ML"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "In 2 repos, up to 88% of the code",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 100,
+                "repo": "henrychen4736/cubesolver"
+              }
+            ]
+          },
+          "reason": "Main language in 1 repo",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c7",
+      "evidence_links": [
+        "https://github.com/henrychen4736/cubesolver"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Main language in 1 repo",
+      "type": "skill"
+    },
+    {
+      "checks": [],
+      "claim_id": "c8",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Not verifiable from public code",
+      "type": "unchecked"
+    },
+    {
+      "checks": [],
+      "claim_id": "c9",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Not verifiable from public code",
+      "type": "unchecked"
+    }
+  ],
+  "computed_at": "2026-10-25T14:06:40Z",
+  "context": [
+    "Account created Sep 2021."
+  ],
+  "inputs": {
+    "claims_sha256": "16e4402933ca66b04e9910b3d23de3c9b8f313b78bfa520acdfc37e871e96dfc",
+    "claims_version": 1,
+    "evidence_sha256": "8d419e4741eeeacbb79d6dbbdc7009d6ad5b512b3b5de2ee0e489047edeee7ce",
+    "run_traces": [
+      {
+        "claim_id": "c3",
+        "sha256": "be99fec79237287536afb1a16458f9982c1bafd339d27cd0bb5f3393dcda261e"
+      }
+    ],
+    "snapshot_id": "snap_20261025T140215Z"
+  },
+  "rubric_version": "rubric-v1",
+  "schema_version": "1",
+  "tally": {
+    "contradicted": 0,
+    "no_evidence": 2,
+    "partial": 1,
+    "supported": 6
+  },
+  "verdict_id": "verdict_1"
+}

@@ -1,0 +1,123 @@
+{
+  "title": "evidence",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "snapshot_id": {
+      "type": "string"
+    },
+    "application_id": {
+      "type": "string"
+    },
+    "github_login": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fetch_mode": {
+      "type": "string",
+      "enum": [
+        "record",
+        "replay",
+        "live"
+      ]
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "responses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "fetched_at": {
+            "type": "string"
+          },
+          "etag": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "body_sha256": {
+            "type": "string"
+          },
+          "body_path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "status",
+          "fetched_at",
+          "etag",
+          "body_sha256",
+          "body_path"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "misses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "const": "repo_match"
+          },
+          "claim_id": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "prompt_version": {
+            "type": "string"
+          },
+          "inputs": {
+            "type": "object"
+          },
+          "output": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "claim_id",
+          "model",
+          "prompt_version",
+          "inputs",
+          "output"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "application_id",
+    "github_login",
+    "fetch_mode",
+    "created_at",
+    "responses",
+    "misses",
+    "decisions"
+  ],
+  "additionalProperties": false
+}

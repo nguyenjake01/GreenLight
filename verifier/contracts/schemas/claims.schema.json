@@ -1,0 +1,444 @@
+{
+  "title": "claims",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "application_id": {
+      "type": "string"
+    },
+    "claims_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "candidate": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "emails": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "github_login": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "github_login_source": {
+          "type": "string",
+          "enum": [
+            "resume_link",
+            "greenhouse_website",
+            "greenhouse_social",
+            "none"
+          ]
+        },
+        "github_login_conflict": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "login": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "login",
+                "source"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "emails",
+        "github_login",
+        "github_login_source",
+        "github_login_conflict"
+      ],
+      "additionalProperties": false
+    },
+    "extraction": {
+      "type": "object",
+      "properties": {
+        "model": {
+          "type": "string"
+        },
+        "prompt_version": {
+          "type": "string"
+        },
+        "temperature": {
+          "type": "number"
+        },
+        "resume_sha256": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "retried",
+            "failed"
+          ]
+        }
+      },
+      "required": [
+        "model",
+        "prompt_version",
+        "temperature",
+        "resume_sha256",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "edits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claims_version": {
+            "type": "integer"
+          },
+          "claim_id": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "from": {},
+          "to": {},
+          "by": {
+            "type": "string"
+          },
+          "at": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "claims_version",
+          "claim_id",
+          "field",
+          "from",
+          "to",
+          "by",
+          "at"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/claim"
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "application_id",
+    "claims_version",
+    "created_at",
+    "candidate",
+    "extraction",
+    "edits",
+    "claims"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "properties": {
+        "claim_id": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "project",
+            "skill",
+            "oss_contribution",
+            "unchecked"
+          ]
+        },
+        "section": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_text": {
+          "type": "string"
+        },
+        "needs_review": {
+          "type": "boolean"
+        },
+        "assertions": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "claim_id",
+        "type",
+        "section",
+        "source_text",
+        "needs_review",
+        "assertions"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "project"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "assertions": {
+                "$ref": "#/$defs/project_assertions"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "skill"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "assertions": {
+                "$ref": "#/$defs/skill_assertions"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "oss_contribution"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "assertions": {
+                "$ref": "#/$defs/contribution_assertions"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "unchecked"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "properties": {
+              "assertions": {
+                "$ref": "#/$defs/unchecked_assertions"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "project_assertions": {
+      "type": "object",
+      "properties": {
+        "repo_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "repo_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "creator",
+            "co-creator",
+            "maintainer",
+            null
+          ]
+        },
+        "language": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "min_stars": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "start_year": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "scale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "small",
+            "substantial",
+            null
+          ]
+        },
+        "public_signal": {
+          "type": "string",
+          "enum": [
+            "link",
+            "open_source_wording",
+            "none"
+          ]
+        },
+        "behavior": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "repo_url",
+        "repo_name",
+        "role",
+        "language",
+        "min_stars",
+        "start_year",
+        "scale",
+        "public_signal",
+        "behavior"
+      ],
+      "additionalProperties": false
+    },
+    "skill_assertions": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "language",
+            "framework_tool"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "contribution_assertions": {
+      "type": "object",
+      "properties": {
+        "repo": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "contributor",
+            "maintainer"
+          ]
+        },
+        "min_prs": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "description": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "repo",
+        "role",
+        "min_prs",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "unchecked_assertions": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "employment",
+            "title",
+            "education",
+            "certification",
+            "impact_metric",
+            "private_work",
+            "other"
+          ]
+        }
+      },
+      "required": [
+        "category"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

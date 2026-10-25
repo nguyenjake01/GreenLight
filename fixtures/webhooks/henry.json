@@ -1,0 +1,71 @@
+{
+  "action": "new_candidate_application",
+  "payload": {
+    "application": {
+      "applied_at": "2026-10-25T14:01:50Z",
+      "candidate": {
+        "attachments": [
+          {
+            "filename": "henry.pdf",
+            "type": "resume",
+            "url": "http://localhost:8100/files/placeholder/henry.pdf"
+          }
+        ],
+        "custom_fields": {},
+        "educations": [
+          {
+            "degree": "High School Diploma",
+            "discipline": null,
+            "end_date": "2027-06-01T00:00:00.000Z",
+            "school_name": "Westview High School",
+            "start_date": null
+          }
+        ],
+        "email_addresses": [
+          {
+            "type": "personal",
+            "value": "henry@example.com"
+          }
+        ],
+        "employments": [
+          {
+            "company_name": "Brightpath Learning",
+            "end_date": "2025-08-31T00:00:00.000Z",
+            "start_date": "2025-06-01T00:00:00.000Z",
+            "title": "Math Tutor"
+          }
+        ],
+        "first_name": "Henry",
+        "id": 2000001,
+        "last_name": "Chen",
+        "phone_numbers": [],
+        "social_media_addresses": [],
+        "tags": [],
+        "website_addresses": [
+          {
+            "type": "personal",
+            "value": "https://henrychen4736.github.io"
+          }
+        ]
+      },
+      "current_stage": {
+        "id": 10,
+        "name": "Application Review"
+      },
+      "custom_fields": {},
+      "id": 1000001,
+      "jobs": [
+        {
+          "id": 3000001,
+          "name": "Software Engineer Intern"
+        }
+      ],
+      "source": {
+        "id": 1,
+        "public_name": "Company careers site"
+      },
+      "status": "active",
+      "url": "http://localhost:8100/candidates/2000001?application_id=1000001"
+    }
+  }
+}

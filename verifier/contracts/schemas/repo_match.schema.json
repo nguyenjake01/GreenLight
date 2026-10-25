@@ -1,0 +1,16 @@
+{
+  "title": "repo_match",
+  "type": "object",
+  "properties": {
+    "repo": {
+      "type": "string",
+      "enum": [
+        "none"
+      ]
+    }
+  },
+  "required": [
+    "repo"
+  ],
+  "additionalProperties": false
+}

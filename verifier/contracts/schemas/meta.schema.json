@@ -1,0 +1,72 @@
+{
+  "title": "meta",
+  "type": "object",
+  "properties": {
+    "application_id": {
+      "type": "string"
+    },
+    "candidate_id": {
+      "type": "string"
+    },
+    "candidate_name": {
+      "type": "string"
+    },
+    "job_title": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "applied_at": {
+      "type": "string"
+    },
+    "latest": {
+      "type": "object"
+    },
+    "slack": {
+      "type": "object"
+    },
+    "runs": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "running",
+          "done",
+          "skipped",
+          "error"
+        ]
+      }
+    },
+    "stage_errors": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "writebacks": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  },
+  "required": [
+    "application_id",
+    "candidate_id",
+    "candidate_name",
+    "job_title",
+    "event_id",
+    "applied_at",
+    "latest",
+    "slack",
+    "runs",
+    "stage_errors",
+    "writebacks"
+  ],
+  "additionalProperties": false
+}

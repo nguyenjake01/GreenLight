@@ -1,0 +1,11 @@
+{
+  "project:CAC24": "supported",
+  "project:Polytrack-ML": "supported",
+  "project:cubesolver": "partial",
+  "skill:C++": "supported",
+  "skill:Dart": "supported",
+  "skill:JavaScript": "supported",
+  "skill:Python": "supported",
+  "unchecked:education": "no_evidence",
+  "unchecked:employment": "no_evidence"
+}

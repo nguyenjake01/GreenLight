@@ -1,0 +1,59 @@
+{
+  "action": "new_candidate_application",
+  "payload": {
+    "application": {
+      "applied_at": "2026-10-25T14:01:50Z",
+      "candidate": {
+        "attachments": [
+          {
+            "filename": "fake.pdf",
+            "type": "resume",
+            "url": "http://localhost:8100/files/placeholder/fake.pdf"
+          }
+        ],
+        "custom_fields": {},
+        "educations": [
+          {
+            "degree": "B.S.",
+            "discipline": "Computer Science",
+            "end_date": "2025-06-01T00:00:00.000Z",
+            "school_name": "Northside University",
+            "start_date": null
+          }
+        ],
+        "email_addresses": [
+          {
+            "type": "personal",
+            "value": "alex.rivera@example.com"
+          }
+        ],
+        "employments": [],
+        "first_name": "Alex",
+        "id": 2000002,
+        "last_name": "Rivera",
+        "phone_numbers": [],
+        "social_media_addresses": [],
+        "tags": [],
+        "website_addresses": []
+      },
+      "current_stage": {
+        "id": 10,
+        "name": "Application Review"
+      },
+      "custom_fields": {},
+      "id": 1000002,
+      "jobs": [
+        {
+          "id": 3000001,
+          "name": "Software Engineer Intern"
+        }
+      ],
+      "source": {
+        "id": 1,
+        "public_name": "Company careers site"
+      },
+      "status": "active",
+      "url": "http://localhost:8100/candidates/2000002?application_id=1000002"
+    }
+  }
+}

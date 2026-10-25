@@ -1,0 +1,41 @@
+{
+  "title": "generated",
+  "type": "object",
+  "properties": {
+    "claim_id": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "more_context",
+        "suggest_questions"
+      ]
+    },
+    "verdict_id": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "prompt_version": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id",
+    "kind",
+    "verdict_id",
+    "model",
+    "prompt_version",
+    "created_at",
+    "text"
+  ],
+  "additionalProperties": false
+}

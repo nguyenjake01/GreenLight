@@ -1,0 +1,51 @@
+{
+  "agent": {
+    "commands": [
+      {
+        "cmd": "ls -la",
+        "duration_s": 0.01,
+        "exit_code": 0,
+        "output_excerpt": "total 20\ndrwxr-xr-x 2 root root 4096 Oct 25 14:03 .\ndrwxr-xr-x 3 root root 4096 Oct 25 14:03 ..\n-rw-r--r-- 1 root root 2840 Oct 25 14:03 main.cpp\n-rwxr-xr-x 1 root root 21032 Oct 25 14:03 a.out\n",
+        "output_path": "raw/4b89f9234e206024c5e9744d67f1ca670acbbe5b6d2f9b9e7941cf6a677d69c2.txt",
+        "timed_out": false
+      },
+      {
+        "cmd": "printf \"F R U R' U' F'\\n\" | ./a.out",
+        "duration_s": 0.4,
+        "exit_code": 0,
+        "output_excerpt": "Solution: F U R U' R' F'\n6 moves\n",
+        "output_path": "raw/35d4078868d36939f2fdeadb24360a9f94af41796de9012e67dfa7849cf01908.txt",
+        "timed_out": false
+      }
+    ],
+    "limits": {
+      "max_commands": 15,
+      "timeout_s": 300
+    },
+    "model": "Qwen3.6-35B-A3B-NVFP4",
+    "prompt_version": "run-v1",
+    "stopped": "done",
+    "timed_out": false
+  },
+  "baseline": {
+    "command": "g++ -O2 main.cpp",
+    "duration_s": 3.1,
+    "exit_code": 0,
+    "failure_kind": null,
+    "output_excerpt": "",
+    "output_path": null,
+    "step": "build",
+    "timed_out": false
+  },
+  "claim_id": "c3",
+  "commit_sha": "7f7a7aacc23a237e392a8bcd0651f8347c76bdd2",
+  "judge": {
+    "model": "Qwen3.6-35B-A3B-NVFP4",
+    "outcome": "works_as_claimed",
+    "prompt_version": "judge-v1",
+    "rationale": "The solver accepted a scramble and printed a short move sequence."
+  },
+  "repo": "henrychen4736/cubesolver",
+  "sandbox_backend": "openshell",
+  "schema_version": "1"
+}

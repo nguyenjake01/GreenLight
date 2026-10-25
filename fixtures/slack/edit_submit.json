@@ -1,0 +1,99 @@
+{
+  "api_app_id": "A0VERIFIER",
+  "team": {
+    "domain": "example",
+    "id": "T0TEAM"
+  },
+  "token": "REDACTED",
+  "trigger_id": "1234567890.1234567890.fedcba9876543210",
+  "type": "view_submission",
+  "user": {
+    "id": "U0RECRUITER",
+    "name": "jordan",
+    "team_id": "T0TEAM",
+    "username": "jordan"
+  },
+  "view": {
+    "callback_id": "openclaw:rv:edit_claim",
+    "hash": "1761400300.abcdef",
+    "id": "V0EDIT",
+    "private_metadata": "{\"application_id\": \"12345\", \"claim_id\": \"c3\", \"claims_version\": 1}",
+    "response_urls": [],
+    "state": {
+      "values": {
+        "behavior": {
+          "v": {
+            "type": "plain_text_input",
+            "value": "Solves a scrambled Rubik's cube"
+          }
+        },
+        "language": {
+          "v": {
+            "type": "plain_text_input",
+            "value": "C++"
+          }
+        },
+        "min_stars": {
+          "v": {
+            "type": "plain_text_input",
+            "value": null
+          }
+        },
+        "repo_name": {
+          "v": {
+            "type": "plain_text_input",
+            "value": "cubesolver"
+          }
+        },
+        "repo_url": {
+          "v": {
+            "type": "plain_text_input",
+            "value": null
+          }
+        },
+        "role": {
+          "v": {
+            "selected_option": {
+              "text": {
+                "text": "creator",
+                "type": "plain_text"
+              },
+              "value": "creator"
+            },
+            "type": "static_select"
+          }
+        },
+        "scale": {
+          "v": {
+            "selected_option": {
+              "text": {
+                "text": "small",
+                "type": "plain_text"
+              },
+              "value": "small"
+            },
+            "type": "static_select"
+          }
+        },
+        "start_year": {
+          "v": {
+            "type": "plain_text_input",
+            "value": "2024"
+          }
+        }
+      }
+    },
+    "submit": {
+      "emoji": true,
+      "text": "Save",
+      "type": "plain_text"
+    },
+    "team_id": "T0TEAM",
+    "title": {
+      "emoji": true,
+      "text": "Edit claim",
+      "type": "plain_text"
+    },
+    "type": "modal"
+  }
+}

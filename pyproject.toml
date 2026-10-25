@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verifier"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi", "uvicorn", "httpx", "jsonschema", "python-dotenv", "pymupdf",
+  "slack_sdk", "jinja2", "python-multipart", "pytest",
+]
+
+[tool.setuptools.packages.find]
+include = ["verifier*"]
+
+[tool.setuptools.package-data]
+verifier = ["contracts/schemas/*.json", "core/prompts/*", "stack/prompts/*", "ats/templates/*", "ats/static/**/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

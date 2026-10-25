@@ -1,0 +1,273 @@
+{
+  "title": "verdict",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "verdict_id": {
+      "type": "string",
+      "pattern": "^verdict_[0-9]+$"
+    },
+    "application_id": {
+      "type": "string"
+    },
+    "computed_at": {
+      "type": "string"
+    },
+    "rubric_version": {
+      "type": "string"
+    },
+    "inputs": {
+      "type": "object",
+      "properties": {
+        "claims_version": {
+          "type": "integer"
+        },
+        "claims_sha256": {
+          "type": "string"
+        },
+        "snapshot_id": {
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "type": "string"
+        },
+        "run_traces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "claim_id": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "claim_id",
+              "sha256"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "claims_version",
+        "claims_sha256",
+        "snapshot_id",
+        "evidence_sha256",
+        "run_traces"
+      ]
+    },
+    "account": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string"
+            },
+            "login_source": {
+              "type": "string"
+            },
+            "login_conflict": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "login": {
+                      "type": "string"
+                    },
+                    "source": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "login",
+                    "source"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "created_at": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "public_repos": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            },
+            "followers": {
+              "type": [
+                "integer",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "login",
+            "login_source",
+            "login_conflict",
+            "created_at",
+            "public_repos",
+            "followers"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "tally": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "integer"
+        },
+        "partial": {
+          "type": "integer"
+        },
+        "contradicted": {
+          "type": "integer"
+        },
+        "no_evidence": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "supported",
+        "partial",
+        "contradicted",
+        "no_evidence"
+      ],
+      "additionalProperties": true
+    },
+    "context": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "claim_id": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "project",
+              "skill",
+              "oss_contribution",
+              "unchecked"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "enum": [
+              "supported",
+              "partial",
+              "contradicted",
+              "no_evidence"
+            ]
+          },
+          "flags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "run_failed",
+                "run_timeout"
+              ]
+            }
+          },
+          "top_reason": {
+            "type": "string"
+          },
+          "checks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "check": {
+                  "type": "string"
+                },
+                "result": {
+                  "type": "string",
+                  "enum": [
+                    "pass",
+                    "soft",
+                    "hard",
+                    "skip"
+                  ]
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "facts": {
+                  "type": "object"
+                }
+              },
+              "required": [
+                "check",
+                "result",
+                "reason"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence_links": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "claim_id",
+          "type",
+          "label",
+          "flags",
+          "top_reason",
+          "checks",
+          "notes",
+          "evidence_links"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "schema_version",
+    "verdict_id",
+    "application_id",
+    "computed_at",
+    "rubric_version",
+    "inputs",
+    "account",
+    "tally",
+    "context",
+    "claims"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,216 @@
+{
+  "title": "run_trace",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "claim_id": {
+      "type": "string"
+    },
+    "repo": {
+      "type": "string"
+    },
+    "commit_sha": {
+      "type": "string"
+    },
+    "sandbox_backend": {
+      "type": "string"
+    },
+    "baseline": {
+      "type": "object",
+      "properties": {
+        "step": {
+          "type": "string",
+          "enum": [
+            "tests",
+            "build",
+            "syntax",
+            "skip"
+          ]
+        },
+        "command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "duration_s": {
+          "type": "number"
+        },
+        "timed_out": {
+          "type": "boolean"
+        },
+        "failure_kind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "deps_missing",
+            "needs_network",
+            "error",
+            null
+          ]
+        },
+        "output_excerpt": {
+          "type": "string"
+        },
+        "output_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "step",
+        "command",
+        "exit_code",
+        "duration_s",
+        "timed_out",
+        "failure_kind",
+        "output_excerpt",
+        "output_path"
+      ],
+      "additionalProperties": false
+    },
+    "agent": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "prompt_version": {
+              "type": "string"
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer"
+              }
+            },
+            "stopped": {
+              "type": "string",
+              "enum": [
+                "done",
+                "max_commands",
+                "timeout",
+                "error"
+              ]
+            },
+            "timed_out": {
+              "type": "boolean"
+            },
+            "commands": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "cmd": {
+                    "type": "string"
+                  },
+                  "exit_code": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "duration_s": {
+                    "type": "number"
+                  },
+                  "timed_out": {
+                    "type": "boolean"
+                  },
+                  "output_excerpt": {
+                    "type": "string"
+                  },
+                  "output_path": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "cmd",
+                  "exit_code",
+                  "duration_s",
+                  "timed_out",
+                  "output_excerpt",
+                  "output_path"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "model",
+            "prompt_version",
+            "limits",
+            "stopped",
+            "timed_out",
+            "commands"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "judge": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "model": {
+              "type": "string"
+            },
+            "prompt_version": {
+              "type": "string"
+            },
+            "outcome": {
+              "type": "string",
+              "enum": [
+                "works_as_claimed",
+                "runs_but_mismatch",
+                "failed_to_run",
+                "could_not_attempt"
+              ]
+            },
+            "rationale": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "model",
+            "prompt_version",
+            "outcome",
+            "rationale"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "claim_id",
+    "repo",
+    "commit_sha",
+    "sandbox_backend",
+    "baseline",
+    "agent",
+    "judge"
+  ],
+  "additionalProperties": false
+}

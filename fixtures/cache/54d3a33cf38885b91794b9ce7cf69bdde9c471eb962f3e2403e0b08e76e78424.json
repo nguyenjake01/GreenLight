@@ -1,0 +1,8 @@
+{
+  "body": "{\"C++\":610}",
+  "body_sha256": "f87350543b6e155eec3686b1214b60e14cad7ab07225fdf5b97c2d802960cae6",
+  "etag": "\"e86180a31c190db377bc4c799c96e4ebee4659ec88bf6bf1fc230cf77d17aaa2\"",
+  "fetched_at": "2026-10-25T19:54:35Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/barcodescanner/languages",
+  "status": 200
+}

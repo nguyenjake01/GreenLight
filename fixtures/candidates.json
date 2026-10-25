@@ -1,9 +1,9 @@
 {
-  "fake": {
-    "github_login": "rv-fake-candidate",
-    "name": "Alex Rivera",
-    "resume": "fake.pdf",
-    "webhook": "fake.json"
+  "aidan": {
+    "github_login": "aidanhong8",
+    "name": "Aidan Hong",
+    "resume": "aidan.pdf",
+    "webhook": "aidan.json"
   },
   "henry": {
     "github_login": "henrychen4736",

@@ -23,7 +23,7 @@ def load(rel):
 
 
 HENRY = load("claims/henrychen4736.json")
-FAKE = load("claims/rv-fake-candidate.json")
+AIDAN = load("claims/aidanhong8.json")
 
 
 def claim_of(doc, claim_id):
@@ -134,7 +134,8 @@ def test_project_modal_fields_and_initial_values():
 
 
 def test_project_modal_null_select_starts_on_not_stated():
-    claim = claim_of(FAKE, "c1")       # scale null
+    claim = claim_of(AIDAN, "c1")
+    claim = {**claim, "assertions": {**claim["assertions"], "scale": None}}
     scale = inputs_by_id(render.render_edit_modal("1", 1, claim))["scale"]
     assert scale["element"]["initial_option"]["value"] == render.NOT_STATED
 
@@ -149,19 +150,19 @@ def test_skill_modal():
 
 
 def test_contribution_modal():
-    blocks = inputs_by_id(render.render_edit_modal("1", 1, claim_of(FAKE, "c2")))
+    blocks = inputs_by_id(render.render_edit_modal("1", 1, claim_of(AIDAN, "c5")))
     assert list(blocks) == ["repo", "role", "min_prs", "description"]
-    assert blocks["repo"]["element"]["initial_value"] == "henrychen4736/cubesolver"
+    assert blocks["repo"]["element"]["initial_value"] == "boomty/CameraDetectionforTraffic"
     assert not blocks["repo"]["optional"] and not blocks["role"]["optional"]
     assert option_values(blocks["role"]) == ["contributor", "maintainer"]
     assert blocks["role"]["element"]["initial_option"]["value"] == "contributor"
     assert blocks["min_prs"]["element"]["type"] == "number_input"
-    assert blocks["min_prs"]["element"]["initial_value"] == "1"
+    assert blocks["min_prs"]["element"]["initial_value"] == "2"
     assert blocks["description"]["element"]["multiline"] is True and blocks["description"]["optional"]
 
 
 def test_modal_initial_options_are_among_options():
-    for doc, ids in ((HENRY, ("c3", "c4")), (FAKE, ("c1", "c2", "c3"))):
+    for doc, ids in ((HENRY, ("c3", "c4")), (AIDAN, ("c1", "c3", "c4", "c5"))):
         for cid in ids:
             for b in inputs_by_id(render.render_edit_modal("1", 1, claim_of(doc, cid))).values():
                 el = b["element"]
@@ -246,14 +247,14 @@ def test_validate_edit_unknown_field_claim_and_type(app_id):
 
 
 def test_validate_edit_contribution_repo():
-    app = make_app("Alex Rivera", "fake.pdf")
+    app = make_app("Aidan Hong", "aidan.pdf")
     pipeline.run(app, wait=True)
     aid = app["application_id"]
     for bad in ("justarepo", "a/b/c", "a b/c", ""):
-        assert list(pipeline.validate_edit(aid, "c2", {"repo": bad})) == ["repo"], bad
-    assert pipeline.validate_edit(aid, "c2", {"repo": "owner/repo", "min_prs": "2"}) == {}
-    assert pipeline.validate_edit(aid, "c2", {"repo": "https://github.com/owner/repo"}) == {}
-    assert list(pipeline.validate_edit(aid, "c2", {"role": "creator"})) == ["role"]
+        assert list(pipeline.validate_edit(aid, "c5", {"repo": bad})) == ["repo"], bad
+    assert pipeline.validate_edit(aid, "c5", {"repo": "owner/repo", "min_prs": "2"}) == {}
+    assert pipeline.validate_edit(aid, "c5", {"repo": "https://github.com/owner/repo"}) == {}
+    assert list(pipeline.validate_edit(aid, "c5", {"role": "creator"})) == ["role"]
 
 
 # ── edit_claim ────────────────────────────────────────────────────────────────
@@ -355,17 +356,17 @@ def test_repo_url_edit_sets_link_signal_and_normalizes(app_id):
 
 
 def test_contribution_repo_change_makes_new_snapshot():
-    app = make_app("Alex Rivera", "fake.pdf")
+    app = make_app("Aidan Hong", "aidan.pdf")
     pipeline.run(app, wait=True)
     aid = app["application_id"]
     old = store.read_meta(aid)["latest"]["snapshot_id"]
     time.sleep(1.1)
-    pipeline.edit_claim(aid, "c2", {"repo": "someone/else"}, "Jake")
+    pipeline.edit_claim(aid, "c5", {"repo": "someone/else"}, "Jake")
     meta = store.read_meta(aid)
     assert meta["latest"]["snapshot_id"] != old
     v2 = store.read_json(store.run_dir(aid) / "claims.v2.json")
-    assert claim_of(v2, "c2")["assertions"]["repo"] == "someone/else"
-    assert v2["edits"][0]["from"] == "henrychen4736/cubesolver"
+    assert claim_of(v2, "c5")["assertions"]["repo"] == "someone/else"
+    assert v2["edits"][0]["from"] == "boomty/CameraDetectionforTraffic"
 
 
 def test_no_changes_replies_and_writes_nothing(env, app_id):

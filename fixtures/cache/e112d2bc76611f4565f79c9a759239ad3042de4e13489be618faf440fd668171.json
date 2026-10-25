@@ -1,0 +1,8 @@
+{
+  "body": "{\"JavaScript\":18865,\"CSS\":437,\"HTML\":356}",
+  "body_sha256": "f8613bd400888bd65cc30cb55977acf0e5898b1a372a5d894e3b443f8354e467",
+  "etag": "W/\"f18718640e2d082e78b6dfb8952c88a3a8b7a9612786ecccac13c1f68b82ab76\"",
+  "fetched_at": "2026-10-25T19:54:34Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/care360/languages",
+  "status": 200
+}

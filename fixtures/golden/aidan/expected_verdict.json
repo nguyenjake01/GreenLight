@@ -1,0 +1,521 @@
+{
+  "account": {
+    "created_at": "2022-11-27",
+    "followers": 3,
+    "login": "aidanhong8",
+    "login_conflict": null,
+    "login_source": "resume_link",
+    "public_repos": 19
+  },
+  "application_id": "12345",
+  "claims": [
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "aidanhong8/care360"
+          },
+          "reason": "Repo aidanhong8/care360 (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2025,
+            "repo_created_at": "2025-06-27"
+          },
+          "reason": "Created Jun 2025; claim says 2025",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 4,
+              "name": 0
+            },
+            "matched": 4,
+            "total": 4
+          },
+          "reason": "4 of 4 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "CSS": 2,
+              "HTML": 1,
+              "JavaScript": 95
+            }
+          },
+          "reason": "JavaScript is the main language",
+          "result": "pass"
+        },
+        {
+          "check": "substance",
+          "facts": {
+            "commits": 4,
+            "distinct_days": 2,
+            "size_kb": 379
+          },
+          "reason": "Repo is 379 KB with 4 commits",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c1",
+      "evidence_links": [
+        "https://github.com/aidanhong8/care360"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "4 of 4 commits by the candidate; JavaScript is the main language",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "aidanhong8/HalloweenTracker"
+          },
+          "reason": "Repo aidanhong8/HalloweenTracker (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2025,
+            "repo_created_at": "2025-11-03"
+          },
+          "reason": "Created Nov 2025; claim says 2025",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 6,
+              "name": 0
+            },
+            "matched": 6,
+            "total": 6
+          },
+          "reason": "6 of 6 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "C++": 12,
+              "Python": 10,
+              "Swift": 77
+            }
+          },
+          "reason": "Swift is the main language",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c2",
+      "evidence_links": [
+        "https://github.com/aidanhong8/HalloweenTracker"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "6 of 6 commits by the candidate; Swift is the main language",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "aidanhong8/quiz"
+          },
+          "reason": "Repo aidanhong8/quiz (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2025,
+            "repo_created_at": "2025-06-29"
+          },
+          "reason": "Created Jun 2025; claim says 2025",
+          "result": "pass"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 3,
+              "name": 0
+            },
+            "matched": 3,
+            "total": 3
+          },
+          "reason": "3 of 3 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "JavaScript": 5,
+              "TypeScript": 94
+            }
+          },
+          "reason": "TypeScript is the main language",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c3",
+      "evidence_links": [
+        "https://github.com/aidanhong8/quiz"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "3 of 3 commits by the candidate; TypeScript is the main language",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "repo",
+          "facts": {
+            "method": "name",
+            "repo": "aidanhong8/portfolio-aidan-hong"
+          },
+          "reason": "Repo aidanhong8/portfolio-aidan-hong (matched by name)",
+          "result": "pass"
+        },
+        {
+          "check": "fork",
+          "reason": "Not a fork",
+          "result": "pass"
+        },
+        {
+          "check": "start_date",
+          "facts": {
+            "claim_start_year": 2021,
+            "repo_created_at": "2024-03-31"
+          },
+          "reason": "Created Mar 2024; claim says 2021",
+          "result": "hard"
+        },
+        {
+          "check": "stars",
+          "facts": {
+            "claim_min_stars": 500,
+            "stars": 1
+          },
+          "reason": "1 stars; claim says 500",
+          "result": "hard"
+        },
+        {
+          "check": "commit_share",
+          "facts": {
+            "by_method": {
+              "email": 0,
+              "login": 42,
+              "name": 0
+            },
+            "matched": 42,
+            "total": 42
+          },
+          "reason": "42 of 42 commits by the candidate",
+          "result": "pass"
+        },
+        {
+          "check": "language",
+          "facts": {
+            "languages": {
+              "CSS": 18,
+              "HTML": 7,
+              "JavaScript": 74
+            }
+          },
+          "reason": "JavaScript is the main language",
+          "result": "pass"
+        },
+        {
+          "check": "substance",
+          "facts": {
+            "commits": 42,
+            "distinct_days": 24,
+            "size_kb": 15517
+          },
+          "reason": "Repo is 15517 KB with 42 commits",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c4",
+      "evidence_links": [
+        "https://github.com/aidanhong8/portfolio-aidan-hong"
+      ],
+      "flags": [],
+      "label": "contradicted",
+      "notes": [],
+      "top_reason": "Created Mar 2024; claim says 2021",
+      "type": "project"
+    },
+    {
+      "checks": [
+        {
+          "check": "contribution",
+          "facts": {
+            "landed_commits": 17,
+            "merged_total": 2,
+            "opened_total": 3,
+            "pr_titles": [
+              "added models",
+              "Add alignment model"
+            ],
+            "reviews_total": 0
+          },
+          "reason": "2 merged PRs and 17 commits by @aidanhong8 in boomty/CameraDetectionforTraffic",
+          "result": "pass"
+        },
+        {
+          "check": "pr_count",
+          "facts": {
+            "claim_min_prs": 2,
+            "merged_total": 2
+          },
+          "reason": "2 merged PRs; claim says 2",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c5",
+      "evidence_links": [
+        "https://github.com/boomty/CameraDetectionforTraffic/pull/2",
+        "https://github.com/boomty/CameraDetectionforTraffic/pull/1",
+        "https://github.com/boomty/CameraDetectionforTraffic/commits?author=aidanhong8"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "2 merged PRs and 17 commits by @aidanhong8 in boomty/CameraDetectionforTraffic",
+      "type": "oss_contribution"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 100,
+                "repo": "aidanhong8/discord-api-practice"
+              },
+              {
+                "percent": 100,
+                "repo": "aidanhong8/eddhalloween"
+              },
+              {
+                "percent": 100,
+                "repo": "aidanhong8/quiz"
+              },
+              {
+                "percent": 98,
+                "repo": "aidanhong8/dbhsfbla"
+              },
+              {
+                "percent": 97,
+                "repo": "aidanhong8/theRdKitchen"
+              },
+              {
+                "percent": 96,
+                "repo": "aidanhong8/fblaae"
+              },
+              {
+                "percent": 95,
+                "repo": "aidanhong8/care360"
+              },
+              {
+                "percent": 74,
+                "repo": "aidanhong8/portfolio-aidan-hong"
+              },
+              {
+                "percent": 69,
+                "repo": "aidanhong8/cv"
+              }
+            ]
+          },
+          "reason": "Main language in 9 repos",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c6",
+      "evidence_links": [
+        "https://github.com/aidanhong8/discord-api-practice",
+        "https://github.com/aidanhong8/eddhalloween",
+        "https://github.com/aidanhong8/quiz"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Main language in 9 repos",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 94,
+                "repo": "aidanhong8/quiz"
+              },
+              {
+                "percent": 84,
+                "repo": "aidanhong8/eddhalloween"
+              }
+            ]
+          },
+          "reason": "Main language in 2 repos",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c7",
+      "evidence_links": [
+        "https://github.com/aidanhong8/quiz",
+        "https://github.com/aidanhong8/eddhalloween"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Main language in 2 repos",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 100,
+                "repo": "aidanhong8/CSVStudy"
+              },
+              {
+                "percent": 100,
+                "repo": "aidanhong8/MailMerge"
+              },
+              {
+                "percent": 10,
+                "repo": "aidanhong8/HalloweenTracker"
+              }
+            ]
+          },
+          "reason": "Main language in 2 repos",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c8",
+      "evidence_links": [
+        "https://github.com/aidanhong8/CSVStudy",
+        "https://github.com/aidanhong8/MailMerge",
+        "https://github.com/aidanhong8/HalloweenTracker"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Main language in 2 repos",
+      "type": "skill"
+    },
+    {
+      "checks": [
+        {
+          "check": "skill_presence",
+          "facts": {
+            "repos": [
+              {
+                "percent": 77,
+                "repo": "aidanhong8/HalloweenTracker"
+              }
+            ]
+          },
+          "reason": "Main language in 1 repo",
+          "result": "pass"
+        }
+      ],
+      "claim_id": "c9",
+      "evidence_links": [
+        "https://github.com/aidanhong8/HalloweenTracker"
+      ],
+      "flags": [],
+      "label": "supported",
+      "notes": [],
+      "top_reason": "Main language in 1 repo",
+      "type": "skill"
+    },
+    {
+      "checks": [],
+      "claim_id": "c10",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Not verifiable from public code",
+      "type": "unchecked"
+    },
+    {
+      "checks": [],
+      "claim_id": "c11",
+      "evidence_links": [],
+      "flags": [],
+      "label": "no_evidence",
+      "notes": [],
+      "top_reason": "Not verifiable from public code",
+      "type": "unchecked"
+    }
+  ],
+  "computed_at": "2026-10-25T14:06:40Z",
+  "context": [
+    "Account created Nov 2022."
+  ],
+  "inputs": {
+    "claims_sha256": "7270701d97f3a248f30310b6655f2e6d192642b06047445d69cfc4ba0152d6be",
+    "claims_version": 1,
+    "evidence_sha256": "fde0c11a4be99b536581da0a2856e0a04b092c0963afe2c024850ec11cca6edf",
+    "run_traces": [],
+    "snapshot_id": "snap_20261025T195528Z"
+  },
+  "rubric_version": "rubric-v1",
+  "schema_version": "1",
+  "tally": {
+    "contradicted": 1,
+    "no_evidence": 2,
+    "partial": 0,
+    "supported": 8
+  },
+  "verdict_id": "verdict_1"
+}

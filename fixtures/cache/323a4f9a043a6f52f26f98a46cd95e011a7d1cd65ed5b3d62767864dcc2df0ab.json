@@ -1,0 +1,8 @@
+{
+  "body": "{\"TypeScript\":21583,\"JavaScript\":3845}",
+  "body_sha256": "932d3613005ce73344cfc68d53e3c71b0765f39b49f1cb72ebf8568a0c30256d",
+  "etag": "W/\"cf41563f0cecd2772d1ee261423ebe7f8e55c5dd4288b0f7eabc7b80a078b8c6\"",
+  "fetched_at": "2026-10-25T19:54:36Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/eddhalloween/languages",
+  "status": 200
+}

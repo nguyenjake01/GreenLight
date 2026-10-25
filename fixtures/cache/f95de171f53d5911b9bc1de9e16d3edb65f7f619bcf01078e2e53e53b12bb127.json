@@ -1,0 +1,8 @@
+{
+  "body": "[{\"login\":\"aidanhong8\",\"id\":119242962,\"node_id\":\"U_kgDOBxuA0g\",\"avatar_url\":\"https://avatars.githubusercontent.com/u/119242962?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/aidanhong8\",\"html_url\":\"https://github.com/aidanhong8\",\"followers_url\":\"https://api.github.com/users/aidanhong8/followers\",\"following_url\":\"https://api.github.com/users/aidanhong8/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/aidanhong8/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/aidanhong8/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/aidanhong8/subscriptions\",\"organizations_url\":\"https://api.github.com/users/aidanhong8/orgs\",\"repos_url\":\"https://api.github.com/users/aidanhong8/repos\",\"events_url\":\"https://api.github.com/users/aidanhong8/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/aidanhong8/received_events\",\"type\":\"User\",\"user_view_type\":\"public\",\"site_admin\":false,\"contributions\":4}]",
+  "body_sha256": "4e76eaa7f3993d06bd5f460d096db9dfefd9aa7d23896a790edc49d70db5d8ce",
+  "etag": "W/\"504e98a1bed938fc991429bddb36657169527d006865fbfd7196ed434a282bf2\"",
+  "fetched_at": "2026-10-25T19:54:41Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/care360/contributors?anon=1&per_page=100",
+  "status": 200
+}

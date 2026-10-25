@@ -78,8 +78,8 @@ def test_run_stub_henry(env):
     assert not pipeline.is_busy(app["application_id"])
 
 
-def test_run_stub_fake(env):
-    app = make_app("Alex Rivera", "fake.pdf")
+def test_run_stub_aidan(env):
+    app = make_app("Aidan Hong", "aidan.pdf")
     pipeline.run(app, wait=True)
     meta = store.read_meta(app["application_id"])
     assert meta["latest"]["verdict_n"] >= 1 and len(meta["writebacks"]) == 1
@@ -570,7 +570,7 @@ def test_card_options(monkeypatch, actions, cut, buttons, menu):
 def test_find_applications_and_claim_and_state(env):
     a1 = make_app("Henry Chen", applied_at="2026-10-25T10:00:00Z")
     a2 = make_app("Henry Smith", applied_at="2026-10-25T12:00:00Z")
-    a3 = make_app("Alex Rivera", "fake.pdf", applied_at="2026-10-25T11:00:00Z")
+    a3 = make_app("Aidan Hong", "aidan.pdf", applied_at="2026-10-25T11:00:00Z")
     for a in (a1, a2, a3):
         pipeline.run(a, wait=True)
     i1, i2, i3 = (a["application_id"] for a in (a1, a2, a3))

@@ -11,7 +11,8 @@ before committing).
 Cases:
 - ``henry``: a real replay snapshot built from the recorded GitHub cache (`fixtures/cache/`) and a live
   extraction of `fixtures/resumes/henry.pdf`; the run trace is a real live run (Docker sandbox, vLLM Qwen3.6).
-- ``fake``: a hand-made snapshot of the fake candidate (account and repo created Oct 2026, 0 stars).
+- ``aidan``: a real replay snapshot of aidanhong8 built from the recorded cache and a live extraction of
+  `fixtures/resumes/aidan.pdf` (portfolio-aidan-hong is the deliberately overstated project).
 - ``edges``: hand-made edge cases (fork as creator, stars soft, language soft, empty repo, missing
   data, repo-match decision missing, failed build with a run trace, ...).
 - ``nologin``: a candidate with no GitHub login.
@@ -30,8 +31,8 @@ from verifier.core import rubric, store
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
 GOLDEN = FIXTURES / "golden"
 FIXED_AT = "2026-10-25T14:06:40Z"
-CASES = ["henry", "fake", "edges", "nologin"]
-LABEL_FILES = {"henry": "henrychen4736", "fake": "rv-fake-candidate"}
+CASES = ["henry", "aidan", "edges", "nologin"]
+LABEL_FILES = {"henry": "henrychen4736", "aidan": "aidanhong8"}
 
 
 def compute(case: str) -> dict:
@@ -120,17 +121,27 @@ def test_henry_cubesolver_is_partial_from_substance_with_a_clean_run():
     assert run["result"] == "pass" and run["reason"] == "Built in 0.8s; works as claimed"
 
 
-def test_fake_fabricated_library_is_red_with_both_hard_reasons():
-    v = compute("fake")
-    vc = [c for c in v["claims"] if c["claim_id"] == "c1"][0]
+def test_aidan_overstated_portfolio_is_red_with_both_hard_reasons():
+    v = compute("aidan")
+    vc = [c for c in v["claims"] if c["claim_id"] == "c4"][0]
     assert vc["label"] == "contradicted"
     hard = {c["check"]: c["reason"] for c in vc["checks"] if c["result"] == "hard"}
-    assert hard == {"start_date": "Created Oct 2026; claim says 2023",
-                    "stars": "0 stars; claim says 2000"}
-    assert vc["top_reason"] == "Created Oct 2026; claim says 2023"
-    assert v["context"][0] == "Account created Oct 2026."
-    # red appears only on the fabricated library (D12: absent skills are never red)
+    assert hard == {"start_date": "Created Mar 2024; claim says 2021",
+                    "stars": "1 stars; claim says 500"}
+    assert vc["top_reason"] == "Created Mar 2024; claim says 2021"
+    assert v["context"][0] == "Account created Nov 2022."
+    # red appears only on the overstated portfolio (D12: absent skills are never red)
     assert v["tally"]["contradicted"] == 1
+
+
+def test_aidan_contribution_is_green_with_the_merged_prs_as_evidence():
+    v = compute("aidan")
+    vc = [c for c in v["claims"] if c["claim_id"] == "c5"][0]
+    assert vc["label"] == "supported"
+    assert vc["top_reason"] == "2 merged PRs and 17 commits by @aidanhong8 in boomty/CameraDetectionforTraffic"
+    links = vc["evidence_links"]
+    assert "https://github.com/boomty/CameraDetectionforTraffic/pull/1" in links
+    assert "https://github.com/boomty/CameraDetectionforTraffic/pull/2" in links
 
 
 def test_edges_covers_each_edge():

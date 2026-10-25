@@ -1,0 +1,8 @@
+{
+  "body": "{\"login\":\"aidanhong8\",\"id\":119242962,\"node_id\":\"U_kgDOBxuA0g\",\"avatar_url\":\"https://avatars.githubusercontent.com/u/119242962?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/aidanhong8\",\"html_url\":\"https://github.com/aidanhong8\",\"followers_url\":\"https://api.github.com/users/aidanhong8/followers\",\"following_url\":\"https://api.github.com/users/aidanhong8/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/aidanhong8/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/aidanhong8/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/aidanhong8/subscriptions\",\"organizations_url\":\"https://api.github.com/users/aidanhong8/orgs\",\"repos_url\":\"https://api.github.com/users/aidanhong8/repos\",\"events_url\":\"https://api.github.com/users/aidanhong8/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/aidanhong8/received_events\",\"type\":\"User\",\"user_view_type\":\"public\",\"site_admin\":false,\"name\":\"Aidan Hong\",\"company\":null,\"blog\":\"aidanhong.com\",\"location\":null,\"email\":null,\"hireable\":true,\"bio\":null,\"twitter_username\":null,\"public_repos\":19,\"public_gists\":0,\"followers\":3,\"following\":9,\"created_at\":\"2022-11-27T18:10:23Z\",\"updated_at\":\"2026-10-20T20:54:37Z\"}",
+  "body_sha256": "5ac3ccc26992ca7d5d064ce114c4496d05babc4a8426f20ccce3116373388a03",
+  "etag": "W/\"18000a0ad72b218e79241634bae794abf47fd3ef2dae8bc4060a29f22c44e9dd\"",
+  "fetched_at": "2026-10-25T19:54:33Z",
+  "key": "GET https://api.github.com/users/aidanhong8",
+  "status": 200
+}

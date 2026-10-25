@@ -1,4 +1,4 @@
-"""``python -m verifier.demo --stub [--candidate henry|fake] [--real fetch,rubric,…]`` (design doc §8.8).
+"""``python -m verifier.demo --stub [--candidate henry|aidan] [--real fetch,rubric,…]`` (design doc §8.8).
 
 Gives the candidate's fixture webhook fresh ids, signs it, passes it through the ``ats``
 adapter's ``handle_webhook``, and runs the pipeline. Then checks the run itself and exits
@@ -121,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
     load_dotenv()
     ap = argparse.ArgumentParser(prog="python -m verifier.demo", description=__doc__.splitlines()[0])
     ap.add_argument("--stub", action="store_true", help="run every module as a stub")
-    ap.add_argument("--candidate", default="henry", choices=["henry", "fake"])
+    ap.add_argument("--candidate", default="henry", choices=["henry", "aidan"])
     ap.add_argument("--real", default="", help="comma list of modules to run real")
     args = ap.parse_args(argv)
 

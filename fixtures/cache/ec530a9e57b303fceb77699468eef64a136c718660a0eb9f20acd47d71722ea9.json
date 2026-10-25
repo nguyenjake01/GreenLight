@@ -1,0 +1,8 @@
+{
+  "body": "{\"JavaScript\":20298,\"CSS\":4991,\"HTML\":1911}",
+  "body_sha256": "aedac6221e276fc32dccb144c5e35291d31e40600237be052639789a1ee60781",
+  "etag": "W/\"834e7c9c0a66fdb95b62d8201ed02a4841ed5ec640587672ac5077b37fd818a7\"",
+  "fetched_at": "2026-10-25T19:54:35Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/portfolio-aidan-hong/languages",
+  "status": 200
+}

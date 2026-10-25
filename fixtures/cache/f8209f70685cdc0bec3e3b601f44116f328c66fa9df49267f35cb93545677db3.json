@@ -1,0 +1,8 @@
+{
+  "body": "{\"JavaScript\":6124,\"HTML\":1721,\"CSS\":928}",
+  "body_sha256": "1401edc5bfbc6094e3a88cadcddcf3e3c9163711e369291796d41ca7010a74fa",
+  "etag": "W/\"5b5c8dfc0c8295cf81e756964457a09ce02d63bc911d43c6215bb9c7e2038577\"",
+  "fetched_at": "2026-10-25T19:54:37Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/cv/languages",
+  "status": 200
+}

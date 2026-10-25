@@ -8,7 +8,7 @@ from verifier.core import resume, store
 
 FIXTURES = Path(__file__).resolve().parents[2] / "fixtures"
 HENRY = "henrychen4736"
-FAKE = "rv-fake-candidate"
+AIDAN = "aidanhong8"
 LABELS = {"supported", "partial", "contradicted", "no_evidence"}
 
 
@@ -28,7 +28,7 @@ def claim_key(c):
 
 @pytest.mark.parametrize("rel, schema", [
     (f"claims/{HENRY}.json", "claims"),
-    (f"claims/{FAKE}.json", "claims"),
+    (f"claims/{AIDAN}.json", "claims"),
     (f"verdicts/{HENRY}.json", "verdict"),
     ("run_traces/c3.json", "run_trace"),
     ("snapshots/sample/evidence.json", "evidence"),
@@ -81,16 +81,16 @@ def test_every_stored_schema_exists_and_is_valid():
 
 def test_candidates_json():
     cands = load("candidates.json")
-    assert set(cands) == {"henry", "fake"}
+    assert {"henry", "aidan"} <= set(cands)
     assert cands["henry"]["github_login"] == HENRY
-    assert cands["fake"]["github_login"] == FAKE
+    assert cands["aidan"]["github_login"] == AIDAN
     for entry in cands.values():
         assert set(entry) == {"name", "github_login", "resume", "webhook"}
         assert (FIXTURES / "resumes" / entry["resume"]).is_file()
         assert (FIXTURES / "webhooks" / entry["webhook"]).is_file()
 
 
-@pytest.mark.parametrize("name", ["henry", "fake"])
+@pytest.mark.parametrize("name", ["henry", "aidan"])
 def test_webhook_shape(name):
     body = load(f"webhooks/{name}.json")
     assert body["action"] == "new_candidate_application"
@@ -109,7 +109,7 @@ def test_webhook_shape(name):
     assert f"{cand['first_name']} {cand['last_name']}" == entry["name"]
 
 
-@pytest.mark.parametrize("name", ["henry", "fake"])
+@pytest.mark.parametrize("name", ["henry", "aidan"])
 def test_resume_json_matches_pdf(name):
     saved = load(f"resumes/{name}.resume.json")
     assert saved == resume.read_resume(FIXTURES / "resumes" / f"{name}.pdf")
@@ -117,12 +117,12 @@ def test_resume_json_matches_pdf(name):
 
 def test_resume_links():
     assert [l["uri"] for l in load("resumes/henry.resume.json")["links"]] == [f"https://github.com/{HENRY}"]
-    assert [l["uri"] for l in load("resumes/fake.resume.json")["links"]] == [f"https://github.com/{FAKE}"]
+    assert [l["uri"] for l in load("resumes/aidan.resume.json")["links"]] == [f"https://github.com/{AIDAN}"]
 
 
 # ── claims against resumes ───────────────────────────────────────────────────
 
-@pytest.mark.parametrize("login, name", [(HENRY, "henry"), (FAKE, "fake")])
+@pytest.mark.parametrize("login, name", [(HENRY, "henry"), (AIDAN, "aidan")])
 def test_claims_match_resume(login, name):
     claims, saved = load(f"claims/{login}.json"), load(f"resumes/{name}.resume.json")
     assert claims["extraction"]["resume_sha256"] == saved["sha256"]
@@ -145,12 +145,14 @@ def test_henry_claims_follow_the_design_doc():
             "unchecked:employment", "unchecked:education"} <= set(by_key)
 
 
-def test_fake_claims_follow_the_design_doc():
-    claims = load(f"claims/{FAKE}.json")["claims"]
+def test_aidan_claims_follow_the_design_doc():
+    claims = load(f"claims/{AIDAN}.json")["claims"]
     by_key = {claim_key(c): c for c in claims}
-    fastgrid = by_key["project:fastgrid"]["assertions"]
-    assert fastgrid["min_stars"] == 2000 and fastgrid["start_year"] == 2023
-    assert by_key["oss:henrychen4736/cubesolver"]["assertions"]["role"] == "contributor"
+    portfolio = by_key["project:portfolio-aidan-hong"]["assertions"]
+    assert portfolio["min_stars"] == 500 and portfolio["start_year"] == 2021
+    oss = by_key["oss:boomty/CameraDetectionforTraffic"]["assertions"]
+    assert oss["role"] == "contributor" and oss["min_prs"] == 2
+    assert {"unchecked:education", "unchecked:other"} <= set(by_key)
 
 
 def test_extraction_output_flattens_to_the_claims_fixture():
@@ -273,12 +275,13 @@ def test_verdict_labels_match_expected_labels():
     assert expected["unchecked:employment"] == expected["unchecked:education"] == "no_evidence"
 
 
-def test_fake_expected_labels_cover_every_claim():
-    claims = load(f"claims/{FAKE}.json")["claims"]
-    expected = load(f"expected/{FAKE}.labels.json")
+def test_aidan_expected_labels_cover_every_claim():
+    claims = load(f"claims/{AIDAN}.json")["claims"]
+    expected = load(f"expected/{AIDAN}.labels.json")
     assert set(expected) == {claim_key(c) for c in claims}
     assert set(expected.values()) <= LABELS
-    assert expected["project:fastgrid"] == "contradicted"
+    assert expected["project:portfolio-aidan-hong"] == "contradicted"
+    assert expected["oss:boomty/CameraDetectionforTraffic"] == "supported"
 
 
 # ── Slack payloads ───────────────────────────────────────────────────────────

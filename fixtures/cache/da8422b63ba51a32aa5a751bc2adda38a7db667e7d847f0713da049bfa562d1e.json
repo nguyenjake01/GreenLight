@@ -1,0 +1,8 @@
+{
+  "body": "{\"TypeScript\":4311,\"JavaScript\":237}",
+  "body_sha256": "2ff5509b281ade8b5faf0ccf48e2454bc859a3649eee72ca2bbfb526666e513a",
+  "etag": "W/\"c504dd494c3ad17901d0dc0c90d49b0a14eaca53faa4440e1a55f9528cf29409\"",
+  "fetched_at": "2026-10-25T19:54:36Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/quiz/languages",
+  "status": 200
+}

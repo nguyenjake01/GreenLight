@@ -1,0 +1,8 @@
+{
+  "body": "{\"Python\":11397}",
+  "body_sha256": "0fed895f45dc9a08ac7af237ab3ad0cfd26eb6e6a321f85253606c7ffd896f93",
+  "etag": "\"d2bbc616dbb07c4afc5ea8141705e207279eef671d69cec742150cf8d149788b\"",
+  "fetched_at": "2026-10-25T19:54:38Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/csvstudy/languages",
+  "status": 200
+}

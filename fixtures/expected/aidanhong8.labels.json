@@ -1,0 +1,13 @@
+{
+  "oss:boomty/CameraDetectionforTraffic": "supported",
+  "project:HalloweenTracker": "supported",
+  "project:care360": "supported",
+  "project:portfolio-aidan-hong": "contradicted",
+  "project:quiz": "supported",
+  "skill:JavaScript": "supported",
+  "skill:Python": "supported",
+  "skill:Swift": "supported",
+  "skill:TypeScript": "supported",
+  "unchecked:education": "no_evidence",
+  "unchecked:other": "no_evidence"
+}

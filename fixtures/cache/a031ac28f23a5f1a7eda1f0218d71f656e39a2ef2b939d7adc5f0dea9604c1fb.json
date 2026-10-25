@@ -1,0 +1,8 @@
+{
+  "body": "{\"Swift\":70924,\"C++\":11089,\"Python\":9296}",
+  "body_sha256": "85f02f94448dcb4f440a0da11367857f912d801a613dab39a7bb9d553a1dfffe",
+  "etag": "W/\"862095fa02d3998589c20b45b1d15634e6f0250d42b59e11bfd446672476e7f0\"",
+  "fetched_at": "2026-10-25T19:54:36Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/halloweentracker/languages",
+  "status": 200
+}

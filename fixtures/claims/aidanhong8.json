@@ -1,0 +1,174 @@
+{
+  "application_id": "12345",
+  "candidate": {
+    "emails": [
+      "aidan@example.com"
+    ],
+    "github_login": "aidanhong8",
+    "github_login_conflict": null,
+    "github_login_source": "resume_link",
+    "name": "Aidan Hong"
+  },
+  "claims": [
+    {
+      "assertions": {
+        "behavior": "React website for a nutrition therapy and consulting company",
+        "language": "JavaScript",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "care360",
+        "repo_url": null,
+        "role": "creator",
+        "scale": "substantial",
+        "start_year": 2025
+      },
+      "claim_id": "c1",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "care360 (JavaScript, 2025): React website for a nutrition therapy and consulting company",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": "iOS app that tracks a Bluetooth beacon on a map",
+        "language": "Swift",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "HalloweenTracker",
+        "repo_url": null,
+        "role": "creator",
+        "scale": "small",
+        "start_year": 2025
+      },
+      "claim_id": "c2",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "HalloweenTracker (Swift, 2025): iOS app that tracks a Bluetooth beacon on a map, an Instructables Halloween contest entry",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": "Expo mobile app with a login screen",
+        "language": "TypeScript",
+        "min_stars": null,
+        "public_signal": "none",
+        "repo_name": "quiz",
+        "repo_url": null,
+        "role": "creator",
+        "scale": "small",
+        "start_year": 2025
+      },
+      "claim_id": "c3",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "quiz (TypeScript, 2025): Expo mobile app with a login screen",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "behavior": "portfolio template",
+        "language": "JavaScript",
+        "min_stars": 500,
+        "public_signal": "none",
+        "repo_name": "portfolio-aidan-hong",
+        "repo_url": null,
+        "role": "creator",
+        "scale": "substantial",
+        "start_year": 2021
+      },
+      "claim_id": "c4",
+      "needs_review": false,
+      "section": "Projects",
+      "source_text": "portfolio-aidan-hong (JavaScript, 2021): open-sourced as a portfolio template with 500+ GitHub stars",
+      "type": "project"
+    },
+    {
+      "assertions": {
+        "description": "Contributed 2 merged pull requests",
+        "min_prs": 2,
+        "repo": "boomty/CameraDetectionforTraffic",
+        "role": "contributor"
+      },
+      "claim_id": "c5",
+      "needs_review": false,
+      "section": "Open Source",
+      "source_text": "Contributed 2 merged pull requests to boomty/CameraDetectionforTraffic",
+      "type": "oss_contribution"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "JavaScript"
+      },
+      "claim_id": "c6",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: JavaScript, TypeScript, Python, Swift",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "TypeScript"
+      },
+      "claim_id": "c7",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: JavaScript, TypeScript, Python, Swift",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Python"
+      },
+      "claim_id": "c8",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: JavaScript, TypeScript, Python, Swift",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "kind": "language",
+        "name": "Swift"
+      },
+      "claim_id": "c9",
+      "needs_review": false,
+      "section": "Skills",
+      "source_text": "Languages: JavaScript, TypeScript, Python, Swift",
+      "type": "skill"
+    },
+    {
+      "assertions": {
+        "category": "education"
+      },
+      "claim_id": "c10",
+      "needs_review": false,
+      "section": "Education",
+      "source_text": "Diamond Bar High School",
+      "type": "unchecked"
+    },
+    {
+      "assertions": {
+        "category": "other"
+      },
+      "claim_id": "c11",
+      "needs_review": false,
+      "section": "Activities",
+      "source_text": "Member, Future Business Leaders of America (FBLA), Diamond Bar High School",
+      "type": "unchecked"
+    }
+  ],
+  "claims_version": 1,
+  "created_at": "2026-10-25T19:53:34Z",
+  "edits": [],
+  "extraction": {
+    "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
+    "prompt_version": "extract-v1",
+    "resume_sha256": "249bcdbd56bb39e1d33a2664baeb6b04fb70a645eae199d8eb023d659991d0d6",
+    "status": "ok",
+    "temperature": 0
+  },
+  "schema_version": "1"
+}

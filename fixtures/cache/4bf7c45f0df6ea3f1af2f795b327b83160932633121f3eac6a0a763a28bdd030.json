@@ -1,0 +1,8 @@
+{
+  "body": "{\"JavaScript\":11589}",
+  "body_sha256": "0cb3025af8b5e3616b0e1664e54276675e2ffbbfe708b69f5f698e95816eee92",
+  "etag": "W/\"913155b1b41c380a33929c86558be9e5875a932565e971ed61697c2774ffa4fa\"",
+  "fetched_at": "2026-10-25T19:54:38Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/discord-api-practice/languages",
+  "status": 200
+}

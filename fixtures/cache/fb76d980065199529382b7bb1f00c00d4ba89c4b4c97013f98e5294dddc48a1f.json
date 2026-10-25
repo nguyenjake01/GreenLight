@@ -1,0 +1,8 @@
+{
+  "body": "{\"JavaScript\":819751,\"CSS\":6850,\"HTML\":2960}",
+  "body_sha256": "f069911e999df6f1b48f6b04767bf89343ecadc53ea10c9e7cbf03d314186858",
+  "etag": "W/\"8dec26915c2fe911d74bbb5cb1ef680b09a25bf48a2f601d694dc8bcda16ff2d\"",
+  "fetched_at": "2026-10-25T19:54:37Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/dbhsfbla/languages",
+  "status": 200
+}

@@ -182,10 +182,10 @@ def test_a_script_tag_in_a_note_is_escaped(client):
 
 
 def test_notes_of_another_candidate_do_not_leak(client):
-    a, b = apply(client), apply(client, "fake")
+    a, b = apply(client), apply(client, "aidan")
     add_note(client, a, "henry only")
     text = page(client, b)
-    assert "henry only" not in text and "Alex Rivera" in text
+    assert "henry only" not in text and "Aidan Hong" in text
 
 
 def test_page_never_shows_fields_the_real_ats_lacks(client):
@@ -198,17 +198,17 @@ def test_page_never_shows_fields_the_real_ats_lacks(client):
 # ── index and the form apply ──────────────────────────────────────────────────
 
 def test_index_lists_applications_newest_first_and_a_button_per_fixture(client):
-    first, second = apply(client), apply(client, "fake")
+    first, second = apply(client), apply(client, "aidan")
     r = client.get("/")
     assert r.status_code == 200
     text = r.text
-    assert text.index("Alex Rivera") < text.index("Henry Chen")  # newest first
+    assert text.index("Aidan Hong") < text.index("Henry Chen")  # newest first
     assert (f'href="/candidates/{second["candidate_id"]}?application_id={second["application_id"]}"'
             in text)
     assert (f'href="/candidates/{first["candidate_id"]}?application_id={first["application_id"]}"'
             in text)
     assert re.search(r'<form[^>]*method="post"[^>]*action="/_mock/apply"', text)
-    assert 'name="fixture" value="henry"' in text and 'name="fixture" value="fake"' in text
+    assert 'name="fixture" value="henry"' in text and 'name="fixture" value="aidan"' in text
     assert text.count("Simulate application") >= 3  # heading + one button per fixture
     assert "greenhouse" not in text.lower()
 

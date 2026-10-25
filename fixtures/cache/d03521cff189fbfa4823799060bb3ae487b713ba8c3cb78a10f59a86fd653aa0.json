@@ -1,0 +1,8 @@
+{
+  "body": "{\"JavaScript\":49714,\"HTML\":1271,\"CSS\":114}",
+  "body_sha256": "1875d06746904d9579abc97fb94ec4867bcd8b175ceb9f7495247905d51f4bf1",
+  "etag": "W/\"eede5eeb67e5addae094a5518c2b93ac3b3f61fc0d90aac25cb64f6fc8105d6e\"",
+  "fetched_at": "2026-10-25T19:54:34Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/therdkitchen/languages",
+  "status": 200
+}

@@ -1,0 +1,8 @@
+{
+  "body": "[{\"login\":\"aidanhong8\",\"id\":119242962,\"node_id\":\"U_kgDOBxuA0g\",\"avatar_url\":\"https://avatars.githubusercontent.com/u/119242962?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/aidanhong8\",\"html_url\":\"https://github.com/aidanhong8\",\"followers_url\":\"https://api.github.com/users/aidanhong8/followers\",\"following_url\":\"https://api.github.com/users/aidanhong8/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/aidanhong8/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/aidanhong8/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/aidanhong8/subscriptions\",\"organizations_url\":\"https://api.github.com/users/aidanhong8/orgs\",\"repos_url\":\"https://api.github.com/users/aidanhong8/repos\",\"events_url\":\"https://api.github.com/users/aidanhong8/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/aidanhong8/received_events\",\"type\":\"User\",\"user_view_type\":\"public\",\"site_admin\":false,\"contributions\":6}]",
+  "body_sha256": "20bcee0c60fff2af6bbc776d12e662f4c2632a9b1e430e615b70568f6bec4f9b",
+  "etag": "W/\"45e96cff0da8ac541c5846be6dc7852bdfd470c4052aded9d75c83085b9e4ef4\"",
+  "fetched_at": "2026-10-25T19:54:46Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/halloweentracker/contributors?anon=1&per_page=100",
+  "status": 200
+}

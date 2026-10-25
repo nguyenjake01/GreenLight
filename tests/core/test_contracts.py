@@ -166,9 +166,9 @@ def test_resume_stub_by_sha_and_fallback(tmp_path):
     unknown.write_bytes(b"%PDF-unknown")
     assert stubs.resume.read_resume(unknown) == json.loads(
         (FIXTURES / "resumes" / "henry.resume.json").read_text())
-    if (FIXTURES / "resumes" / "fake.resume.json").exists():
-        fake = stubs.resume.read_resume(_pdf("fake.pdf"))
-        assert fake["sha256"] == hashlib.sha256(_pdf("fake.pdf").read_bytes()).hexdigest()
+    if (FIXTURES / "resumes" / "aidan.resume.json").exists():
+        aidan = stubs.resume.read_resume(_pdf("aidan.pdf"))
+        assert aidan["sha256"] == hashlib.sha256(_pdf("aidan.pdf").read_bytes()).hexdigest()
 
 
 def test_link_github_stub_uses_resume_filename_not_app_id():

@@ -61,7 +61,7 @@ CAND = {"name": "N", "emails": [], "github_login": None, "github_login_source": 
 # ── real extract with the stub llm reproduces the fixture ──────────────────────
 
 @pytest.mark.parametrize("login,resume_file", [("henrychen4736", "henry"),
-                                               ("rv-fake-candidate", "fake")])
+                                               ("aidanhong8", "aidan")])
 def test_stub_llm_reproduces_henry_fixture(login, resume_file, monkeypatch):
     monkeypatch.delenv("VERIFIER_REAL", raising=False)  # llm resolves to the stub
     resume = _load(f"resumes/{resume_file}.resume.json")

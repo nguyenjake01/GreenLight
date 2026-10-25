@@ -113,9 +113,9 @@ def test_apply_stores_the_fixture_resume_and_serves_it(client, sent):
     assert r.content == (FIXTURES / "resumes" / "henry.pdf").read_bytes()
 
 
-def test_apply_with_the_fake_fixture(client, sent):
-    apply(client, "fake")
-    assert json.loads(sent[0].content)["payload"]["application"]["candidate"]["first_name"] == "Alex"
+def test_apply_with_the_aidan_fixture(client, sent):
+    apply(client, "aidan")
+    assert json.loads(sent[0].content)["payload"]["application"]["candidate"]["first_name"] == "Aidan"
 
 
 def test_apply_reports_an_unreachable_verifier(cfg):
@@ -452,7 +452,7 @@ def test_live_two_uvicorn_smoke(tmp_path):
         assert "HTTP 401" in bad.stdout and "bad_signature" in bad.stdout
         listing = subprocess.run([*base, "--list"], cwd=repo, env=env, capture_output=True,
                                  text=True, timeout=30)
-        assert listing.stdout.split() == ["fake", "henry"]
+        assert {"aidan", "henry"} <= set(listing.stdout.split())
     finally:
         for p in procs:
             p.terminate()

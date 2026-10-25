@@ -1,0 +1,8 @@
+{
+  "body": "{}",
+  "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "etag": "\"2404b14530ee9b784097ba72ff95b59e871c98eda058feabc685e264dc9b5661\"",
+  "fetched_at": "2026-10-25T19:54:37Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/dbhsae24-25/languages",
+  "status": 200
+}

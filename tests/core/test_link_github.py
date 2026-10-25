@@ -177,7 +177,7 @@ def test_henry_fixture():
     assert cand["github_login_conflict"] == {"login": "someone-else", "source": "greenhouse_website"}
 
 
-@pytest.mark.parametrize("name", ["henry", "fake"])
+@pytest.mark.parametrize("name", ["henry", "aidan"])
 def test_fixtures_match_candidates_json(name):
     resume = json.loads((ROOT / "fixtures" / "resumes" / f"{name}.resume.json").read_text())
     expected = json.loads((ROOT / "fixtures" / "candidates.json").read_text())[name]["github_login"]

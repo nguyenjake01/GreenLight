@@ -1,0 +1,8 @@
+{
+  "body": "{\"JavaScript\":21195,\"CSS\":436,\"HTML\":386}",
+  "body_sha256": "8f661078731be53d84b554bfcce19c738e337fab10697e6e302ff86478949772",
+  "etag": "W/\"b30f95993f04519aacf01a932d888c2ab72d122c619c9a169d152ac0a0edfc90\"",
+  "fetched_at": "2026-10-25T19:54:37Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/fblaae/languages",
+  "status": 200
+}

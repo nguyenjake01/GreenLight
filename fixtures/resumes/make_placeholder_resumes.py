@@ -1,10 +1,10 @@
-"""Generate placeholder resume PDFs (henry.pdf, fake.pdf) next to this script.
+"""Generate placeholder resume PDFs (henry.pdf, aidan.pdf) next to this script.
 
 Placeholders only: the real resumes may replace them. Every claim sits on one line so its
 `source_text` can be found in the pdftotext output. Run from the repo root:
 
     .venv/bin/python fixtures/resumes/make_placeholder_resumes.py
-    for n in henry fake; do .venv/bin/python -m verifier.core.resume fixtures/resumes/$n.pdf > fixtures/resumes/$n.resume.json; done
+    for n in henry aidan; do .venv/bin/python -m verifier.core.resume fixtures/resumes/$n.pdf > fixtures/resumes/$n.resume.json; done
 """
 
 from __future__ import annotations
@@ -42,23 +42,30 @@ HENRY = [
     ("line", "Westview High School, Class of 2027"),
 ]
 
-FAKE = [
-    ("title", "Alex Rivera"),
-    ("contact", "alex.rivera@example.com | ", "github.com/rv-fake-candidate", "https://github.com/rv-fake-candidate"),
+AIDAN = [
+    ("title", "Aidan Hong"),
+    ("contact", "aidan@example.com | ", "github.com/aidanhong8", "https://github.com/aidanhong8"),
     ("line", "Applying for: Software Engineer Intern"),
     ("gap",),
     ("heading", "Projects"),
-    ("line", "fastgrid (Python): maintain an open-source library with 2k stars since 2023"),
+    ("line", "care360 (JavaScript, 2025): React website for a nutrition therapy and consulting company"),
+    ("line", "HalloweenTracker (Swift, 2025): iOS app that tracks a Bluetooth beacon on a map, an Instructables Halloween contest entry"),
+    ("line", "quiz (TypeScript, 2025): Expo mobile app with a login screen"),
+    ("line", "portfolio-aidan-hong (JavaScript, 2021): open-sourced as a portfolio template with 500+ GitHub stars"),
     ("gap",),
     ("heading", "Open Source"),
-    ("line", "Contributed a merged pull request to henrychen4736/cubesolver"),
+    ("line", "Contributed 2 merged pull requests to boomty/CameraDetectionforTraffic"),
     ("gap",),
     ("heading", "Skills"),
-    ("line", "Languages: Python, Rust"),
+    ("line", "Languages: JavaScript, TypeScript, Python, Swift"),
     ("gap",),
     ("heading", "Education"),
-    ("line", "Northside University, B.S. Computer Science, 2025"),
+    ("line", "Diamond Bar High School"),
+    ("gap",),
+    ("heading", "Activities"),
+    ("line", "Member, Future Business Leaders of America (FBLA), Diamond Bar High School"),
 ]
+
 
 
 def build(path: Path, entries: list[tuple]) -> None:
@@ -96,5 +103,5 @@ def build(path: Path, entries: list[tuple]) -> None:
 
 if __name__ == "__main__":
     build(HERE / "henry.pdf", HENRY)
-    build(HERE / "fake.pdf", FAKE)
-    print("wrote", HERE / "henry.pdf", HERE / "fake.pdf")
+    build(HERE / "aidan.pdf", AIDAN)
+    print("wrote", HERE / "henry.pdf", HERE / "aidan.pdf")

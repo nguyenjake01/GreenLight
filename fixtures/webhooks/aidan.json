@@ -6,35 +6,40 @@
       "candidate": {
         "attachments": [
           {
-            "filename": "fake.pdf",
+            "filename": "aidan.pdf",
             "type": "resume",
-            "url": "http://localhost:8100/files/placeholder/fake.pdf"
+            "url": "http://localhost:8100/files/placeholder/aidan.pdf"
           }
         ],
         "custom_fields": {},
         "educations": [
           {
-            "degree": "B.S.",
-            "discipline": "Computer Science",
-            "end_date": "2025-06-01T00:00:00.000Z",
-            "school_name": "Northside University",
+            "degree": null,
+            "discipline": null,
+            "end_date": null,
+            "school_name": "Diamond Bar High School",
             "start_date": null
           }
         ],
         "email_addresses": [
           {
             "type": "personal",
-            "value": "alex.rivera@example.com"
+            "value": "aidan@example.com"
           }
         ],
         "employments": [],
-        "first_name": "Alex",
+        "first_name": "Aidan",
         "id": 2000002,
-        "last_name": "Rivera",
+        "last_name": "Hong",
         "phone_numbers": [],
         "social_media_addresses": [],
         "tags": [],
-        "website_addresses": []
+        "website_addresses": [
+          {
+            "type": "personal",
+            "value": "https://aidanhong.com"
+          }
+        ]
       },
       "current_stage": {
         "id": 10,

@@ -1,0 +1,8 @@
+{
+  "body": "[{\"login\":\"aidanhong8\",\"id\":119242962,\"node_id\":\"U_kgDOBxuA0g\",\"avatar_url\":\"https://avatars.githubusercontent.com/u/119242962?v=4\",\"gravatar_id\":\"\",\"url\":\"https://api.github.com/users/aidanhong8\",\"html_url\":\"https://github.com/aidanhong8\",\"followers_url\":\"https://api.github.com/users/aidanhong8/followers\",\"following_url\":\"https://api.github.com/users/aidanhong8/following{/other_user}\",\"gists_url\":\"https://api.github.com/users/aidanhong8/gists{/gist_id}\",\"starred_url\":\"https://api.github.com/users/aidanhong8/starred{/owner}{/repo}\",\"subscriptions_url\":\"https://api.github.com/users/aidanhong8/subscriptions\",\"organizations_url\":\"https://api.github.com/users/aidanhong8/orgs\",\"repos_url\":\"https://api.github.com/users/aidanhong8/repos\",\"events_url\":\"https://api.github.com/users/aidanhong8/events{/privacy}\",\"received_events_url\":\"https://api.github.com/users/aidanhong8/received_events\",\"type\":\"User\",\"user_view_type\":\"public\",\"site_admin\":false,\"contributions\":5}]",
+  "body_sha256": "460bc6ca639598993ee73ecc3835f16fb264c8644022df472d1c7b68471be0e6",
+  "etag": "W/\"fea6a79c72d71501c02ed417c67a4343914097722fa21844228dd20fd35a8497\"",
+  "fetched_at": "2026-10-25T19:54:49Z",
+  "key": "GET https://api.github.com/repos/aidanhong8/fblaae/contributors?anon=1&per_page=100",
+  "status": 200
+}

@@ -1,4 +1,4 @@
-# Handoff: Resume Verifier build (checkpoint 2, Oct 25 2026, ~14:40 CDT)
+# Handoff: Resume Verifier build (checkpoint 2, Oct 25 2026, ~14:08 CDT)
 
 Read this first in the next session, then `CLAUDE.md`, then the design-doc sections a task cites.
 Setup: one machine (the GB10 itself, arm64, Python 3.12). The lead (Opus) plans and reviews;

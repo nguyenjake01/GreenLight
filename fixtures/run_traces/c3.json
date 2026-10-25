@@ -38,7 +38,7 @@
     "timed_out": false
   },
   "claim_id": "c3",
-  "commit_sha": "7f7a7aacc23a237e392a8bcd0651f8347c76bdd2",
+  "commit_sha": "fc4e103df0494fbe59d53bc990daf0eb124043cb",
   "judge": {
     "model": "Qwen3.6-35B-A3B-NVFP4",
     "outcome": "works_as_claimed",

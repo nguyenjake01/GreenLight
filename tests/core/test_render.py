@@ -156,18 +156,19 @@ def test_henry_card_matches_mockup():
     assert msg["text"] == "New application: Henry Chen: 🟢 6 🟡 1 🔴 0 ⚪ 2"
     assert b["header"]["text"]["text"] == "New application: Henry Chen · Software Engineer Intern"
     acct = [e["text"] for e in b["account"]["elements"]]
-    assert acct == ["GitHub @henrychen4736 · 5 public repos · account since Sep 2021"]
+    assert acct == ["GitHub @henrychen4736 · 5 public repos · account since Sep 2021",
+                    "Most public activity is from the last 30 days."]
     assert b["tally"]["text"]["text"] == "🟢 6   🟡 1   🔴 0   ⚪ 2"
     order = [x["block_id"] for x in msg["blocks"]]
     assert order == ["header", "account", "tally", "group_projects", "claim_c1", "notes_claim_c1",
-                     "claim_c2", "claim_c3", "group_skills", "claim_c4", "claim_c5", "claim_c6",
+                     "claim_c2", "notes_claim_c2", "claim_c3", "group_skills", "claim_c4", "claim_c5", "claim_c6",
                      "claim_c7", "group_unchecked", "unchecked", "actions", "footer"]
     assert b["group_projects"]["text"]["text"] == "*PROJECTS*"
     assert b["claim_c1"]["text"]["text"].startswith("🟢 *Polytrack-ML*: 35 of 35 commits by the candidate")
     assert b["notes_claim_c1"]["elements"][0]["text"] == "↳ Commits not linked to the GitHub account"
     assert b["claim_c3"]["text"]["text"] == (
         "🟡 *cubesolver*: Described as a complete project, but the repo is 3 KB with 2 commits on 1 day")
-    assert b["claim_c4"]["text"]["text"] == "🟢 *Python*: Main language in 1 repo"
+    assert b["claim_c4"]["text"]["text"] == "🟢 *Python*: In 3 repos, up to 45% of the code"
     assert b["group_unchecked"]["text"]["text"] == "*NOT CHECKED (2)*"
     assert b["unchecked"]["text"]["text"] == "⚪ Employment, education. Not verifiable from public code."
     assert "accessory" not in b["unchecked"]
@@ -178,7 +179,7 @@ def test_henry_card_matches_mockup():
     assert acts[0]["value"] == "12345"
     assert acts[1]["url"] == APP["profile_url"] and acts[2]["url"] == PDF_URL
     assert b["footer"]["elements"][0]["text"] == (
-        "Evidence summary, not a hiring decision · rubric-v1 · snap_20261025T140215Z")
+        "Evidence summary, not a hiring decision · rubric-v1 · snap_20261025T185533Z")
 
 
 def test_claim_menu_overflow():
@@ -253,7 +254,7 @@ def test_stage_errors_and_run_progress():
     msg = card(meta=meta)
     check_message(msg)
     lines = [e["text"] for e in by_id(msg)["account"]["elements"]]
-    assert lines[1:] == [
+    assert lines[2:] == [
         "GitHub evidence unavailable; affected checks show ⚪.",
         "Annotated resume unavailable.",
         "Functional run check unavailable for cubesolver.",

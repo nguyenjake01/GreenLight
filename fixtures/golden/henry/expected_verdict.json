@@ -52,13 +52,23 @@
           "check": "language",
           "facts": {
             "languages": {
-              "HTML": 9,
+              "HTML": 57,
               "JavaScript": 34,
-              "Python": 56,
+              "Python": 5,
               "Shell": 1
             }
           },
-          "reason": "Python is the main language; JavaScript is 34% of the code",
+          "reason": "JavaScript is 34% of the code",
+          "result": "pass"
+        },
+        {
+          "check": "substance",
+          "facts": {
+            "commits": 35,
+            "distinct_days": 11,
+            "size_kb": 3339
+          },
+          "reason": "Repo is 3339 KB with 35 commits",
           "result": "pass"
         }
       ],
@@ -71,7 +81,7 @@
       "notes": [
         "Commits not linked to the GitHub account"
       ],
-      "top_reason": "35 of 35 commits by the candidate; Python is the main language; JavaScript is 34% of the code",
+      "top_reason": "35 of 35 commits by the candidate; JavaScript is 34% of the code",
       "type": "project"
     },
     {
@@ -104,8 +114,8 @@
           "facts": {
             "by_method": {
               "email": 0,
-              "login": 5,
-              "name": 0
+              "login": 1,
+              "name": 4
             },
             "matched": 5,
             "total": 5
@@ -117,11 +127,29 @@
           "check": "language",
           "facts": {
             "languages": {
-              "Dart": 77,
-              "Python": 22
+              "Batchfile": 1,
+              "Dart": 53,
+              "Dockerfile": 1,
+              "Kotlin": 1,
+              "Objective-C": 1,
+              "PowerShell": 1,
+              "Python": 45,
+              "Ruby": 1,
+              "Shell": 1,
+              "Swift": 1
             }
           },
-          "reason": "Dart is the main language; Python is 22% of the code",
+          "reason": "Dart is the main language",
+          "result": "pass"
+        },
+        {
+          "check": "substance",
+          "facts": {
+            "commits": 5,
+            "distinct_days": 2,
+            "size_kb": 1309
+          },
+          "reason": "Repo is 1309 KB with 5 commits",
           "result": "pass"
         }
       ],
@@ -131,8 +159,10 @@
       ],
       "flags": [],
       "label": "supported",
-      "notes": [],
-      "top_reason": "5 of 5 commits by the candidate; Dart is the main language; Python is 22% of the code",
+      "notes": [
+        "Commits not linked to the GitHub account"
+      ],
+      "top_reason": "5 of 5 commits by the candidate; Dart is the main language",
       "type": "project"
     },
     {
@@ -217,28 +247,33 @@
           "facts": {
             "repos": [
               {
-                "percent": 56,
-                "repo": "henrychen4736/Polytrack-ML"
+                "percent": 45,
+                "repo": "henrychen4736/CAC24"
               },
               {
-                "percent": 22,
-                "repo": "henrychen4736/CAC24"
+                "percent": 27,
+                "repo": "henrychen4736/fbla-coding"
+              },
+              {
+                "percent": 5,
+                "repo": "henrychen4736/Polytrack-ML"
               }
             ]
           },
-          "reason": "Main language in 1 repo",
+          "reason": "In 3 repos, up to 45% of the code",
           "result": "pass"
         }
       ],
       "claim_id": "c4",
       "evidence_links": [
-        "https://github.com/henrychen4736/Polytrack-ML",
-        "https://github.com/henrychen4736/CAC24"
+        "https://github.com/henrychen4736/CAC24",
+        "https://github.com/henrychen4736/fbla-coding",
+        "https://github.com/henrychen4736/Polytrack-ML"
       ],
       "flags": [],
       "label": "supported",
       "notes": [],
-      "top_reason": "Main language in 1 repo",
+      "top_reason": "In 3 repos, up to 45% of the code",
       "type": "skill"
     },
     {
@@ -248,7 +283,7 @@
           "facts": {
             "repos": [
               {
-                "percent": 77,
+                "percent": 53,
                 "repo": "henrychen4736/CAC24"
               }
             ]
@@ -274,12 +309,16 @@
           "facts": {
             "repos": [
               {
-                "percent": 88,
+                "percent": 69,
                 "repo": "henrychen4736/henrychen4736.github.io"
               },
               {
                 "percent": 34,
                 "repo": "henrychen4736/Polytrack-ML"
+              },
+              {
+                "percent": 20,
+                "repo": "henrychen4736/fbla-coding"
               }
             ]
           },
@@ -290,7 +329,8 @@
       "claim_id": "c6",
       "evidence_links": [
         "https://github.com/henrychen4736/henrychen4736.github.io",
-        "https://github.com/henrychen4736/Polytrack-ML"
+        "https://github.com/henrychen4736/Polytrack-ML",
+        "https://github.com/henrychen4736/fbla-coding"
       ],
       "flags": [],
       "label": "supported",
@@ -347,19 +387,20 @@
   ],
   "computed_at": "2026-10-25T14:06:40Z",
   "context": [
-    "Account created Sep 2021."
+    "Account created Sep 2021.",
+    "Most public activity is from the last 30 days."
   ],
   "inputs": {
-    "claims_sha256": "16e4402933ca66b04e9910b3d23de3c9b8f313b78bfa520acdfc37e871e96dfc",
+    "claims_sha256": "d9307911dc1638c8dd3c3db11a6f51ededc406e523f4e4ddc78b4b31ba4d0609",
     "claims_version": 1,
-    "evidence_sha256": "2b61eb3d6928d6d25a652a3ddca169c7b1b0582048ed09a27f7d5d8fc9003be4",
+    "evidence_sha256": "aa89474272554355feb4b4b8434e254d57ebab09d48610c63f6c93020adafdc2",
     "run_traces": [
       {
         "claim_id": "c3",
-        "sha256": "be99fec79237287536afb1a16458f9982c1bafd339d27cd0bb5f3393dcda261e"
+        "sha256": "e3f103f798a1451f8942c3fe6f9651500079b1ed137b9867bc8617431e68ec0e"
       }
     ],
-    "snapshot_id": "snap_20261025T140215Z"
+    "snapshot_id": "snap_20261025T185533Z"
   },
   "rubric_version": "rubric-v1",
   "schema_version": "1",

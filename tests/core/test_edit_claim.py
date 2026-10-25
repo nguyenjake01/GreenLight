@@ -89,7 +89,7 @@ def test_modal_envelope():
         "application_id": "12345", "claim_id": "c3", "claims_version": 3}
     first = modal["blocks"][0]
     assert first["type"] == "context"
-    assert first["elements"][0]["text"] == "Built cubesolver, a full Rubik's cube solver in C++"
+    assert first["elements"][0]["text"] == "Built cubesolver, a full Rubik's cube solver in C++ (2024)"
     json.dumps(modal)  # serializable
 
 
@@ -111,7 +111,7 @@ def test_project_modal_fields_and_initial_values():
     assert blocks["language"]["element"]["initial_value"] == "C++"
     assert "initial_value" not in blocks["repo_url"]["element"]          # null: empty
     assert blocks["behavior"]["element"]["multiline"] is True
-    assert blocks["behavior"]["element"]["initial_value"] == "Solves a scrambled Rubik's cube"
+    assert blocks["behavior"]["element"]["initial_value"] == "Solves a Rubik's cube"
     # Selects
     role, scale, signal = blocks["role"], blocks["scale"], blocks["public_signal"]
     assert option_values(role)[:3] == ["creator", "co-creator", "maintainer"]

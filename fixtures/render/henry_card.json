@@ -17,6 +17,10 @@
         {
           "type": "mrkdwn",
           "text": "GitHub @henrychen4736 · 5 public repos · account since Sep 2021"
+        },
+        {
+          "type": "mrkdwn",
+          "text": "Most public activity is from the last 30 days."
         }
       ]
     },
@@ -41,7 +45,7 @@
       "block_id": "claim_c1",
       "text": {
         "type": "mrkdwn",
-        "text": "🟢 *Polytrack-ML*: 35 of 35 commits by the candidate; Python is the main language; JavaScript is 34% of the code"
+        "text": "🟢 *Polytrack-ML*: 35 of 35 commits by the candidate; JavaScript is 34% of the code"
       },
       "accessory": {
         "type": "overflow",
@@ -89,7 +93,7 @@
       "block_id": "claim_c2",
       "text": {
         "type": "mrkdwn",
-        "text": "🟢 *CAC24*: 5 of 5 commits by the candidate; Dart is the main language; Python is 10% of the code"
+        "text": "🟢 *CAC24*: 5 of 5 commits by the candidate; Dart is the main language"
       },
       "accessory": {
         "type": "overflow",
@@ -121,6 +125,16 @@
           }
         ]
       }
+    },
+    {
+      "type": "context",
+      "block_id": "notes_claim_c2",
+      "elements": [
+        {
+          "type": "mrkdwn",
+          "text": "↳ Commits not linked to the GitHub account"
+        }
+      ]
     },
     {
       "type": "section",
@@ -173,7 +187,7 @@
       "block_id": "claim_c4",
       "text": {
         "type": "mrkdwn",
-        "text": "🟢 *Python*: Main language in 1 repo"
+        "text": "🟢 *Python*: In 3 repos, up to 45% of the code"
       },
       "accessory": {
         "type": "overflow",
@@ -249,7 +263,7 @@
       "block_id": "claim_c6",
       "text": {
         "type": "mrkdwn",
-        "text": "🟢 *JavaScript*: In 2 repos, up to 88% of the code"
+        "text": "🟢 *JavaScript*: Main language in 1 repo"
       },
       "accessory": {
         "type": "overflow",
@@ -378,7 +392,7 @@
       "elements": [
         {
           "type": "mrkdwn",
-          "text": "Evidence summary, not a hiring decision · rubric-v1 · snap_20261025T140215Z"
+          "text": "Evidence summary, not a hiring decision · rubric-v1 · snap_20261025T185533Z"
         }
       ]
     }

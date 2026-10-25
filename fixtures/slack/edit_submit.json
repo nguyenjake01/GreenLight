@@ -24,7 +24,7 @@
         "behavior": {
           "v": {
             "type": "plain_text_input",
-            "value": "Solves a scrambled Rubik's cube"
+            "value": "Solves a Rubik's cube"
           }
         },
         "language": {

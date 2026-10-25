@@ -245,7 +245,8 @@ def test_match_commits_on_sample_contributors():
     assert match.match_commits(body, cand) == {
         "total": 35, "matched": 35, "by_method": {"login": 0, "email": 0, "name": 35}}
     _, linked = snap.get("GET", match.contributors_url("henrychen4736/cac24"))
-    assert match.match_commits(linked, cand)["by_method"]["login"] == 5
+    assert match.match_commits(linked, cand) == {
+        "total": 5, "matched": 5, "by_method": {"login": 1, "email": 0, "name": 4}}
 
 
 # ── commit_timeline ───────────────────────────────────────────────────────────

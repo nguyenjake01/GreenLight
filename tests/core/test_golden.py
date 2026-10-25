@@ -9,9 +9,8 @@ twice to prove the output is identical.
 before committing).
 
 Cases:
-- ``henry``: the hand-made sample snapshot, with one change: CAC24's Python is 22% of the bytes
-  (the shared sample has 10%, which the rubric correctly calls 🟡), so the §11.4 labels come out.
-  Replace with the real 11:45 recording when it lands.
+- ``henry``: a real replay snapshot built from the recorded GitHub cache (`fixtures/cache/`) and a live
+  extraction of `fixtures/resumes/henry.pdf`; the run trace is still hand-made.
 - ``fake``: a hand-made snapshot of the fake candidate (account and repo created Oct 2026, 0 stars).
 - ``edges``: hand-made edge cases (fork as creator, stars soft, language soft, empty repo, missing
   data, repo-match decision missing, failed build with a run trace, ...).
@@ -107,7 +106,8 @@ def test_henry_account_and_context():
     assert v["account"] == {"login": "henrychen4736", "login_source": "resume_link",
                             "login_conflict": None, "created_at": "2021-09-03",
                             "public_repos": 5, "followers": 4}
-    assert v["context"] == ["Account created Sep 2021."]
+    assert v["context"] == ["Account created Sep 2021.",
+                            "Most public activity is from the last 30 days."]
     assert v["tally"] == {"supported": 6, "partial": 1, "contradicted": 0, "no_evidence": 2}
 
 

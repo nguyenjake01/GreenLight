@@ -138,7 +138,7 @@ def test_henry_claims_follow_the_design_doc():
     by_key = {claim_key(c): c for c in claims}
     cube = by_key["project:cubesolver"]
     assert cube["claim_id"] == "c3"
-    assert cube["source_text"] == "Built cubesolver, a full Rubik's cube solver in C++"
+    assert cube["source_text"] == "Built cubesolver, a full Rubik's cube solver in C++ (2024)"
     assert cube["assertions"]["scale"] == "substantial"
     assert all(c["assertions"]["min_stars"] is None for c in claims if c["type"] == "project")
     assert {"skill:Python", "skill:Dart", "skill:JavaScript", "skill:C++",
@@ -212,7 +212,7 @@ def test_sample_snapshot_matches_design_doc_data():
     cube_commits = body(f"{base}/repos/{HENRY}/cubesolver/commits?per_page=100")
     assert len(cube_commits) == 2
     assert body(f"{base}/repos/{HENRY}/cubesolver")["size"] == 3
-    assert body(f"{base}/repos/{HENRY}/cubesolver/languages") == {"C++": 2840}
+    assert body(f"{base}/repos/{HENRY}/cubesolver/languages") == {"C++": 11434}
     poly = body(f"{base}/repos/{HENRY}/polytrack-ml/commits?per_page=100")
     assert len(poly) == 35 and all(c["author"] is None for c in poly)
     contribs = body(f"{base}/repos/{HENRY}/polytrack-ml/contributors?anon=1&per_page=100")

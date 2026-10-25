@@ -1,0 +1,35 @@
+# NemoClaw custom policy preset: lets the OpenClaw plugin (and curl, for the reachability check)
+# call the Resume Verifier's internal API on the host. Nothing else on the host is opened.
+#
+#   nemoclaw <sandbox> policy add --from-file verifier/stack/openclaw/nemoclaw-policy-verifier.yaml --dry-run
+#   nemoclaw <sandbox> policy add --from-file verifier/stack/openclaw/nemoclaw-policy-verifier.yaml --yes
+#   nemoclaw <sandbox> policy remove rv-verifier --yes
+#
+# Format: NemoClaw docs `network-policy/create-custom-policy-presets.mdx`. `allowed_ips` is accepted in a
+# custom preset only on the `host.openshell.internal` bridge endpoint (the sandbox -> host path); the same
+# private-range pins ship in NemoClaw's own `local-inference` preset. The verifier service must listen on a
+# non-loopback address (`--host 0.0.0.0`) and the host firewall must let the Docker bridge reach port 8200.
+preset:
+  name: rv-verifier
+  description: "Resume Verifier internal API on the host (host.openshell.internal:8200, /internal/** only)"
+
+network_policies:
+  rv_verifier:
+    name: rv_verifier
+    endpoints:
+      - host: host.openshell.internal
+        port: 8200
+        protocol: rest
+        enforcement: enforce
+        allowed_ips:
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+        rules:
+          - allow: { method: GET, path: "/internal/**" }
+          - allow: { method: POST, path: "/internal/**" }
+    binaries:
+      - { path: /usr/local/bin/openclaw }
+      - { path: /usr/local/bin/node }
+      - { path: /usr/bin/node }
+      - { path: /usr/bin/curl }

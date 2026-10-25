@@ -15,6 +15,8 @@
 - Whenever tasks don't depend on each other, run them at the same time: several coders in one message, and independent reads, searches and commands batched together.
 - Give each parallel coder its own files. Two coders never edit the same file at once; if work overlaps, run it in order or split the files differently.
 - Run work in sequence only when one step needs another's output.
+- The lead never sits waiting. Anything slow that doesn't block the next step (a test suite, a live run, a build,
+  a long check) goes to a background subagent (or a background command), and the lead keeps working meanwhile.
 
 ## Project rules (from the design doc, §13)
 

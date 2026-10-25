@@ -1,13 +1,15 @@
-# Handoff: Resume Verifier build (checkpoint 3, Oct 25 2026, ~15:15 CDT)
+# Handoff: Resume Verifier build (checkpoint 4, Oct 25 2026, ~15:45 CDT)
 
 Read this first in the next session, then `CLAUDE.md`, then the design-doc sections a task cites.
 Setup: one machine (the GB10 itself, arm64, Python 3.12). The lead (Opus) plans and reviews;
 Sonnet `coder` agents write the code, several at once on separate files.
+Since checkpoint 4 this session is the **master coding session**: it alone writes tracked files. Other sessions may
+read anything but write only to gitignored folders (they may still run `full_run.sh`, so check ports 8100/8200 first).
 
 ## Where things stand
 
 **Every module in the plan is on `main`**, and the full system now runs end to end with **real Slack**.
-1109 tests and `demo --stub` (henry and aidan) pass at `25ae0aa`.
+1109 tests and `demo --stub` pass at HEAD.
 
 | Commit | What |
 |---|---|
@@ -22,6 +24,9 @@ Sonnet `coder` agents write the code, several at once on separate files.
 | 7a4420a | cubesolver run trace fixture is now a real live trace; plugin `package-lock.json` (real `npm install`) |
 | 89f4254 | `scripts/full_run.sh`: one-command full-system run |
 | 25ae0aa | Second candidate Aidan Hong (`aidanhong8`) replaces the fake candidate |
+| 7bd6a77 | Thread lines name Slack users by `<@U…>` mention when OpenClaw gives no username |
+| 75ba301 | Judge: reasoning on (missing weights/datasets → `could_not_attempt`), `MAX_TOKENS` 6000 |
+| (next) | `full_run.sh` OpenShell + `VERIFIER_HOST`; `scripts/openclaw_onboard.sh`, `scripts/openclaw_install_plugin.sh`, NemoClaw preset |
 
 `contracts-v1` is **not tagged** yet.
 
@@ -41,20 +46,21 @@ and `fixtures/expected/aidanhong8.labels.json`.
 | c6–c9 skills JavaScript, TypeScript, Python, Swift | 🟢 | |
 | c10 education, c11 FBLA | ⚪ | not verifiable from public code |
 
-A live pipeline run for Aidan (Docker backend, 290 s) gave the same labels. Not done yet: a live run with real Slack,
-`SLACK=real bash scripts/full_run.sh aidan`.
+**Live with real Slack and OpenShell (done, 15:24):** `SANDBOX_BACKEND=openshell SLACK=real bash scripts/full_run.sh aidan`
+gave the labels above, both hard reasons on c4, 0 stage errors. Run checks: quiz "works as claimed", the other three
+"couldn't test the behavior here". Card: https://greenlight-hum1820.slack.com/archives/C0CC26ZSBH7/p1792959822242999
 
 **History note:** the handoff commit `3b01001` accidentally carried the coder's staged deletions of the old fake-candidate
 files, so it's a broken in-between commit (tests fail there). `25ae0aa` completes the swap; HEAD is green.
 Recorder quirk worth fixing: GitHub returns 204 (empty body) for an empty repo's `contributors`. The recorder logs that
 as a miss; it should treat it like 409/404.
 
-## Another session's uncommitted work (not this lead's; don't commit it blindly)
-At the pause, a separate session was adding a third candidate, **Andrej Karpathy** (`karpathy`). It was also editing
-`verifier/stack/judge.py`, `verifier/stack/prompts/judge-v1.md`, `tests/stack/test_judge.py` and `docs/design-doc.md`.
-On disk: the `karpathy` entry in `fixtures/candidates.json`, `KARPATHY` in `make_placeholder_resumes.py`,
-`fixtures/resumes/karpathy.*` and `fixtures/webhooks/karpathy.json`. Ask the user whether that work should be kept,
-and review it before committing (Karpathy is a real public figure, so check what his placeholder resume claims).
+## Karpathy candidate (uncommitted, user said "leave it for now")
+Another session started a third candidate, **Andrej Karpathy** (`karpathy`). Its judge changes were reviewed and
+committed (75ba301). Still uncommitted on disk: the `karpathy` entry in `fixtures/candidates.json`, `KARPATHY` in
+`make_placeholder_resumes.py`, `fixtures/resumes/karpathy.*`, `fixtures/webhooks/karpathy.json`. No claims, recording
+or golden case yet. A session was test-running it (Slack stubbed) at 15:29. Don't commit it until the user decides.
+Also untracked: `docs/video-script.md` (from another session; not reviewed).
 
 ## Verified live today (GB10)
 - **vLLM** (`vllm-qwen` container, `nvidia/Qwen3.6-35B-A3B-NVFP4` on :8000). Extraction takes ~24 s per resume.
@@ -65,10 +71,15 @@ and review it before committing (Karpathy is a real public figure, so check what
   Live judge results: cubesolver "works as claimed"; Polytrack-ML and CAC24 "could not attempt".
 - **Run-check image `resume-verifier-runcheck:latest`** was built from `docker/runcheck.Dockerfile` (uid 1000, `/work`,
   `iproute2`, cmake). It's the default `RUNCHECK_IMAGE`, so there's no need to set one.
-- **OpenShell backend** with the local gateway: same results as Docker on cubesolver and `cpp_broken`.
-  It wasn't rerun with the newly built image and the repo policy; that's the remaining check
-  (`bash verifier/stack/openshell/gateway.sh setup|start`, then `SANDBOX_BACKEND=openshell`).
-- **OpenClaw plugin:** typecheck, 35 tests and build pass, with real `node_modules` and a lockfile. It isn't installed in a gateway yet.
+- **OpenShell backend, rerun with `resume-verifier-runcheck:latest` and the repo policy (15:20):** same outcomes as Docker
+  (cubesolver `works_as_claimed` ~25 s, `cpp_broken` `failed_to_run` ~17 s). No network (proxy 403, raw sockets and
+  DNS fail), PID limit 256 holds against a fork bomb, `/usr` and `/etc` read-only, sandboxes deleted after each run.
+  **The demo uses `SANDBOX_BACKEND=openshell`.** `full_run.sh` now starts the gateway itself on that backend
+  (state in `~/.rv-openshell`; stop with `bash verifier/stack/openshell/gateway.sh stop`).
+  Gotcha: `run_check` swallows an LLM connection failure (agent "stopped: error", judge null) if `.env` isn't loaded.
+- **J14 live:** More context mentions every note and flag.
+- **OpenClaw plugin:** typecheck, 35 tests and build pass; a local install rehearsal (throwaway `HOME`) loaded it with
+  all 4 tools. Not yet installed in a NemoClaw sandbox: waiting on the Slack app's Socket Mode token (see next steps).
 
 ## Decisions made (keep consistent)
 - Placeholder resumes list one language per project (the live model keeps only the first).
@@ -79,6 +90,9 @@ and review it before committing (Karpathy is a real public figure, so check what
 - Coders run tests with `RUNS_DIR=$(mktemp -d)`. Commit only a module's own paths, `git pull --rebase`, push.
   The user approved pushing each finished module to `main`.
 - `scripts/full_run.sh` sets `LLM_BASE_URL`/`LLM_MODEL` itself and refuses to start if 8100/8200 are busy.
+  `VERIFIER_HOST=0.0.0.0` makes the service reachable from the OpenClaw sandbox (the internal API needs `INTERNAL_TOKEN`).
+- The edit modal stays on the real `render` (not the registry): the service parses its `callback_id` suffix, which the stub lacks.
+- With no username from OpenClaw, `by` is `<@U…>`, which Slack shows as the name (the bot has no `users:read`).
 
 ## Stack / machine state and gotchas
 - Venv `.venv`; Node 22 + OpenShell in `~/.local` (not on PATH: `export PATH=$HOME/.local/node/bin:$HOME/.local/bin:$PATH`).
@@ -96,24 +110,24 @@ and review it before committing (Karpathy is a real public figure, so check what
 - vLLM restart if needed: `sg docker -c "bash ~/Downloads/hackathon/a-bundle/start-vllm-offline.sh"`.
 
 ## Next steps (in order)
-1. Live Aidan run with real Slack (`SLACK=real bash scripts/full_run.sh aidan`); decide what to do with the Karpathy work.
-2. **OpenClaw install** (internet is up). Steps from the H4 coder:
-   1. Build the plugin.
-   2. Add a NemoClaw network-policy preset allowing `host.openshell.internal:8200` `/internal/**`.
-   3. `nemoclaw <name> exec -- openclaw plugins install <dir>`.
-   4. Set `verifierUrl=http://host.openshell.internal:8200`, `token`, `slackActions`.
-   5. `nemoclaw <name> gateway restart`.
-   6. Click Re-check on a card. Fall back to `slackActions=agent`, then `off`.
-   This needs `nemoclaw onboard` first; ask the user before connecting it to their Slack app.
-3. OpenShell rerun with `resume-verifier-runcheck:latest` and the repo policy. If it passes, decide whether the demo uses
-   `SANDBOX_BACKEND=openshell` (the design's intent) or `docker`.
-4. Small gaps:
-   - Thread lines show Slack user ids when OpenClaw gives no username.
-   - `service.py` calls `render` directly rather than through `registry.get("render")`.
-   - J14's context prompt now asks the model to mention notes and flags. That wasn't rechecked live.
-5. Demo prep (design doc ~line 2608 beat sheet): record in replay mode; J11's *Simulate application* button starts a run.
+1. **OpenClaw install.** The user approved it. Waiting on the user's Slack dashboard changes for the existing app
+   (`greenlight_helper`): Socket Mode on; App-Level Token with `connections:write` saved in `.env` as `SLACK_APP_TOKEN`;
+   Interactivity on; bot scopes `app_mentions:read channels:history channels:read groups:history groups:read im:history
+   im:read im:write users:read` (plus `commands` for a slash command); bot events `app_mention message.channels
+   message.groups message.im`; reinstall the app (re-copy `SLACK_BOT_TOKEN` if it changes); bot in the channel.
+   Then:
+   1. The user runs `bash scripts/openclaw_onboard.sh` in a terminal (wizard: accept the third-party notice; Local vLLM;
+      Slack on; Balanced). It never stops or re-downloads vLLM.
+   2. Start the stack with `VERIFIER_HOST=0.0.0.0 KEEP=1 SANDBOX_BACKEND=openshell SLACK=real bash scripts/full_run.sh`.
+   3. `bash scripts/openclaw_install_plugin.sh rv-openclaw` (builds, applies preset `rv-verifier`, uploads, installs,
+      configures, restarts, waits for Slack, checks sandbox → host reachability). `--dry-run` / `--verify-only` exist.
+   4. Click Re-check on a card. If clicks do nothing: `SLACK_ACTIONS=agent`, then `off`.
+   Unconfirmed: whether `host.openshell.internal` reaches the host here (fallback: host LAN IP + `--trusted-private-host`),
+   whether ufw blocks the Docker bridge, and whether OpenClaw hands button clicks to the plugin handler.
+2. Demo prep (design doc ~line 2608 beat sheet): record in replay mode; J11's *Simulate application* button starts a run.
+3. Recorder quirk: treat GitHub's 204 for an empty repo's `contributors` like 404/409.
 
 ## Open items for the user
 - Tag `contracts-v1` (Jake and Henry both agree).
 - Whether to delete the stray failed Henry card in Slack.
-- OK to install the OpenClaw plugin against the real Slack app.
+- Whether to keep the Karpathy candidate.

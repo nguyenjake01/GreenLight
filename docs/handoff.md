@@ -117,7 +117,9 @@ Also untracked: `docs/video-script.md` (from another session; not reviewed).
    `scripts/openclaw_install_plugin.sh rv-openclaw` passed: plugin loaded with 4 tools, Slack Socket Mode connected,
    sandbox → `host.openshell.internal:8200` HTTP 200. The verifier must listen on 0.0.0.0
    (`VERIFIER_HOST=0.0.0.0 KEEP=1 SANDBOX_BACKEND=openshell SLACK=real bash scripts/full_run.sh`).
-   Still to check: a real Re-check click from Slack (fallbacks `SLACK_ACTIONS=agent`, then `off`), and an @-mention.
+   **A real Re-check click from Slack works end to end** (21:04 UTC: Slack → OpenClaw → plugin → `/internal/actions` 200 →
+   "Re-check started/done" in the thread). Still to check: an @-mention, the overflow menu (More context, Edit),
+   why the card's buttons vanished at 20:53 UTC before any click, and OpenClaw's "⚠️ Memory Search blocked" thread reply.
 2. Demo prep (design doc ~line 2608 beat sheet): record in replay mode; J11's *Simulate application* button starts a run.
 3. Recorder quirk: treat GitHub's 204 for an empty repo's `contributors` like 404/409.
 

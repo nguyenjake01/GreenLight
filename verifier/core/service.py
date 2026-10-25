@@ -150,15 +150,13 @@ def _parse_body(raw: bytes, content_type: str) -> dict[str, Any]:
 
 
 def _user(payload: dict[str, Any]) -> str:
-    """Name, else username, else a Slack mention of the id (Slack shows it as the name)."""
+    """Name, else username, else the id. A Slack user id becomes a mention, which Slack shows as
+    the name; the OpenClaw plugin sends the id as `name` when it has no username."""
     user = payload.get("user") or {}
-    name = user.get("name") or user.get("username")
-    if name:
-        return str(name)
-    uid = str(user.get("id") or "")
-    if re.fullmatch(r"[UW][A-Z0-9]+", uid):
-        return f"<@{uid}>"
-    return uid or "someone"
+    who = str(user.get("name") or user.get("username") or user.get("id") or "")
+    if re.fullmatch(r"[UW][A-Z0-9]+", who):
+        return f"<@{who}>"
+    return who or "someone"
 
 
 def _action_value(action: dict[str, Any]) -> str:

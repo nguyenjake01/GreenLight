@@ -7,7 +7,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const body = readFileSync(resolve(root, "AGENT_INSTRUCTIONS.md"), "utf8").trim();
 const frontmatter = `---
 name: resume-verifier
-description: Answer questions about candidates' resume claims and start re-checks using the get_verdict, explain_claim and recheck tools.
+description: Use for ANY question about a job candidate or applicant, a resume, a project or repo named in a resume (e.g. cubesolver, quiz, portfolio), a claim, a label or color (green, yellow, red, white), a verdict, or "fake / honest / should we hire" questions, and for re-checks. Answer only with the get_verdict, explain_claim and recheck tools; never from general knowledge.
 ---
 `;
 const out = resolve(root, "skills/resume-verifier/SKILL.md");

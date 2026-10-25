@@ -164,6 +164,38 @@ fi
 nc exec -- openclaw plugins enable "$PLUGIN_ID"
 
 # ---------------------------------------------------------------------------------------------
+step "4b. Always-on answering rules in the agent workspace AGENTS.md"
+# OpenClaw injects the workspace AGENTS.md into every turn, unlike the skill (loaded only when its
+# description matches). The block between the markers is replaced on every run; the rest of the
+# file is kept. The workspace is `agents.defaults.workspace` (when unset, the runtime default).
+BLOCK_FILE="$REPO_ROOT/verifier/stack/openclaw/workspace-agents-block.md"
+DEFAULT_WORKSPACE="/sandbox/.openclaw/workspace"
+[ -f "$BLOCK_FILE" ] || die "missing $BLOCK_FILE"
+echo "+ nemoclaw $NAME exec -- openclaw config get agents.defaults.workspace   # fallback $DEFAULT_WORKSPACE"
+echo "+ node - <workspace> < <script embedding $BLOCK_FILE>  # writes <workspace>/AGENTS.md between <!-- resume-verifier:begin/end -->"
+if [ "$DRY_RUN" = 0 ]; then
+  WORKSPACE="$(nemoclaw "$NAME" exec -- openclaw config get agents.defaults.workspace 2>/dev/null | tr -d '\r' | grep -E '^/' | head -1 || true)"
+  WORKSPACE="${WORKSPACE:-$DEFAULT_WORKSPACE}"
+  echo "workspace: $WORKSPACE"
+  {
+    printf 'const block = %s;\n' "$(node -e 'process.stdout.write(JSON.stringify(require("fs").readFileSync(process.argv[1], "utf8").trim()))' "$BLOCK_FILE")"
+    cat <<'JS'
+const fs = require("fs");
+const dir = process.argv[2];
+if (!fs.existsSync(dir)) { console.error("workspace directory not found: " + dir); process.exit(2); }
+const file = dir + "/AGENTS.md";
+const begin = "<!-- resume-verifier:begin -->", end = "<!-- resume-verifier:end -->";
+let cur = fs.existsSync(file) ? fs.readFileSync(file, "utf8") : "";
+const a = cur.indexOf(begin), b = cur.indexOf(end);
+if (a !== -1 && b > a) cur = cur.slice(0, a).replace(/\s+$/, "") + cur.slice(b + end.length);
+cur = cur.replace(/\s+$/, "");
+fs.writeFileSync(file, (cur ? cur + "\n\n" : "") + block + "\n");
+console.log("AGENTS.md updated: " + file);
+JS
+  } | nemoclaw "$NAME" exec --stdin -- node - "$WORKSPACE" || die "could not write the AGENTS.md block into $WORKSPACE"
+fi
+
+# ---------------------------------------------------------------------------------------------
 step "5. Restart the gateway and wait for Slack"
 nc gateway restart
 if [ "$DRY_RUN" = 1 ]; then

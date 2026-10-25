@@ -1,7 +1,7 @@
 import { test, before, after, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import { createClient } from "../src/client.ts";
-import { createTools } from "../src/tools.ts";
+import { createTools, RULES_LINE, asMention, verdictFacts, claimFacts } from "../src/tools.ts";
 import { startFakeServer, TOKEN, type FakeServer } from "./helpers.ts";
 
 let server: FakeServer;
@@ -16,6 +16,8 @@ beforeEach(async () => {
 const mk = (ctx = {}, token = TOKEN, url = () => server.url) =>
   createTools(createClient({ verifierUrl: url(), token, toolTimeoutMs: 3000 }), ctx);
 const text = (r: { content: Array<{ text: string }> }) => r.content[0]!.text;
+/** The JSON is always the last line; the rules and FACTS lines come before it. */
+const data = (r: { content: Array<{ text: string }> }) => text(r).split("\n").at(-1)!;
 
 test("get_verdict: GET /internal/verdict?candidate=... returns the endpoint JSON as text", async () => {
   const r = await mk().getVerdict.execute("t1", { candidate: "Henry" });
@@ -25,14 +27,17 @@ test("get_verdict: GET /internal/verdict?candidate=... returns the endpoint JSON
   assert.equal(reqs[0]!.path, "/internal/verdict");
   assert.deepEqual(reqs[0]!.query, { candidate: "Henry" });
   assert.equal(reqs[0]!.headers["x-verifier-token"], TOKEN);
-  const parsed = JSON.parse(text(r));
+  assert.ok(text(r).startsWith(RULES_LINE + "\n"), "rules line first");
+  assert.match(text(r), /\nFACTS: Henry Chen: 1 partially supported\. Claims to mention: 🟡 Built cubesolver, a full Rubik's cube solver in C\+\.\.\. \(c3\): Repo is 3 KB with 2 commits on one day\.\n\{/);
+  assert.equal(text(r).split("\n").length, 3, "rules, facts, JSON");
+  const parsed = JSON.parse(data(r));
   assert.equal(parsed.candidate_name, "Henry Chen");
   assert.deepEqual(parsed.other_matches, []);
   assert.equal(parsed.claims[0].claim_id, "c3");
 });
 
 test("get_verdict: other_matches reaches the agent unchanged", async () => {
-  const parsed = JSON.parse(text(await mk().getVerdict.execute("t", { candidate: "Alex" })));
+  const parsed = JSON.parse(data(await mk().getVerdict.execute("t", { candidate: "Alex" })));
   assert.equal(parsed.other_matches.length, 1);
 });
 
@@ -41,21 +46,42 @@ test("get_verdict: 404 -> 'No application found for {candidate}'", async () => {
   assert.equal(text(r), "No application found for Nobody");
 });
 
-test("recheck: POST /internal/recheck with by='slack' when the context has no name", async () => {
+test("rules line: never call anyone fake, no hiring advice, five lines, labels", () => {
+  assert.ok(!RULES_LINE.includes("\n"));
+  for (const needle of ["Answer only", "fake", "hire", "Five lines", "🟢", "🟡", "🔴", "⚪"]) {
+    assert.ok(RULES_LINE.includes(needle), `rules line mentions ${needle}`);
+  }
+});
+
+test("asMention: Slack ids become <@id>; names pass through; empty stays empty", () => {
+  assert.equal(asMention("U0RECRUITER"), "<@U0RECRUITER>");
+  assert.equal(asMention("slack:U0RECRUITER"), "<@U0RECRUITER>");
+  assert.equal(asMention("W123ABC"), "<@W123ABC>");
+  assert.equal(asMention("team:T01ABC:user:U0RECRUITER"), "<@U0RECRUITER>");
+  assert.equal(asMention("Jordan Lee"), "Jordan Lee");
+  assert.equal(asMention(undefined), "");
+  assert.equal(asMention("  "), "");
+});
+
+test("recheck: POST /internal/recheck with by='someone' when the context has no name or id", async () => {
   const r = await mk().recheck.execute("t", { candidate: "Henry" });
   const [req] = await server.requests();
   assert.equal(req!.method, "POST");
   assert.equal(req!.path, "/internal/recheck");
-  assert.deepEqual(req!.body, { candidate: "Henry", by: "slack" });
-  assert.deepEqual(JSON.parse(text(r)), { application_id: "12345", status: "started" });
+  assert.deepEqual(req!.body, { candidate: "Henry", by: "someone" });
+  assert.match(text(r), /^RULES: /);
+  assert.match(text(r), /Reply exactly: "Re-checking Henry\. The card will update in place\."/);
+  assert.deepEqual(JSON.parse(text(r).split("\n").at(-1)!), { application_id: "12345", status: "started" });
 });
 
-test("recheck: by = display name from the tool context, else requested_by, else slack", async () => {
+test("recheck: by = display name, else the sender id as a <@mention>, else requested_by, else someone", async () => {
   await mk({ requesterDisplayName: "Jordan" }).recheck.execute("t", { candidate: "Henry", requested_by: "ignored" });
   await mk({ requesterSenderId: "U0RECRUITER" }).recheck.execute("t", { candidate: "Henry", requested_by: "Pat" });
   await mk({ requesterSenderId: "U0RECRUITER" }).recheck.execute("t", { candidate: "Henry" });
+  await mk({}).recheck.execute("t", { candidate: "Henry", requested_by: "Pat" });
+  await mk({}).recheck.execute("t", { candidate: "Henry" });
   const bys = (await server.requests()).map((r) => r.body.by);
-  assert.deepEqual(bys, ["Jordan", "Pat", "slack"]);
+  assert.deepEqual(bys, ["Jordan", "<@U0RECRUITER>", "<@U0RECRUITER>", "Pat", "someone"]);
 });
 
 test("recheck: 404 -> 'No application found for {candidate}'", async () => {
@@ -68,7 +94,8 @@ test("explain_claim: GET /internal/explain with candidate and claim (URL-encoded
   const [req] = await server.requests();
   assert.equal(req!.path, "/internal/explain");
   assert.deepEqual(req!.query, { candidate: "Henry", claim: "cube solver & more" });
-  const parsed = JSON.parse(text(r));
+  assert.ok(text(r).startsWith("RULES: "));
+  const parsed = JSON.parse(data(r));
   assert.equal(parsed.label, "yellow");
   assert.match(parsed.top_reason, /3 KB|2 commits/);
   assert.equal(parsed.evidence_links[0], "https://github.com/henrychen4736/cubesolver");
@@ -132,4 +159,60 @@ test("tool definitions: names, required params, labels", () => {
   assert.deepEqual(params(t.recheck).required, ["candidate"]);
   assert.deepEqual(params(t.pressButton), { required: ["action_id", "value"], props: ["action_id", "value"] });
   for (const tool of Object.values(t)) assert.ok(tool.label && tool.description);
+});
+
+test("the three question tools are direct-only so Tool Search never hides them from the model", () => {
+  const t = mk();
+  for (const tool of [t.getVerdict, t.recheck, t.explainClaim]) {
+    assert.equal((tool as { catalogMode?: string }).catalogMode, "direct-only", tool.name);
+  }
+});
+
+test("verdictFacts: real-service shape (supported/partial/contradicted/no_evidence) -> tally and notable claims", () => {
+  const body = {
+    candidate_name: "Aidan Hong",
+    claims: [
+      { claim_id: "c3", source_text: "quiz (TypeScript, 2025): Expo mobile app" },
+      { claim_id: "c4", source_text: "portfolio-aidan-hong (JavaScript, 2021): template" },
+      { claim_id: "c1", source_text: "care360 (JavaScript, 2025): site" },
+    ],
+    verdict: {
+      claims: [
+        { claim_id: "c1", label: "supported", top_reason: "4 of 4 commits" },
+        { claim_id: "c3", label: "contradicted", top_reason: "No Python code in the repo" },
+        { claim_id: "c4", label: "partial", top_reason: "Created Mar 2024; claim says 2021" },
+        { claim_id: "c10", label: "no_evidence", top_reason: "Not verifiable from public code" },
+      ],
+    },
+    other_matches: [],
+  };
+  assert.equal(
+    verdictFacts(body),
+    "FACTS: Aidan Hong: 1 supported, 1 partially supported, 1 contradicted, 1 no public evidence. " +
+      "Claims to mention: 🔴 quiz (c3): No Python code in the repo | 🟡 portfolio-aidan-hong (c4): Created Mar 2024; claim says 2021",
+  );
+  assert.match(verdictFacts({ ...body, other_matches: [{ candidate_name: "Aidan Hong" }] }), /other_matches is not empty: ask which candidate/);
+});
+
+test("verdictFacts / claimFacts: odd shapes give an empty string, never throw", () => {
+  for (const b of [undefined, null, "x", 5, [], {}, { verdict: {} }, { verdict: { claims: "no" } }]) {
+    assert.equal(verdictFacts(b), "");
+  }
+  for (const b of [undefined, null, "x", {}, { label: "mystery" }]) assert.equal(claimFacts(b), "");
+});
+
+test("explain_claim: FACTS line carries label, top_reason and the run check's reason", () => {
+  assert.equal(
+    claimFacts({
+      claim_id: "c3",
+      source_text: "quiz (TypeScript, 2025): Expo app",
+      label: "supported",
+      top_reason: "3 of 3 commits by the candidate",
+      checks: [
+        { check: "commit_share", reason: "3 of 3 commits by the candidate" },
+        { check: "run", reason: "Syntax check passed; couldn't test the behavior here" },
+      ],
+    }),
+    "FACTS: 🟢 quiz (c3) is supported: 3 of 3 commits by the candidate. Run check: Syntax check passed; couldn't test the behavior here.",
+  );
 });

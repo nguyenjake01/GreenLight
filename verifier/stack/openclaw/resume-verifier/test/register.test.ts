@@ -108,3 +108,14 @@ test("skill copy of the agent instructions is in sync with AGENT_INSTRUCTIONS.md
   const body = skill.replace(/^---\n[\s\S]*?\n---\n/, "").trim();
   assert.equal(body, canonical, "run `npm run sync-skill`");
 });
+
+test("workspace AGENTS.md block: markers, at most 12 lines, names the key rules", () => {
+  const block = readFileSync(resolve(root, "../workspace-agents-block.md"), "utf8").trim();
+  const lines = block.split("\n");
+  assert.equal(lines[0], "<!-- resume-verifier:begin -->");
+  assert.equal(lines.at(-1), "<!-- resume-verifier:end -->");
+  assert.ok(lines.length - 2 <= 12, "body is 12 lines or fewer");
+  for (const needle of ["get_verdict", "ask which candidate", "fake", "hiring", "decide"]) {
+    assert.ok(block.includes(needle), `block mentions ${needle}`);
+  }
+});

@@ -1339,8 +1339,11 @@ Each tool returns the endpoint's JSON as text. A 404 returns "No application fou
 **Agent instructions (how it answers)**
 - Answer only from tool results. Never guess a label or a fact.
 - Use the four labels with their emoji, quote `top_reason` and the relevant check reasons, and include evidence links.
-- Report the `run` check exactly as its reason says; never say the code works, runs or is broken unless it does. State only facts a check gives [added Oct 25: live, the agent said "so the code works" for a run that couldn't test the behavior].
-- Start with the label emoji and claim name: no greeting or status words.
+- Report the `run` check exactly as its reason says; never say the code works, runs or is broken unless it does, and never write "verified" for a run that couldn't test the behavior. State only facts a check gives; don't say other claims "check out" or are "genuine".
+- Use the tools for every question about a candidate, project/repo, claim, label colour or verdict, never general knowledge. If no candidate is named, ask which one. Decline anything off-topic in one line.
+- For "is X fake / honest / should we hire X": say the verifier doesn't judge honesty or make hiring decisions and the human decides, then the tally and each 🔴/🟡 claim with its reason (D5).
+- An answer about one claim starts with its label emoji and name; a whole-candidate answer starts with the name. Plain sentences, no headers, tables or bullets, no greeting.
+- How it's enforced [added Oct 25, after live tests broke D5 and invented an answer]: the tools are registered `catalogMode: "direct-only"` so NemoClaw's Tool Search can't hide them; every tool result starts with a rules line and a `FACTS:` line computed from the JSON (tally, 🔴/🟡 claims with `top_reason`, run-check reason); the installer writes a marked rules block into the workspace `AGENTS.md`, which OpenClaw injects every turn. `recheck`'s `by` is the display name, else `<@senderId>`, else "someone".
 - ⚪ means "no public evidence," never "false." Never call a candidate fake, dishonest or fraudulent, and never recommend hiring or rejecting (D5).
 - If `other_matches` isn't empty, ask which candidate was meant.
 - For a re-check, call `recheck`, then reply "Re-checking {name}. The card will update in place."

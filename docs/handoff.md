@@ -10,7 +10,7 @@ write only to gitignored folders, but they may run `full_run.sh`, so check ports
 
 Every module in `docs/coding-prompts.md` is on `main`. The full system runs live end to end: mock ATS → verifier →
 real Slack card → run checks in **OpenShell** → OpenClaw in a NemoClaw sandbox handling **button clicks and @-mentions**.
-1109 Python tests, 35 plugin tests and `demo --stub` pass at HEAD. `contracts-v1` is still not tagged.
+1109 Python tests, 42 plugin tests and `demo --stub` pass at HEAD. `contracts-v1` is still not tagged.
 
 Commits since checkpoint 3 (newest first):
 
@@ -44,44 +44,33 @@ Commits since checkpoint 3 (newest first):
   The filled card arrives ~30 s after the click. Open in Greenhouse → `/candidates/<id>?application_id=<id>` shows
   the annotated PDF and the note.
 
-## In progress at the pause: hardening the bot's answers (uncommitted)
+## Bot answers hardened (committed after checkpoint 5)
 
-A coder was working on this at the pause. Live CLI tests showed two failures:
-- "Is Aidan Hong a fake candidate? Should we hire him?" got "fabrication", "red flag for honesty" and
-  "Recommendation: proceed with an interview". This breaks D5.
-- "why is cubesolver yellow?" (no candidate named) got an invented answer about NVIDIA cuSOLVER, with no tool call.
+Live CLI tests had shown the bot breaking D5 ("fabrication", "recommend an interview") and inventing an answer for
+"why is cubesolver yellow?". Biggest cause: NemoClaw's `tools.toolSearch.mode: "tools"` hid our tools behind
+`tool_search`. Fixes, by impact:
+1. The tools are registered `catalogMode: "direct-only"`.
+2. Every tool result starts with a rules line and a `FACTS:` line computed from the JSON.
+3. The installer writes `verifier/stack/openclaw/workspace-agents-block.md` into `/sandbox/.openclaw/workspace/AGENTS.md`.
+4. Stricter `AGENT_INSTRUCTIONS.md` and a broader skill description.
+`recheck`'s `by` is now the display name, else `<@senderId>`, else "someone".
 
-Also, the bot's `recheck` tool credits "slack" instead of the asking user (`src/tools.ts`, about line 83).
-
-The fix has three layers:
-1. An always-on block, `verifier/stack/openclaw/workspace-agents-block.md`, which the install script writes into
-   the agent workspace's `AGENTS.md`.
-2. A one-line rule reminder at the top of every tool result (`src/tools.ts`).
-3. Stricter `AGENT_INSTRUCTIONS.md`: a fixed reply for "fake/hire" questions, the scope rule, and no tables.
-   The skill description is broadened in `scripts/sync-skill.mjs`.
-
-Uncommitted files: those above, plus `scripts/openclaw_install_plugin.sh`, `SKILL.md` and `test/{tools,register}.test.ts`.
-
-**To finish:**
-1. `cd verifier/stack/openclaw/resume-verifier && npm run check`.
-2. Reinstall: `env -u XDG_STATE_HOME -u XDG_CONFIG_HOME sg docker -c "bash scripts/openclaw_install_plugin.sh rv-openclaw"`.
-   It must end with "OK:".
-3. Run the CLI test harness: questions on fake/hire, cubesolver, the red portfolio claim, Aidan's verdict, Bob Smith,
-   the yellow portfolio claim with no name, "capital of France", and "re-check Aidan Hong".
-   Pass criteria: no invented facts; tools used; none of fake/fraud/red flag/recommend/hire; at most 5 lines with no
-   tables; label emoji first; a question naming no candidate gets "which candidate?"; an off-topic question gets a
-   one-line decline.
-4. Mirror the new rules in the design doc's H5 "Agent instructions" bullets (~line 1338), then commit.
-
-How to test the agent without Slack: one `nemoclaw rv-openclaw exec --stdin -- sh -s` that runs several
-`openclaw agent --session-id <new id> --json -m "<question>"` in parallel. NemoClaw allows only one `exec` at a time,
-because of a host lock. Without `--deliver`, nothing posts.
+Final round (r8): every question passed: fake/hire, the red portfolio claim, Aidan's verdict, Bob Smith, no candidate
+named, off-topic, and cubesolver twice. Results are in the session scratchpad under `agent_tests/`.
+Still model-dependent:
+- The off-topic decline ("Paris." slipped through in 3 of 8 rounds before the scope rule moved first).
+- Cubesolver sometimes makes one wasted `get_verdict("cubesolver")` call before asking.
+- Unverified: a real @-mention re-check showing `<@you>` (the CLI has no Slack sender).
+If the sandbox is recreated, rerun `scripts/openclaw_install_plugin.sh`, which restores the AGENTS block and tool settings.
+Test the agent without Slack: one `nemoclaw rv-openclaw exec --stdin -- sh -s` running several
+`openclaw agent --session-id <new id> --json -m "<question>"` in parallel (only one `exec` at a time; no `--deliver`,
+so nothing posts).
 
 ## Final manual checklist (for the user, one sitting, before recording)
 
 1. In `#resume-review-hub`, on a card, open **⋯ → Edit** on a claim. The modal should open (only a real click can
    test this). Cancel it.
-2. Click **Re-check now**. The thread should show "↻ Re-check started by @you", then "Re-check done".
+2. Click **Re-check now**, and also post `@greenlight_helper re-check Aidan Hong`. Both thread lines should say "↻ Re-check started by @you".
 3. Post `@greenlight_helper is Aidan Hong a fake candidate? Should we hire him?`. The thread reply should say the
    verifier doesn't judge honesty or make hiring calls, then the tally and the 🔴 claim, with no recommendation.
 4. Post `@greenlight_helper why is cubesolver yellow?`. The bot should ask which candidate.

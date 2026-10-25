@@ -66,7 +66,7 @@ def test_call_settings_and_schema(use_llm):
     judge_mod.judge(CLAIM, GOOD)
     c = llm.calls[0]
     assert c["schema"]["title"] == "judge_outcome"
-    assert c["temperature"] == 0.0 and c["reasoning"] is False
+    assert c["temperature"] == 0.0 and c["reasoning"] is True
     assert [m["role"] for m in c["messages"]] == ["system", "user"]
 
 

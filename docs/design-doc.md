@@ -1389,7 +1389,7 @@ Each tool returns the endpoint's JSON as text. A 404 returns "No application fou
   - `failed_to_run`: build or run errors with dependencies present.
   - `could_not_attempt`: missing dependencies; needs network, API keys, special hardware or a GUI; or no runnable entry point.
   - Judge behavior only, never performance numbers. The rationale is ≤ 300 characters and cites the command that shows it.
-- One `llm_chat` with `judge_outcome`, temperature 0, reasoning off (proposed; turn reasoning on only if test judgments look wrong).
+- One `llm_chat` with `judge_outcome`, temperature 0, **reasoning on** [changed Oct 25: with it off, the judge called missing model weights a mismatch on llm.c and llama2.c; with it on, all 8 test transcripts were judged right, about 30 s each].
 - The judge only names an outcome. The rubric decides what it does to the label (D13; §11 J10).
 - A judge error leaves `judge: null`, with no stage error; the baseline still counts.
 

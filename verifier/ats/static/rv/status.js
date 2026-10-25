@@ -53,6 +53,10 @@
       head.textContent = "Report ready";
       sub.textContent = "The annotated resume and note are in.";
       list.hidden = true; card.querySelector("[data-rv-bar]").hidden = true;
+      if (spin && !card.querySelector(".rv-done-ico")) {
+        var ok = el("span", "rv-done-ico", "\u2713"); ok.setAttribute("aria-hidden", "true");
+        spin.parentNode.insertBefore(ok, spin);
+      }
       if (spin) spin.hidden = true;
       if (!act.firstChild) {
         var b = el("button", "rv-btn rv-btn-primary", "Show annotated resume ");

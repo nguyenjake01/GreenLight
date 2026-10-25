@@ -107,3 +107,7 @@ p { margin: 0; }
   .rv-indet::after { animation: none; width: 100%; opacity: .5; }
 }
 .rv-st-card { margin-bottom: var(--gap); overflow: hidden; }
+
+/* `hidden` must win over component display rules (status card swaps). */
+[hidden] { display: none !important; }
+.rv-done-ico { display: inline-grid; place-items: center; width: 14px; height: 14px; border-radius: 50%; background: var(--ok); color: #fff; font-size: 9px; font-weight: 700; flex: none; }

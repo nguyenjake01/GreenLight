@@ -53,6 +53,8 @@ export LLM_BASE_URL="${LLM_BASE_URL:-http://localhost:8000/v1}"
 export LLM_MODEL="${LLM_MODEL:-nvidia/Qwen3.6-35B-A3B-NVFP4}"
 # The two servers find each other through these (config.py defaults assume 8100/8200).
 export ATS_PUBLIC_URL="${ATS_PUBLIC_URL:-http://localhost:$ATS_PORT}"
+# The verifier downloads resumes through this local address, never through a public tunnel.
+export MOCK_ATS_INTERNAL_URL="http://127.0.0.1:$ATS_PORT"
 export HARVEST_AUTH_URL="http://127.0.0.1:$ATS_PORT/token"
 export HARVEST_BASE_URL="http://127.0.0.1:$ATS_PORT/v3"
 export VERIFIER_WEBHOOK_URL="http://127.0.0.1:$VERIFIER_PORT/webhooks/greenhouse"

@@ -315,7 +315,11 @@ def create_app(*, state_root: Path | None = None,
             if resume_att is not None and resume_bytes is not None:
                 file_id = f"f{state.next_id('file')}"
                 store.write_bytes(state.file_path(file_id, resume_name), resume_bytes)
-                resume_att["url"] = file_url(file_id, resume_name, absolute=True)
+                # The verifier downloads this itself, so it gets the local address when one is
+                # set (behind a public tunnel the public URL is passcode-gated).
+                internal = os.environ.get("MOCK_ATS_INTERNAL_URL", "").strip().rstrip("/")
+                resume_att["url"] = (internal + file_url(file_id, resume_name, absolute=False)
+                                     if internal else file_url(file_id, resume_name, absolute=True))
                 att_id = state.next_id("attachment")
                 state.data["attachments"].append({
                     "id": att_id, "application_id": app_id, "candidate_id": cand_id,

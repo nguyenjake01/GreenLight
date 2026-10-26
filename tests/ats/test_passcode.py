@@ -130,3 +130,25 @@ def test_no_page_says_greenhouse(client):
     for path in ("/", "/apply"):
         assert "greenhouse" not in client.get(path, headers=h).text.lower()
     assert "greenhouse" not in client.get("/login", headers=CF).text.lower()
+
+
+def test_webhook_resume_url_uses_the_internal_address(monkeypatch, tmp_path):
+    """Behind a tunnel the public URL is gated, so the verifier must download the resume locally."""
+    import json
+
+    import httpx
+
+    from verifier.ats.mock_app import create_app
+
+    sent = []
+    transport = httpx.MockTransport(lambda req: (sent.append(json.loads(req.content)),
+                                                 httpx.Response(200, json={"status": "accepted"}))[1])
+    monkeypatch.setenv("RUNS_DIR", str(tmp_path))
+    monkeypatch.setenv("ATS_PUBLIC_URL", "https://demo.trycloudflare.com")
+    monkeypatch.setenv("MOCK_ATS_INTERNAL_URL", "http://127.0.0.1:8101/")
+    client = TestClient(create_app(state_root=tmp_path / "_mock_ats",
+                                   webhook_client=httpx.Client(transport=transport)))
+    assert client.post("/_mock/apply", json={"fixture": "henry"}).status_code == 200
+    app = sent[0]["payload"]["application"]
+    assert app["candidate"]["attachments"][0]["url"].startswith("http://127.0.0.1:8101/files/")
+    assert app["url"].startswith("https://demo.trycloudflare.com/candidates/")

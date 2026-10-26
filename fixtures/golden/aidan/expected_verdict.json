@@ -503,7 +503,7 @@
     "Account created Nov 2022."
   ],
   "inputs": {
-    "claims_sha256": "7270701d97f3a248f30310b6655f2e6d192642b06047445d69cfc4ba0152d6be",
+    "claims_sha256": "8c7a8de1246fb5fb0841bbd24ae091c50bcb5b72a8ba3b23b5b73bb5945e3d80",
     "claims_version": 1,
     "evidence_sha256": "fde0c11a4be99b536581da0a2856e0a04b092c0963afe2c024850ec11cca6edf",
     "run_traces": [],

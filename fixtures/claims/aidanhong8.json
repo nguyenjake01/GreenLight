@@ -166,7 +166,7 @@
   "extraction": {
     "model": "nvidia/Qwen3.6-35B-A3B-NVFP4",
     "prompt_version": "extract-v1",
-    "resume_sha256": "249bcdbd56bb39e1d33a2664baeb6b04fb70a645eae199d8eb023d659991d0d6",
+    "resume_sha256": "e2622b9b3b31c77e6aed024420cfbda3502743006717ce9051cdb4122a5b5020",
     "status": "ok",
     "temperature": 0
   },

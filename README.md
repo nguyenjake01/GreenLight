@@ -1,3 +1,8 @@
+> **Live demo for judges:** https://specialist-diversity-referrals-introduce.trycloudflare.com
+> **Passcode:** `violet-orbit-54`
+>
+> Runs live on our NVIDIA GB10. Upload a resume at `/apply`, then watch it get verified. The link works while the demo machine is on.
+
 # Resume Verifier
 
 Resume Verifier checks a job applicant's resume claims against public evidence. When a candidate applies through

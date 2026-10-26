@@ -43,6 +43,17 @@ A candidate can apply on the mock ATS careers page, `http://localhost:8101/apply
 - To hide the Simulate buttons and show a link to the careers page instead, start with `MOCK_ATS_HIDE_SIMULATE=1 bash scripts/demo_up.sh`.
 - The canned runs still work from a terminal when the buttons are hidden: `curl -s -X POST localhost:8101/_mock/apply -H 'content-type: application/json' -d '{"fixture":"henry"}'`
 
+## Public link for judges
+
+Only the mock ATS is exposed; the verifier stays local.
+
+1. Install `cloudflared`, then run `cloudflared tunnel --url http://127.0.0.1:8101` and copy the `https://<name>.trycloudflare.com` URL. The link changes every time the tunnel restarts.
+2. Start the stack with that URL and a passcode (take it from `.env`):
+   `SLACK=real GITHUB_FETCH_MODE=live MOCK_ATS_HIDE_SIMULATE=1 MOCK_ATS_PASSCODE=<from .env> ATS_PUBLIC_URL=<the trycloudflare URL> bash scripts/demo_up.sh`
+3. Judges open the link, enter the passcode once (cookie lasts 7 days; changing the passcode logs everyone out), and land on the mock ATS.
+
+`MOCK_ATS_PASSCODE` only gates requests that come through the tunnel (they carry `Cf-Connecting-Ip`). The verifier's calls to the Harvest API and this machine's own browser need no passcode. Unset it for no gate.
+
 ## If something goes wrong
 
 - **Card lost its buttons** (a click landed while OpenClaw was restarting or reloading): `RUNS_DIR=<runs dir> bash scripts/refresh_card.sh <application_id>`. The application id is in the card's candidate URL and on the mock ATS index.

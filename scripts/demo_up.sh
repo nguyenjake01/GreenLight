@@ -22,6 +22,9 @@
 #   MOCK_ATS_HIDE_SIMULATE   1|true|yes hides the "Simulate application" buttons on the mock ATS index and shows a link to the
 #                            candidate-facing careers page (/apply) instead. Export it before running; the mock ATS inherits it.
 #                            Canned runs still work from a terminal (see docs/demo-runbook.md, "Live upload").
+#   MOCK_ATS_PASSCODE        set it to put the mock ATS behind a passcode for tunnel visitors (requests that carry a
+#                            Cf-Connecting-Ip header, i.e. via cloudflared). Local requests (the verifier, this machine's
+#                            browser) are never gated. Unset or empty: no gate. The value is never printed.
 #   OPENCLAW_SANDBOX         rv-openclaw (the sandbox checked when SLACK=real)
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -69,6 +72,8 @@ case "$(printf %s "${MOCK_ATS_HIDE_SIMULATE:-}" | tr A-Z a-z)" in
   1|true|yes) export MOCK_ATS_HIDE_SIMULATE; echo "mock ATS: Simulate buttons hidden (MOCK_ATS_HIDE_SIMULATE on); candidates apply at /apply" ;;
   *) echo "mock ATS: Simulate buttons shown (MOCK_ATS_HIDE_SIMULATE off)" ;;
 esac
+if [ -n "${MOCK_ATS_PASSCODE:-}" ]; then export MOCK_ATS_PASSCODE; echo "mock ATS: passcode gate on for tunnel visitors"
+else echo "mock ATS: passcode gate off"; fi
 echo "modules: $VERIFIER_REAL   sandbox: $SANDBOX_BACKEND   run check: ${RUN_CHECK:-on}   slack: $SLACK"
 
 # ── Preflight ────────────────────────────────────────────────────────────────

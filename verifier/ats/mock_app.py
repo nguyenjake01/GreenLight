@@ -157,6 +157,37 @@ class MockState:
         return self.root / "files" / file_id / filename
 
 
+# ── Passcode gate helpers ─────────────────────────────────────────────────────
+
+_GATE_COOKIE = "rv_gate"
+_GATE_MAX_AGE_S = 7 * 24 * 3600
+_GATE_OPEN_STATIC = ("/static/rv/tokens.css", "/static/rv/rv.css")  # the login page's styling
+_GATE_NON_HTML = ("/files/", "/static/", "/_mock/", "/v3/", "/token", "/docs", "/openapi.json")
+_LOGIN_MAX_FAILS = 10
+_LOGIN_WINDOW_S = 600
+
+
+def _is_public(request: Request) -> bool:
+    """True for tunnelled traffic. Cloudflare's edge sets/overwrites `Cf-Connecting-Ip` on every
+    request it forwards, so a visitor can't hide it; direct local requests (the verifier calling
+    the Harvest API, our own browser) never carry it and are never gated."""
+    return "cf-connecting-ip" in request.headers
+
+
+def _gate_token(passcode: str) -> str:
+    """Stateless cookie value: HMAC of a fixed label keyed by the passcode (changing the
+    passcode invalidates every cookie)."""
+    return hmac.new(passcode.encode(), b"rv-gate-v1", hashlib.sha256).hexdigest()
+
+
+def _safe_next(value: str) -> str:
+    """Same-site relative paths only; anything else (absolute URL, `//host`, backslash) is `/`."""
+    if (not value.startswith("/") or value.startswith("//") or "\\" in value
+            or any(ord(c) < 32 for c in value)):
+        return "/"
+    return value
+
+
 # ── The app ───────────────────────────────────────────────────────────────────
 
 def create_app(*, state_root: Path | None = None,
@@ -171,6 +202,55 @@ def create_app(*, state_root: Path | None = None,
     jenv.filters["when"] = _when
     jenv.globals["slack_live"] = _slack_live
     app.mount("/static", StaticFiles(directory=str(STATIC)), name="static")
+
+    # ── passcode gate (tunnel visitors only; see _is_public) ──────────────────
+
+    failed_logins: dict[str, list[float]] = {}
+
+    @app.middleware("http")
+    async def passcode_gate(request: Request, call_next):
+        passcode = os.environ.get("MOCK_ATS_PASSCODE", "")
+        if not passcode or not _is_public(request):
+            return await call_next(request)
+        path, method = request.url.path, request.method
+        if (path == "/login" and method in ("GET", "HEAD", "POST")) or (
+                method in ("GET", "HEAD") and path in _GATE_OPEN_STATIC):
+            return await call_next(request)
+        cookie = request.cookies.get(_GATE_COOKIE, "")
+        if hmac.compare_digest(cookie.encode(), _gate_token(passcode).encode()):
+            return await call_next(request)
+        if method in ("GET", "HEAD") and not path.startswith(_GATE_NON_HTML):
+            target = request.url.path + (f"?{request.url.query}" if request.url.query else "")
+            return RedirectResponse(f"/login?next={quote(target, safe='')}", status_code=303)
+        return JSONResponse({"error": "passcode_required"}, status_code=401)
+
+    @app.get("/login", response_class=HTMLResponse)
+    def login_form(next: str = "/"):
+        return render("login.html", next=_safe_next(next), error="")
+
+    @app.post("/login")
+    async def login_submit(request: Request):
+        passcode = os.environ.get("MOCK_ATS_PASSCODE", "")
+        form = await request.form()
+        nxt = _safe_next(str(form.get("next") or "/"))
+        if not passcode:
+            return RedirectResponse(nxt, status_code=303)
+        ip = request.headers.get("cf-connecting-ip", "") or (
+            request.client.host if request.client else "")
+        now = time.monotonic()
+        recent = [t for t in failed_logins.get(ip, []) if now - t < _LOGIN_WINDOW_S]
+        failed_logins[ip] = recent
+        if len(recent) >= _LOGIN_MAX_FAILS:
+            return render("login.html", 429, next=nxt, error="Too many tries. Wait a few minutes.")
+        given = str(form.get("passcode") or "")
+        if not hmac.compare_digest(given.encode(), passcode.encode()):
+            recent.append(now)
+            return render("login.html", 401, next=nxt, error="That passcode isn't right.")
+        failed_logins.pop(ip, None)
+        resp = RedirectResponse(nxt, status_code=303)
+        resp.set_cookie(_GATE_COOKIE, _gate_token(passcode), max_age=_GATE_MAX_AGE_S,
+                        httponly=True, secure=True, samesite="lax", path="/")
+        return resp
 
     def public_url() -> str:
         return env("ATS_PUBLIC_URL").rstrip("/")

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Passcode · Mock ATS{% endblock %}
+{% block head %}
+<style>
+  .lg-wrap { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; padding: 8px 0 24px; }
+  .lg-wrap h1, .lg-wrap .rv-lead { margin: 0; }
+  .lg-form { display: flex; flex-direction: column; gap: 20px; }
+  .lg-field { display: flex; flex-direction: column; gap: 6px; }
+  .lg-field label { font-size: 13px; font-weight: 500; color: var(--text); }
+  .lg-field input[type=password] {
+    height: 40px; width: 100%; box-sizing: border-box; padding: 0 12px; border-radius: 4px;
+    border: 1px solid var(--border); background: var(--surface); color: var(--text);
+    font: 400 14.5px/1 var(--font-sans);
+  }
+  .lg-field input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-line); }
+  .lg-field.has-error input { border-color: var(--bad); }
+  .lg-err { font-size: 13px; color: var(--bad); margin: 0; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="lg-wrap">
+  <span class="rv-eyebrow">GreenLight demo · judges</span>
+  <h1 class="rv-h1">Enter the passcode</h1>
+  <p class="rv-lead">This demo runs on a single NVIDIA GB10. Ask the team for the passcode.</p>
+  <section class="rv-card">
+    <div class="rv-card-body">
+      <form class="lg-form" method="post" action="/login">
+        <input type="hidden" name="next" value="{{ next }}">
+        <div class="lg-field{% if error %} has-error{% endif %}">
+          <label for="passcode">Passcode</label>
+          <input type="password" id="passcode" name="passcode" autocomplete="current-password" autofocus required>
+          {% if error %}<p class="lg-err" role="alert">{{ error }}</p>{% endif %}
+        </div>
+        <div><button type="submit" class="rv-btn rv-btn-primary">Open the demo <span class="rv-arrow">→</span></button></div>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}
